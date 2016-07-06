@@ -29,15 +29,18 @@ const UserModel = new Schema({
   },
   team: [{
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
+    ref: 'Team'
   }],
   project: [{
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
+    ref: 'Project'
   }],
-  survey_id: {
+  survey: {
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
+    ref: 'Survey'
   },
   is_searching: {
     type: Boolean,
@@ -48,14 +51,10 @@ const UserModel = new Schema({
     type: Date,
     default: Date.now
   },
-  token: String,
-  token_uuid: String,
-  token_expire: {
-    set: {
-      type: Date,
-      default: Date.now
-    },
-    expire: Date
+  token: {
+    full: String,
+    uuid: String,
+    valid: Boolean
   },
   salt: String
 });

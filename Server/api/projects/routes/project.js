@@ -1,47 +1,40 @@
-var Project = require('../models/Project');
+var _ = require('../handler');
+var projectSchema = require('../schemas/projectSchema');
 
 module.exports = [{
   // Return all documents from the projects collection
   method: 'GET',
   path: '/projects',
   config: {
-    auth: false
+    auth: 'jwt'
   },
-  handler: function (req, res) {
-    Project.find(function (err, projects) {
-      if (err) return console.error(err);
-      res(projects);
-    });
-  }
+  handler: _.getProjects
 }, {
   // Get a project by that project's object ID
   method: 'GET',
   path: '/projects/{id}',
   config: {
-    auth: false
+    auth: 'jwt'
   },
-  handler: function (req, res) {
-    Project.findById(req.params.id, function (err, project) {
-      if (err) return console.error(err);
-      res(project);
-    });
-  }
+  handler: _.getProject
 }, {
-  // Method for adding will be changed to POST and will require auth
-  // It's set to GET for testing purposes
-  method: 'GET',
+  method: 'POST',
   path: '/projects/add',
   config: {
-    auth: false
+    validate: {
+      payload: projectSchema
+    },
+    auth: 'jwt'
   },
-  handler: function (req, res) {
-    var newProject = new Project({
-      title: req.query.title,
-      details: req.query.details
-    });
-    newProject.save(function (err, newProject) {
-      if (err) return console.log(err);
-      res(newProject);
-    });
-  }
+  handler: _.addProject
+}, {
+  method: 'PUT',
+  path: '/projects/{id}',
+  config: {
+    validate: {
+      payload: projectSchema
+    },
+    auth: 'jwt'
+  },
+  handler: _.updateProject
 }];

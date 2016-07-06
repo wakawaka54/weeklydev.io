@@ -1,11 +1,12 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+// var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var tokenCookieAuthentication = require('./middleware/token-cookie-authentication');
+var config = require('./config');
 
 var routes = require('./routes/index');
 var auth = require('./routes/auth');
@@ -25,13 +26,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // set up the session
 app.use(session({
-  secret: 'IAmASecretPlzDontShareMeYouWillGetMyFamilyKilledOhGodHelpMe1265123!%@!$#!',
+  secret: config.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 60 * 60 * 24 // set max age to 24 hours.
+    maxAge: 1000 * 60 * 60 * 24 // set max age to 24 hours.
   }
 }));
 

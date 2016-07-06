@@ -1,18 +1,11 @@
-'use strict';
-
-const Boom = require('boom');
-const User = require('../models/User');
-const createUserSchema = require('../schemas/createUser');
-const generateUUID = require('../../../methods/generateUUID');
-const formatUser = require('../util/userFunctions').formatUser;
-const verifyUniqueUser = require('../util/userFunctions').verifyUniqueUser;
-const createToken = require('../util/token');
+var _ = require('../handler');
+var verifyUniqueUser = require('../util/userFunctions').verifyUniqueUser;
+var createUserSchema = require('../schemas/createUser');
 
 module.exports = [{
   method: 'POST',
   path: '/users/new',
   config: {
-    // Validate the payload against the Joi schema
     validate: {
       payload: createUserSchema
     },
@@ -25,23 +18,7 @@ module.exports = [{
     // to register user does not need any authentication
     auth: false
   },
-  handler: (req, res) => {
-    let user = new User();
-    user.email = req.payload.email;
-    user.username = req.payload.username;
-    user.admin = false;
-    user.password = req.payload.password;
-    user.uuid = generateUUID();
-    user.token = createToken(user);
-    // user.token_expire.expire = (Date.now() + (24 * 60 * 60))
-    user.save((err, user) => {
-      if (err) {
-        throw Boom.badRequest(err);
-      }
-      // If the user is saved successfully, Send a JWT
-      res(formatUser(user)).code(201);
-    });
-  }
+  handler: _.addUser
 }, {
   /**
    * Update user by ID
@@ -51,19 +28,7 @@ module.exports = [{
   config: {
     auth: 'jwt'
   },
-  handler: (req, res) => {
-    User.findByIdAndUpdate(req.params.id, {
-      $set: {
-        username: req.payload.username,
-        email: req.payload.email,
-        admin: req.payload.admin,
-        password: req.payload.password
-      }
-    }, function (err, user) {
-      if (err) return console.error(err);
-      res(formatUser(user));
-    });
-  }
+  handler: _.updateUser
 }, {
   /**
    * Get all users or one user by id
@@ -73,45 +38,17 @@ module.exports = [{
   config: {
     auth: 'jwt'
   },
-  handler: (req, res) => {
-    if (req.params.id) {
-      User.findById(req.params.id, function (err, user) {
-        if (err) return console.error(err);
-        res(formatUser(user)).code(200);
-      });
-    } else {
-      User.find(function (err, users) {
-        if (err) return console.error(err);
-        if (req.Token.scope == 'admin') {
-          res(users).code(200);
-        } else {
-          var Users = [];
-          users.forEach((user) => {
-            Users.push(formatUser(user));
-          });
-          res(Users);
-        }
-      });
-    }
-  }
+  handler: _.getUser
 }, {
   /**
-   * Get all users or one user by id
+   * Get user by request id
    */
   method: 'GET',
   path: '/users/me',
   config: {
     auth: 'jwt'
   },
-  handler: (req, res) => {
-    User.findById(req.Token.id, (err, user) => {
-      if (err || !user) {
-        res(Boom.unauthorized('user not found'));
-      } else {
-        res(formatUser(user));
-      }
-    });
-  }
+  handler: _.getCurrentUser
 }, {
   /**
    * Update user by ID
@@ -119,19 +56,7 @@ module.exports = [{
   method: 'DELETE',
   path: '/users/{id}',
   config: {
-    auth: false
+    auth: 'jwt'
   },
-  handler: (req, res) => {
-    User.findByIdAndRemove(req.params.id, (err, user) => {
-      if (err) {
-        console.error(err);
-        res(Boom.wrap(err, 400));
-      }
-      if (user) {
-        res(formatUser(user)).code(200);
-      } else {
-        res(Boom.notFound('User not found'));
-      }
-    });
-  }
+  handler: _.deleteUser
 }];

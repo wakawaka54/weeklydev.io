@@ -3,7 +3,6 @@
 const Boom = require('boom');
 const User = require('../models/User');
 const createToken = require('./token');
-const validateEmail = require('../../../methods/validateEmail');
 const generateUUID = require('../../../methods/generateUUID');
 
 function verifyUniqueUser (req, res) {
@@ -21,9 +20,11 @@ function verifyUniqueUser (req, res) {
     if (user) {
       if (user.username === req.payload.username) {
         res(Boom.badRequest('Username taken'));
+        return;
       }
       if (user.email === req.payload.email) {
         res(Boom.badRequest('Email taken'));
+        return;
       }
     }
     // If no username or email is found send it on
@@ -43,7 +44,7 @@ function authenticateUser (req, res) {
       res(Boom.badRequest('User not found!'));
       return;
     }
-    user.token_uuid = generateUUID();
+    user.token.uuid = generateUUID();
     user.save((err, user) => {
       if (err) {
         console.log('-- Something went wrong:');
@@ -57,17 +58,43 @@ function authenticateUser (req, res) {
   });
 }
 
-function userModel (user) {
-  let obj = {
-    id: user.id,
-    email: user.email,
-    username: user.username,
-    admin: user.admin,
-    team: user.team,
-    project: user.project,
-    token: user.token
-  };
-  return obj;
+function userModel (user, opts) {
+  switch (opts) {
+    case 'admin':
+      return {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        admin: user.admin,
+        team: user.team,
+        project: user.project
+      };
+    case 'user':
+      return {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        admin: user.admin,
+        team: user.team,
+        project: user.project,
+        token: user.token.full
+      };
+    case 'users':
+      return {
+        id: user.id,
+        username: user.username,
+        admin: user.admin,
+        team: user.team,
+        project: user.project
+      };
+    default:
+      return {
+        id: user.id,
+        username: user.username,
+        team: user.team,
+        project: user.project
+      };
+  }
 }
 
 module.exports = {
