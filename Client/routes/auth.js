@@ -22,11 +22,11 @@ router.get('/logout', function (req, res, next) {
 
 // User Login
 router.post('/login', function (req, res, next) {
-  var email = req.body.email;
+  var email = req.body.username;
   var password = req.body.password;
 
   if (!email || !password) {
-    res.render('pages/login', {error: 'Please enter both an email and a password'});
+    res.render('pages/login', {error: 'Please enter both a username or email and your password'});
   }
 
   // API HTTP request options
