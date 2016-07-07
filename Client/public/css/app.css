@@ -6217,3 +6217,7 @@ nav {
   color: #ea2c2c; }
   .error p {
     margin: 0; }
+
+#navigation {
+  position: fixed;
+  height: 100%; }
