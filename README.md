@@ -6,6 +6,8 @@ This is the source to the WeeklyDev.io API and Member's Panel Frontend
 # Installation
 To pull the repo, use `git clone https://github.com/weeklydev/weeklydev.io.git`
 
+Install [MongoDB](https://docs.mongodb.com/manual/installation/) and run it.
+
 Then, cd into your new weekly-dev-site folder and install dependencies by running `npm install` and `bower install` within both the `Client` and `Server` directories.
 
 To compile stylesheets, run `npm run watch`.
