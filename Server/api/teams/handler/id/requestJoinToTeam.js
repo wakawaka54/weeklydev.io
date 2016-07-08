@@ -6,7 +6,7 @@ const Code = require('../../../../config/errorCodes');
 
 module.exports = (req, res) => {
   Team.findById(req.params.id, (err, team) => {
-    if (team.requests.lenght >= 10) {
+    if (team.requests.length >= 10) {
       res(Code.maxRequestsReached);
     }else {
       if (team.requests.indexof(req.payload.user) >= 0) {
