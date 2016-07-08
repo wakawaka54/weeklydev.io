@@ -27,7 +27,7 @@ module.exports = function () {
 
     res.protectPage = protectPage;
 
-    // this is middlware - move on down the chain.
+    // this is middleware - move on down the chain.
     next();
   };
 };
