@@ -26,6 +26,14 @@ module.exports = [{
   },
   handler: _.addTeam
 }, {
+  // Lists all Teams (disabled or not)
+  method: 'GET',
+  path: '/teams/{id}',
+  config: {
+    auth: 'jwt'
+  },
+  handler: _.getTeam
+}, {
   // Bulk update
   method: 'PUT',
   path: '/teams/{id}',
