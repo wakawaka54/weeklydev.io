@@ -62,7 +62,7 @@ router.post('/login', function (req, res, next) {
     if (req.params.url) {
       res.redirect(req.params.url);
     } else {
-      res.redirect('/profile');
+      res.redirect('/');
     }
   });
 });

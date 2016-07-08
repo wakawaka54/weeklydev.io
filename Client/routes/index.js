@@ -4,7 +4,12 @@ var router = express.Router();
 
 // GET
 router.get('/', function (req, res, next) {
-  res.render('pages/index');
+	//res.protectPage(req, res, next);
+	if (res.locals.auth){
+		res.render('pages/index');
+	} else {
+		res.redirect('/auth/login');
+	}
 });
 
 module.exports = router;

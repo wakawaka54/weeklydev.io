@@ -10,7 +10,8 @@ var config = require('./config');
 
 var routes = require('./routes/index');
 var auth = require('./routes/auth');
-var profile = require('./routes/profile');
+var account = require('./routes/account');
+var team = require('./routes/account');
 
 var app = express();
 
@@ -42,7 +43,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/auth', auth);
-app.use('/profile', profile);
+app.use('/account', account);
+app.use('/team', team);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
