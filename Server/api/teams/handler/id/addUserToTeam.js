@@ -37,21 +37,21 @@ module.exports = (req, res) => {
                     if (team.manager.length >= 1) {
                       res(Code.maxUsersInRole);
                     } else {
-                      team.manager.push({user: req.payload.user, role: req.payload.level});
+                      team.manager.push(req.payload.user);
                     }
                     break;
                   case 'backend':
                     if (team.backend.length >= 2) {
                       res(Code.maxUsersInRole);
                     }else {
-                      team.backend.push({user: req.payload.user, role: req.payload.level});
+                      team.backend.push(req.payload.user);
                     }
                     break;
                   case 'frontend':
                     if (team.frontend.length >= 2) {
                       res(Code.maxUsersInRole);
                     }else {
-                      team.frontend.push({user: req.payload.user, role: req.payload.level});
+                      team.frontend.push(req.payload.user);
                     }
                     break;
                   default:
