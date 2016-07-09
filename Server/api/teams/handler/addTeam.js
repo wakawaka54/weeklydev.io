@@ -2,27 +2,42 @@
 
 const Boom = require('boom');
 const Team = require('../models/Team');
-const getRoles = require('../util/teamFunctions').getRoles;
-const arrayChecker = require('../util/teamFunctions').arrayChecker;
+const Code = require('../../../config/errorCodes');
+const validateUser = require(`${PATH}/methods/validateUser`);
 
 module.exports = (req, res) => {
-  let team = new Team();
-  let p = req.payload;
-  console.log(p);
-  if (!arrayChecker([p.manager , p.backend, p.frontend], [p.manager_role, p.backend_role, p.frontend_role])) {
-    res(Boom.badRequest('arrays of "role" and "*_role" must be the same length'));
-    return;
+  var team = new Team();
+  team['owner'] = req.Token.id;
+  if (req.payload.role) {
+    var usersProcessed = 0;
+    var stop = false;
+    req.payload.role.forEach((user, index, array) => {
+      validateUser(user.id, valid => {
+        if (!stop) {
+          if (valid) {
+            team[user.role].push(user.id);
+            team.meta['members'].push({id: user.id});
+            usersProcessed++;
+            if (usersProcessed === array.length) {
+              saveTeam();
+            }
+          }else {
+            stop = true;
+            res(Code.userNotFound);
+          }
+        }
+      });
+    });
   }else {
-    team.owner = req.Token.id;
-    team.manager = getRoles(p.manager, p.manager_role);
-    team.backend = getRoles(p.backend, p.backend_role);
-    team.frontend = getRoles(p.frontend, p.frontend_role);
+    saveTeam();
+  }
+  function saveTeam () {
     team.save((err, team) => {
       if (err) {
         console.log(err);
-        res(err);
+        res(Boom.badImplementation(err));
       }else {
-        res({msg: 'created', id: team.id});
+        res(team);
       }
     });
   }
