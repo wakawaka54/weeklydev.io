@@ -1,6 +1,7 @@
 'use strict';
 const server = require('../../app.js');
 let res;
+let loginRes;
 const user = {
   username: 'crazymouse553',
   password: 'vectra',
@@ -53,7 +54,6 @@ describe('Creating new user', () => {
 });
 
 describe('Login ', () => {
-  var loginRes;
   it('user with username', (done) => {
     server.inject({
       method: 'POST',
@@ -62,7 +62,6 @@ describe('Login ', () => {
         Authorization: 'Basic ' + (new Buffer(user.username + ':' + user.password, 'utf8')).toString('base64')
       }
     }, (res) => {
-      loginRes = res.result;
       expect(res.statusCode).to.be.equal(200);
       done();
     });
@@ -76,6 +75,7 @@ describe('Login ', () => {
         Authorization: 'Basic ' + (new Buffer(user.email + ':' + user.password, 'utf8')).toString('base64')
       }
     }, (res) => {
+      loginRes = res.result;
       expect(res.statusCode).to.be.equal(200);
       done();
     });
@@ -89,7 +89,6 @@ describe('Login ', () => {
         Authorization: 'Basic ' + (new Buffer('Invalid' + ':' + user.password, 'utf8')).toString('base64')
       }
     }, (res) => {
-      loginRes = res.result;
       expect(res.statusCode).to.be.equal(401);
       done();
     });
@@ -103,7 +102,6 @@ describe('Login ', () => {
         Authorization: 'Basic ' + (new Buffer('invalid@someRussina.email' + ':' + user.password, 'utf8')).toString('base64')
       }
     }, (res) => {
-      loginRes = res.result;
       expect(res.statusCode).to.be.equal(401);
       done();
     });
@@ -117,7 +115,6 @@ describe('Login ', () => {
         Authorization: 'Basic ' + (new Buffer(user.username + ':' + '123456ShittyPassword', 'utf8')).toString('base64')
       }
     }, (res) => {
-      loginRes = res.result;
       expect(res.statusCode).to.be.equal(401);
       done();
     });
@@ -131,7 +128,6 @@ describe('Login ', () => {
         Authorization: 'Basic ' + (new Buffer(user.email + ':' + '123456ShittyPassword', 'utf8')).toString('base64')
       }
     }, (res) => {
-      loginRes = res.result;
       expect(res.statusCode).to.be.equal(401);
       done();
     });
@@ -140,12 +136,15 @@ describe('Login ', () => {
 
 describe('Deleting user :', () => {
 
-  var deleteRes;
+  let deleteRes;
 
   it('Respond with succes', (done) => {
     server.inject({
       method: 'DELETE',
-      url: '/users/' + res.id
+      url: '/users/' + res.id,
+      headers: {
+        Authorization: 'bearer ' + loginRes.token
+      }
     }, (res) => {
       deleteRes = res.result;
       expect(res.statusCode).to.be.equal(200);
@@ -175,11 +174,11 @@ describe('Deleting user :', () => {
       method: 'GET',
       url: '/users/me',
       headers: {
-        Authorization: 'bearer ' + res.token
+        Authorization: 'bearer ' + deleteRes.token
       }
     }, (res) => {
       expect(res.statusCode).to.be.equal(401);
-      expect(res.result.message).to.be.equal('user not found');
+      expect(res.result.message).to.be.equal('Invalid credentials');
       expect(res.result.error).to.be.equal('Unauthorized');
 
       done();
@@ -196,7 +195,7 @@ describe('Deleting user :', () => {
     }, (res) => {
       expect(res.statusCode).to.be.equal(401);
       expect(res.result.error).to.be.equal('Unauthorized');
-      expect(res.result.message).to.be.equal('user not found');
+      expect(res.result.message).to.be.equal('Bad username or password');
       done();
     });
   });
@@ -211,7 +210,7 @@ describe('Deleting user :', () => {
     }, (res) => {
       expect(res.statusCode).to.be.equal(401);
       expect(res.result.error).to.be.equal('Unauthorized');
-      expect(res.result.message).to.be.equal('user not found');
+      expect(res.result.message).to.be.equal('Bad username or password');
       done();
     });
   });
