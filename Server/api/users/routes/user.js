@@ -69,4 +69,14 @@ module.exports = [{
     auth: 'jwt'
   },
   handler: _.getCurrentUser
+}, {
+  /**
+   * Get user by request id
+   */
+  method: 'GET',
+  path: '/users/me/teams',
+  config: {
+    auth: 'jwt'
+  },
+  handler: _.getTeamsIn
 }];
