@@ -18,32 +18,27 @@ const TeamModel = new Schema({
   },
   owner: {
     type: Schema.Types.ObjectId,
-    required: true,
     ref: 'User'
   },
   manager: [{
-    role: Number,
-    user: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
-    }
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
   }],
   frontend: [{
-    role: Number,
-    user: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
-    }
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
   }],
   backend: [{
-    role: Number,
-    user: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
-    }
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
+  }],
+  requests: [{
+    user: Schema.Types.ObjectId,
+    role: String,
+    msg: String
   }],
   meta: {
     created: {type: Date, default: Date.now()},

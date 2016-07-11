@@ -1,4 +1,4 @@
-<!-- views/pages/index.ejs -->
+<!-- views/pages/account-settings.ejs -->
 
 <!DOCTYPE html>  
 <html lang="en">  
@@ -7,12 +7,11 @@
   
     <% include ../partials/nav %>
 
-    <div class="row padded">
       <div class="medium-8 medium-centered large-6 large-centered columns">
 
         <form method="post" name="profile_edit_form" data-abide novalidate>
           <div class="row column profile-edit-form">
-            <h4 class="text-center">Edit Your Profile</h4>
+            <h4 class="text-center">Edit Your Account</h4>
 
             <% if (locals.error) { %>
               <div class="error">

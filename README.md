@@ -1,10 +1,12 @@
-[![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
+[![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)  [![Build Status](https://travis-ci.org/weeklydev/weeklydev.io.svg?branch=development)](https://travis-ci.org/weeklydev/weeklydev.io)
 
 # WeeklyDev.io
 This is the source to the WeeklyDev.io API and Member's Panel Frontend
 
 # Installation
 To pull the repo, use `git clone https://github.com/weeklydev/weeklydev.io.git`
+
+Install [MongoDB](https://docs.mongodb.com/manual/installation/) and run it.
 
 Then, cd into your new weekly-dev-site folder and install dependencies by running `npm install` and `bower install` within both the `Client` and `Server` directories.
 

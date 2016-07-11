@@ -5,7 +5,9 @@
   <% include ../partials/head %>
   <body>
 
+  <% if (locals.auth) { %>
     <% include ../partials/nav %>
+  <% } %>
     
     <div class="row">
       <div class="large-12 columns text-center">

@@ -11,11 +11,11 @@ router.get('/*', function (req, res, next) {
 
 // GET
 router.get('/', function (req, res, next) {
-  res.render('pages/profile', {username: req.session.user.username});
+  res.render('pages/account', {username: req.session.user.username});
 });
 
 router.get('/settings', function (req, res, next) {
-  res.render('pages/profile-settings', {username: req.session.user.username});
+  res.render('pages/account-settings', {username: req.session.user.username});
 });
 
 // POST
@@ -33,7 +33,7 @@ router.post('/settings', function (req, res, next) {
       'Authorization': 'bearer ' + req.session.user.token
     },
     form: {
-      role: role,
+      'role[0]': role,
       skill: skill,
       size: projectSize,
       projectManager: isProjectManager,
@@ -45,8 +45,8 @@ router.post('/settings', function (req, res, next) {
   request.post(requestOptions, function (error, response, body) {
     // if there are database errors, send an error message.
     if (error) {
-      console.log('/profile/settings error - ' + error.Error);
-      res.render('pages/profile-settings', {error: "Couldn't connect to the database. Please contact a system administrator."});
+      console.log('/account/settings error - ' + error.Error);
+      res.render('pages/account-settings', {error: "Couldn't connect to the database. Please contact a system administrator."});
       return;
     }
 
@@ -55,13 +55,13 @@ router.post('/settings', function (req, res, next) {
 
     // if we got an error from the API, log that message.
     if (jsonBody.error) {
-      console.log('/profile/settings error - ' + jsonBody.message);
-      res.render('pages/profile-settings', { error: jsonBody.message });
+      console.log('/account/settings error - ' + jsonBody.message);
+      res.render('pages/account-settings', { error: jsonBody.message });
       return;
     }
 
     // Settings update was successful.
-    res.redirect('/profile');
+    res.redirect('/account');
   });
 });
 

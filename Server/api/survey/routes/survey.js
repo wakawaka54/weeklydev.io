@@ -14,7 +14,14 @@ module.exports = [{
     },
     auth: 'jwt'
   },
-  handler: _.getSurvey
+  handler: _.getSurveys
+}, {
+  method: 'GET',
+  path: '/surveys/{id}',
+  config: {
+    auth: 'jwt'
+  },
+  handler:_.getSurvey
 }, {
   method: 'PUT',
   path: '/surveys',

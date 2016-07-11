@@ -1,3 +1,6 @@
+'use strict';
+const server = require('../../app.js');
+
 describe('Validate Server is up and running', () => {
   it('Respond with 200', (done) => {
     server.inject({
