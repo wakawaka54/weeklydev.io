@@ -1,5 +1,5 @@
 const server = require('../../app.js');
-const res;
+let res;
 const user = {
   username: 'crazymouse553',
   password: 'vectra',
