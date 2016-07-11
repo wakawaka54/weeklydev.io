@@ -1,3 +1,4 @@
+'use strict';
 const server = require('../../app.js');
 
 describe('Validate Server is up and running', () => {

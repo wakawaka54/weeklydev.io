@@ -1,3 +1,4 @@
+'use strict';
 const server = require('../../app.js');
 let res;
 const user = {
