@@ -1,5 +1,7 @@
-var res;
-var user = {
+'use strict';
+const server = require('../../app.js');
+let res;
+const user = {
   username: 'crazymouse553',
   password: 'vectra',
   email: 'philip.barnes@example.com'

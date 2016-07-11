@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "4"
+  - "5.11"
+
+env:
+  - CXX=g++-4.8
+  
+services:
+  - mongodb
+
+cache:
+  directories:
+    - Server/node_modules
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+  
+script: cd Server && npm install && npm test
