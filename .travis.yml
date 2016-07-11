@@ -9,6 +9,9 @@ env:
 services:
   - mongodb
 
+cache:
+  directories:
+    - Server/node_modules
 
 addons:
   apt:
