@@ -5,7 +5,7 @@ var surveySchema = require('../schemas/surveySchema');
 
 module.exports = [{
   method: 'GET',
-  path: '/surveys',
+  path: '/survey',
   config: {
     // Validate the payload against the Joi schema
     // NOTE: Do we need this?
@@ -14,17 +14,10 @@ module.exports = [{
     },
     auth: 'jwt'
   },
-  handler: _.getSurveys
-}, {
-  method: 'GET',
-  path: '/surveys/{id}',
-  config: {
-    auth: 'jwt'
-  },
-  handler:_.getSurvey
+  handler: _.getSurvey
 }, {
   method: 'PUT',
-  path: '/surveys',
+  path: '/survey',
   config: {
     // Validate the payload against the Joi schema
     validate: {
@@ -35,7 +28,7 @@ module.exports = [{
   handler: _.updateSurvey
 }, {
   method: 'POST',
-  path: '/surveys',
+  path: '/survey',
   config: {
     // Validate the payload against the Joi schema
     validate: {
