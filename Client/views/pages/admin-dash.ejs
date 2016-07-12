@@ -1,0 +1,22 @@
+<!-- views/pages/admin-dash.ejs -->
+
+<!DOCTYPE html>  
+<html lang="en">  
+  <% include ../partials/head %>
+  <body>
+  
+    <% include ../partials/nav %>
+
+    <div class="row padded">
+      <div class="large-12 columns text-center">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome admin, <%= locals.username %>.</p>
+        <h3>Token: </h3>
+        <p><%= locals.token %></p>
+      </div>
+    </div>
+
+    <% include ../partials/scripts %>
+  </body>
+
+</html>
