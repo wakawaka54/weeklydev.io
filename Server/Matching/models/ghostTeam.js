@@ -4,21 +4,19 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const TeamModel = new Schema({
-  manager: [{
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
+  members: [{
+    id: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'User'
+    },
+    role: String
   }],
-  frontend: [{
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
-  }],
-  backend: [{
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
-  }]
+  score: Number,
+  confirmed: Number,
+  manager: [Schema.Types.Mixed],
+  frontend: [Schema.Types.Mixed],
+  backend: [Schema.Types.Mixed]
 });
 
 module.exports = mongoose.model('ghostTeam', TeamModel, 'ghostTeams');
