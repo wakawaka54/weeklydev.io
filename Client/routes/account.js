@@ -38,8 +38,6 @@ router.get('/settings', function (req, res, next) {
       return;
     }
 
-    console.log(jsonBody);
-
     res.render('pages/account-settings', jsonBody);
   });
 
