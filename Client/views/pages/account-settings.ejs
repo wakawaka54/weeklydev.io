@@ -44,6 +44,7 @@
               </select>
               <span class="form-error">Please choose a skill level.</span>
             </label>
+            <!-- Un commented until further notice
             <label>Preferred Team Size
               <select id="size" name="size" required>
                 <option value="">Choose a team size...</option>
@@ -53,6 +54,9 @@
               </select>
               <span class="form-error">Please choose a team size.</span>
             </label>
+            -->
+            <!-- Default to 5 because we don't have anything else yet !-->
+            <input type="hidden" name="size" value="5">
             <label>
               What is your timezone offset? (UTC/GMT)<br>
               If you're not sure, go to <a href="http://time.is/">http://time.is/</a>, scroll down to the time zone section, and enter the offset listed there.
