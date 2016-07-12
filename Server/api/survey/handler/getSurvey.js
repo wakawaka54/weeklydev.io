@@ -9,7 +9,7 @@ module.exports = (req, res) => {
     user_id: req.Token.id
   }, (err, survey) => {
     res(((survey) ? survey : {
-      msg: 'No Survey found!'
+      error: 'No Survey found!'
     })).code(200);
   });
 };
