@@ -4,6 +4,22 @@ const Boom = require('boom');
 const Survey = require('../models/Survey');
 const User = require('../../users/models/User');
 const Code = require('../../../config/errorCodes');
+const ghostUser = require(PATH + '/Matching/models/searchingUsers');
+
+function addToGhost (survey) {
+  var ghost = new ghostUser();
+  ghost.user = survey.user_id;
+  ghost.preferred_role = survey.preferred_role;
+  ghost.project_manager = survey.project_manager;
+  ghost.skill_level = survey.skill_level;
+  ghost.project_size = survey.project_size;
+  ghost.timezone = survey.timezone;
+  ghost.save(err => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
 
 module.exports = (req, res) => {
   User.findById(req.Token.id, (err, user) => {
@@ -25,6 +41,7 @@ module.exports = (req, res) => {
           if (err) {
             throw Boom.badRequest(err);
           }
+          addToGhost(survey);
           user.survey = survey.id;
           user.save(err => {
             if (err) {
