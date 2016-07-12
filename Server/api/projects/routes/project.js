@@ -1,5 +1,7 @@
-var _ = require('../handler');
-var projectSchema = require('../schemas/projectSchema');
+'use strict';
+
+const _ = require('../handler');
+const projectSchema = require('../schemas/projectSchema');
 
 module.exports = [{
   // Return all documents from the projects collection

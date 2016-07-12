@@ -1,6 +1,8 @@
-var _ = require('../handler');
-var submissionSchema = require('../schemas/submissionSchema');
-var newSubmissionSchema = require('../schemas/newSubmissionSchema');
+'use strict';
+
+const _ = require('../handler');
+const submissionSchema = require('../schemas/submissionSchema');
+const newSubmissionSchema = require('../schemas/newSubmissionSchema');
 
 module.exports = [{
   method: 'GET',

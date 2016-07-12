@@ -1,6 +1,8 @@
+'use strict';
+
 module.exports = (domains, tld) => {
-  var validUrl = '';
-  for (var i = domains.length - 1; i >= 0; i--) {
+  let validUrl = '';
+  for (let i = domains.length - 1; i >= 0; i--) {
     if (i !== 0) {
       validUrl = validUrl + '|';
     }
@@ -8,7 +10,7 @@ module.exports = (domains, tld) => {
   }
 
   var validTLD = '';
-  for (var x = tld.length - 1; x >= 0; x--) {
+  for (let x = tld.length - 1; x >= 0; x--) {
     if (x !== 0) {
       validTLD = validTLD + '|';
     }

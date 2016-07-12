@@ -1,6 +1,8 @@
-var _ = require('../handler');
-var createNewSurvey = require('../util/surveySchema');
-var surveySchema = require('../schemas/surveySchema');
+'use strict';
+
+const _ = require('../handler');
+const createNewSurvey = require('../util/surveySchema');
+const surveySchema = require('../schemas/surveySchema');
 // const surveySchema = require('../schemas/survey')
 
 module.exports = [{

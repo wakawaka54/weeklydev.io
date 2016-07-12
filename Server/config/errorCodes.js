@@ -12,7 +12,9 @@
 //  Team          :   5xx
 //  Projects      :   6xx
 //  Submissions   :   7xx
-var Boom = require('boom');
+'use strict';
+
+const Boom = require('boom');
 function applyErrorCode (error) {
   error.output.payload.errorCode = error.data.errorCode;
   return error;
@@ -20,7 +22,7 @@ function applyErrorCode (error) {
 module.exports = {
   applyErrorCode: applyErrorCode,
   // Server
-  internalServerError: applyErrorCode(Boom.create(500, 'Sorry, something went wrong on our end', {errorCode: 001})),
+  internalServerError: applyErrorCode(Boom.create(500, 'Sorry, something went wrong on our end', {errorCode: '001'})),
   // Users
   userNotFound: applyErrorCode(Boom.create(404, 'User not found', {errorCode: 300})),
   userInTooManyTeams: applyErrorCode(Boom.create(400, 'User in too many Teams', { errorCode: 305 })),

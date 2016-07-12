@@ -1,6 +1,8 @@
-var User = require('./api/users/models/User');
-var validateEmail = require('./methods/validateEmail');
-var Boom = require('boom');
+'use strict';
+
+const User = require('./api/users/models/User');
+const validateEmail = require('./methods/validateEmail');
+const Boom = require('boom');
 
 function jwtAuth (decoded, request, callback) {
   // do your checks to see if the person is valid

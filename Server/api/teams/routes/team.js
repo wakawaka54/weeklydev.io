@@ -1,5 +1,7 @@
-var _ = require('../handler');
-var teamSchema = require('../schemas/teamSchema');
+'use strict';
+
+const _ = require('../handler');
+const teamSchema = require('../schemas/teamSchema');
 
 module.exports = [{
   // Lists all Teams (disabled or not)
