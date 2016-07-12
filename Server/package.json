@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/weeklydev/weeklydev.io#readme",
   "dependencies": {
+    "amqplib": "^0.4.2",
     "bcrypt": "^0.8.7",
     "boom": "^3.2.1",
     "glob": "^7.0.3",
@@ -27,8 +28,8 @@
     "joi": "^8.4.1",
     "jsonwebtoken": "^7.0.0",
     "mongoose": "^4.4.20",
-    "nodemailer": "*",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.7",
+    "nodemailer": "*"
   },
   "devDependencies": {
     "chai": "^3.5.0",
