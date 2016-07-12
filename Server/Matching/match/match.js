@@ -16,100 +16,12 @@ const _TEAM_NEED_SKILL_LEVEL_THREE = 9;
 
 var offsetMinus;
 
-function something (userId) {
-  User.findById(userId).populate('survey').exec((err, user) => {
-    const userSurvey = user.survey;
-    User.find({ 'is_searching': true }).populate({path: 'survey', options: { sort: { 'timezone': -1 } } }).exec((err, potentialCandidates) => {
-      potentialCandidates.forEach((nUser, array, index) => {
-        if (nUser.survey) {
-          console.log(`[${nUser.survey.timezone}, ${nUser.survey.project_size}, ${nUser.survey.skill_level}]`);
-        }else {
-          console.log(nUser);
-        }
-      // console.log(nUser.survey.timezone + nUser.survey.project_size + nUser.survey.skill_level)
-      });
-    });
-  });
-}
-
 function getOffset (offset) {
   return Math.round((Math.random() * (offset - 1) + 1));
 }
 
 function getUserSkillLevel (x) {
   return Math.abs(x - 6);
-}
-
-function getTeamSkillLevel (team) {
-  let teamSkill;
-  team['backend'].forEach((inTeamUser, array, index) => {
-    teamSkill = teamSkill + inTeamUser.skillLevel;
-  });
-  team['frontend'].forEach((inTeamUser, array, index) => {
-    teamSkill = teamSkill + inTeamUser.skillLevel;
-  });
-  team['frontend'].forEach((inTeamUser, array, index) => {
-    teamSkill = teamSkill + inTeamUser.skillLevel;
-  });
-  return teamSkill;
-}
-
-function getTeamSize (team) {
-  return (team.backend.length + team.frontend.length + team.manager.length);
-}
-
-function getTeamSizeOffset (user) {
-  return [Math.abs(user.project_size - _PS_OFFSET),(user.project_size + _PS_OFFSET)];
-}
-function find_Users_With_Smaller_Skill_Level_And_Same_Role (potentialCandidates, userSkillLevel) {
-  let result = [];
-  potentialCandidates.forEach((potentailTeammate, array, index) => {
-    potentailTeammate.preferred_role.forEach((teammateRole, arra, index) => {
-      if (user.preferred_role.indexOf(teammateRole) > -1) {
-        if (potentailTeammate.skill_level <= userSkillLevel) {
-          result.push(potentailTeammate);
-        }
-      }
-    });
-  });
-  return result;
-}
-
-function find_Users_With_Higher_Skill_Level_And_Same_Role (potentialCandidates, userSkillLevel) {
-  let result = [];
-  potentialCandidates.forEach((potentailTeammate, array, index) => {
-    potentailTeammate.preferred_role.forEach((teammateRole, arra, index) => {
-      if (user.preferred_role.indexOf(teammateRole) > -1) {
-        if (potentailTeammate.skill_level >= userSkillLevel) {
-          result.push(potentailTeammate);
-        }
-      }
-    });
-  });
-  return result;
-}
-
-function find_Users_With_Higher_Skill_Level_And_Any_Role (potentialCandidates, userSkillLevel) {
-  let result = [];
-  potentialCandidates.forEach((potentailTeammate, array, index) => {
-    potentailTeammate.preferred_role.forEach((teammateRole, arra, index) => {
-      if (potentailTeammate.skill_level >= userSkillLevel) {
-        result.push(potentailTeammate);
-      }
-    });
-  });
-  return result;
-}
-function find_Users_With_Smaller_Skill_Level_And_Any_Role (potentialCandidates, userSkillLevel) {
-  let result = [];
-  potentialCandidates.forEach((potentailTeammate, array, index) => {
-    potentailTeammate.preferred_role.forEach((teammateRole, arra, index) => {
-      if (potentailTeammate.skill_level <= userSkillLevel) {
-        result.push(potentailTeammate);
-      }
-    });
-  });
-  return result;
 }
 
 function find_Users_With_Any_Skill_Level_And_Same_Role (potentialCandidates, role) {
@@ -181,6 +93,15 @@ function inRange (skillNeed, skill) {
   }
 }
 
+function format (_Team) {
+  console.log(`
+Backend----Frontend----Manager
+${_Team.backend.length} / ${_Team.frontend.length} / ${_Team.manager.length}
+    Team Size: ${_Team.getTeamSize()}
+    Score: ${_Team.getScore()/_Team.getTeamSize()}
+    Timezones: ${_Team.getTimezones()}`);
+}
+
 function removeFromFreeRole (arr, role) {
   arr.splice(arr.indexOf(role), 1);
 }
@@ -219,9 +140,9 @@ function doSomething (userId) {
       // Populate free roles in 5 man team
       var freeRoles = ['backend', 'backend', 'frontend', 'frontend', 'manager'];
 
-      console.log(userSkillLevel);
       removeFromFreeRole(freeRoles, userRole);
-      console.log(freeRoles);
+
+      _Team.score = [_User.skill_level];
 
       potentialCandidates.forEach((potentailTeammate, arra, index) => {
         // Check if team is full
@@ -231,19 +152,41 @@ function doSomething (userId) {
           if (inRange(userSkillLevel, potentailTeammate.skill_level)) {
             _Team[potentialRole].push(potentailTeammate);
             removeFromFreeRole(freeRoles, potentialRole);
-            console.log('[x] Added to team');
+            _Team.score.push(potentailTeammate.skill_level);
           }
         }
       });
 
       if (freeRoles.length >= 0) {
         for (var i = 0; i < freeRoles.length; i++) {
-          find_Users_With_Any_Skill_Level_And_Same_Role(potentialCandidates, freeRoles[i]);
+          let potentailTeammate = find_Users_With_Any_Skill_Level_And_Same_Role(potentialCandidates, freeRoles[i])[0];
+          _Team[freeRoles[i]].push(potentailTeammate);
+          _Team.score.push(potentailTeammate.skill_level);
         }
       }
-
-      console.log(_Team.backend.length + ' / ' + _Team.frontend.length + ' / ' + _Team.manager.length);
-    // console.log(_Team.backend.length)
+      _Team.getTeamSize = () => {
+        return (_Team.backend.length + _Team.frontend.length + _Team.manager.length);
+      };
+      _Team.getScore = () => {
+        function add (a, b) {
+          return a + b;
+        }
+        return _Team.score.reduce(add, 0);
+      };
+      _Team.getTimezones = () => {
+        let result = [];
+        for (let i = 0; i < _Team.backend.length; i++) {
+          result.push(_Team.backend[i].timezone);
+        }
+        for (let i = 0; i < _Team.frontend.length; i++) {
+          result.push(_Team.frontend[i].timezone);
+        }
+        for (let i = 0; i < _Team.manager.length; i++) {
+          result.push(_Team.manager[i].timezone);
+        }
+        return result;
+      };
+      format(_Team);
     });
   });
 }
