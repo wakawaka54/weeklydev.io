@@ -4,7 +4,7 @@ const Boom = require('boom');
 const Team = require('../models/Team');
 const User = require('../../users/models/User');
 const Code = require('../../../config/errorCodes');
-const validateUser = require(`${PATH}/methods/validateUser`);
+const validateUser = require(`../../../methods/validateUser`);
 
 module.exports = (req, res) => {
   var team = new Team();
