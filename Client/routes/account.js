@@ -38,7 +38,11 @@ router.get('/settings', function (req, res, next) {
       return;
     }
 
-    res.render('pages/account-settings', jsonBody);
+    if (jsonBody.message == 'No Survey found!') {
+      res.render('pages/account-settings');
+    }
+
+    res.render('pages/account-settings-filled', jsonBody);
   });
 
   
@@ -69,7 +73,7 @@ router.post('/settings', function (req, res, next) {
     }
   };
 
-  if (submitted) {
+  if (submitted == 'true') {
     requestOptions.method = 'PUT';
   }
   else {
