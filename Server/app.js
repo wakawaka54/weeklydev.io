@@ -6,9 +6,9 @@ const Boom = require('boom');
 const glob = require('glob');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const validateJwt = require('./validation.js').jwt;
-const validateUserPass = require('./validation.js').basic;
-const config = require('./config');
+const validateJwt = require('./methods/validation.js').jwt;
+const validateUserPass = require('./methods/validation.js').basic;
+const config = require('./config/config.js');
 const server = new Hapi.Server();
 
 global.PATH = process.env.PWD;

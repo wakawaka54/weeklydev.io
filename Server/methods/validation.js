@@ -1,7 +1,7 @@
 'use strict';
 
-const User = require('./api/users/models/User');
-const validateEmail = require('./methods/validateEmail');
+const User = require('../api/users/models/User');
+const validateEmail = require('./validateEmail');
 const Boom = require('boom');
 
 function jwtAuth (decoded, request, callback) {
