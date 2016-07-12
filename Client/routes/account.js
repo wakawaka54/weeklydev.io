@@ -1,7 +1,7 @@
 var express = require('express');
 var request = require('request'); // HTTP request library
 var router = express.Router();
-var serverHost = require('../config').SERVER_HOST;
+var serverHost = require('../config/config.js').SERVER_HOST;
 
 // authentication middleware
 router.get('/*', function (req, res, next) {
