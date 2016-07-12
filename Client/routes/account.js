@@ -33,9 +33,8 @@ router.get('/settings', function (req, res, next) {
     jsonBody.submitted = true;
 
     if (jsonBody.error) {
-      console.log('/account/settings error - ' + jsonBody.message);
-      res.render('pages/account-settings', { error: jsonBody.message });
-      return;
+      console.log('/account/settings error - ' + jsonBody.error);
+      return res.render('pages/error.ejs', { error: jsonBody.error });
     }
 
     res.render('pages/account-settings', jsonBody);
