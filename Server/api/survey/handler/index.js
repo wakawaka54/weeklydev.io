@@ -1,6 +1,5 @@
 module.exports = {
-  getSurveys: require('./getSurveys'),
-  getSurvey: require('./id/getSurvey'),
+  getSurvey: require('./getSurvey'),
   addSurvey: require('./addSurvey'),
   updateSurvey: require('./updateSurvey')
 };
