@@ -13,11 +13,7 @@ const searchingUsers = new Schema({
   project_manager: Boolean,
   skill_level: Number,
   project_size: Number,
-  timezone: Number,
-  ghostTeams: [{
-    type: Schema.Types.ObjectId,
-    ref: 'ghostTeam'
-  }]
+  timezone: Number
 });
 
 module.exports = mongoose.model('searchingUser', searchingUsers, 'searchingUsers');

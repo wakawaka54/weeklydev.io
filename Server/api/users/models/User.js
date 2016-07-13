@@ -56,7 +56,11 @@ const UserModel = new Schema({
     uuid: String,
     valid: Boolean
   },
-  salt: String
+  salt: String,
+  ghostTeams: [{
+    type: Schema.Types.ObjectId,
+    ref: 'ghostTeam'
+  }]
 });
 
 UserModel
