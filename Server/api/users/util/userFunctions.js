@@ -76,6 +76,7 @@ function userModel (user, opts) {
         username: user.username,
         admin: user.admin,
         team: user.team,
+        ghostTeams: user.ghostTeams,
         project: user.project,
         token: user.token.full
       };
