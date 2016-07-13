@@ -1,11 +1,11 @@
 'use strict';
 
-const User = require('../../api/users/models/User');
-const Team = require('../../api/teams/models/Team');
-const Survey = require('../../api/survey/models/Survey');
+// const User = require('../../api/users/models/User')
+// const Team = require('../../api/teams/models/Team')
+// const Survey = require('../../api/survey/models/Survey')
 
-const ghostUser = require('../models/searchingUsers');
-const ghostTeam = require('../models/ghostTeam');
+const GhostUser = require('../models/searchingUsers');
+const GhostTeam = require('../models/ghostTeam');
 
 const _TZ_OFFSET = 1;
 const _PS_OFFSET = 2;
@@ -14,17 +14,25 @@ const _TEAM_NEED_SKILL_LEVEL_FIVE = 15;
 const _TEAM_NEED_SKILL_LEVEL_FOUR = 12;
 const _TEAM_NEED_SKILL_LEVEL_THREE = 9;
 
-var offsetMinus;
+// For more then 1 role
+const PERCENT_TO_GET_PRIMARY_ROLE = 50;
+const PERCENT_TO_GET_SECONDARY_ROLE = 30;
 
+const PERCENT_TO_GET_ONLY_ROLE = 70;
+
+const PERCENT_TO_GET_MANGER_ROLE = 20;
+
+// returns at least 1 or more based on offset specified
 function getOffset (offset) {
   return Math.round((Math.random() * (offset - 1) + 1));
 }
-
+// return the oposit of users skill_level
+// (ex. 5 will return 1, and 2 will return 4)
 function getUserSkillLevel (x) {
   return Math.abs(x - 6);
 }
 
-function find_Users_With_Any_Skill_Level_And_Same_Role (potentialCandidates, role) {
+function getUsersForRole (potentialCandidates, role) {
   let result = [];
   potentialCandidates.forEach((potentailTeammate, array, index) => {
     potentailTeammate.preferred_role.forEach((teammateRole, arra, index) => {
@@ -40,32 +48,22 @@ function find_Users_With_Any_Skill_Level_And_Same_Role (potentialCandidates, rol
   return result;
 }
 
+function randomPercentage (percentage) {
+  return (Math.random() < (percentage / 100));
+}
+
 function decideUserRole (user, arrOfFreeRoles) {
   if (user.preferred_role.length > 1) {
     if (user.project_manager) {
-      if (Math.random() < 0.40) {
-        return user.preferred_role[0];
-      }else {
-        if (Math.random() < 0.40) {
-          return user.preferred_role[1];
-        }else {
-          return 'manager';
-        }
-      }
+      return (randomPercentage(PERCENT_TO_GET_PRIMARY_ROLE) ? user.preferred_role[0] :
+        (randomPercentage(PERCENT_TO_GET_SECONDARY_ROLE) ? user.preferred_role[1] :
+          'manager'));
     }else {
-      if (Math.random() < 0.70) {
-        return user.preferred_role[0];
-      }else {
-        return user.preferred_role[1];
-      }
+      return (randomPercentage(PERCENT_TO_GET_ONLY_ROLE) ? user.preferred_role[0] : user.preferred_role[1]);
     }
   }else {
     if (user.project_manager) {
-      if (Math.random() < 0.80) {
-        return user.preferred_role[0];
-      }else {
-        return 'manager';
-      }
+      return (!randomPercentage(PERCENT_TO_GET_MANGER_ROLE) ? user.preferred_role[0] : 'manager');
     }else {
       return user.preferred_role[0];
     }
@@ -93,100 +91,96 @@ function inRange (skillNeed, skill) {
   }
 }
 
-function format (_Team) {
-  console.log(`
-Backend----Frontend----Manager
-${_Team.backend.length} / ${_Team.frontend.length} / ${_Team.manager.length}
-    Team Size: ${_Team.getTeamSize()}
-    Score: ${_Team.getScore()/_Team.getTeamSize()}
-    Timezones: ${_Team.getTimezones()}`);
-}
-
 function removeFromFreeRole (arr, role) {
   arr.splice(arr.indexOf(role), 1);
 }
 function include (arr, obj) {
   return (arr.indexOf(obj) != -1);
 }
+function removeUsersIfInTeam (users, teamMemebers) {
+  users.forEach((user, index, array) => {
+    if (include(teamMemebers, user)) {
+      array.splice(index, 1);
+    }
+  });
+  return users;
+}
+function sort (array, argument) {
+  // default argument is skill_level
+  if (!argument) {
+    argument = 'skill_level';
+  }
+  array.sort(function (a, b) {
+    if (a[argument] > b[argument]) {
+      return 1;
+    }
+    if (a[argument] < b[argument]) {
+      return -1;
+    }
+    // a must be equal to b
+    return 0;
+  });
+  return array;
+}
 function doSomething (userId) {
-  ghostUser.find({ user: userId }, (err, user) => {
+  GhostUser.find({ user: userId }, (err, user) => {
     if (err || user.length == 0) {
       console.log('user not found!');
       return;
     }
     let timeOffset = getOffset(_TZ_OFFSET);
     let projectOffset = getOffset(_PS_OFFSET);
-    var _User = user[0];
-    ghostUser.find({
+    var User = user[0];
+    GhostUser.find({
       user: { $ne: userId },
-      timezone: {$gte: (_User.timezone - timeOffset), $lte: (_User.timezone + timeOffset) },
-    // project_size: {$gte: (_User.project_size - projectOffset),$lte: (_User.project_size + projectOffset)}
+      timezone: {$gte: (User.timezone - timeOffset), $lte: (User.timezone + timeOffset) },
+    // project_size: {$gte: (User.project_size - projectOffset),$lte: (User.project_size + projectOffset)}
     }).sort({
       timezone: -1,
       skill_level: -1,
       project_size: -1
     }).exec((err, potentialCandidates) => {
-      // Construct teampoary Team
-      let _Team = { };
-      _Team.manager = [];
-      _Team.backend = [];
-      _Team.frontend = [];
+      let ghostTeam = new GhostTeam();
       // Decide users role
-      let userRole = decideUserRole(_User);
+      let userRole = decideUserRole(User);
       // Push user role to the team
-      _Team[userRole].push(_User);
+      ghostTeam[userRole].push(User);
       // Get optimal skill leve
-      let userSkillLevel = getUserSkillLevel(_User.skill_level);
+      let userSkillLevel = getUserSkillLevel(User.skill_level);
       // Populate free roles in 5 man team
       var freeRoles = ['backend', 'backend', 'frontend', 'frontend', 'manager'];
 
       removeFromFreeRole(freeRoles, userRole);
 
-      _Team.score = [_User.skill_level];
+      ghostTeam.score = [User.skill_level];
 
-      potentialCandidates.forEach((potentailTeammate, arra, index) => {
-        // Check if team is full
+      potentialCandidates.forEach((potentailTeammate, index, array) => {
         var potentialRole = decideUserRole(potentailTeammate);
         // Check if role is free
         if (include(freeRoles, potentialRole)) {
           if (inRange(userSkillLevel, potentailTeammate.skill_level)) {
-            _Team[potentialRole].push(potentailTeammate);
+            ghostTeam[potentialRole].push(potentailTeammate);
             removeFromFreeRole(freeRoles, potentialRole);
-            _Team.score.push(potentailTeammate.skill_level);
           }
         }
       });
 
       if (freeRoles.length >= 0) {
         for (var i = 0; i < freeRoles.length; i++) {
-          let potentailTeammate = find_Users_With_Any_Skill_Level_And_Same_Role(potentialCandidates, freeRoles[i])[0];
-          _Team[freeRoles[i]].push(potentailTeammate);
-          _Team.score.push(potentailTeammate.skill_level);
+          let potentailTeammate = removeUsersIfInTeam(sort(getUsersForRole(potentialCandidates, freeRoles[i])), ghostTeam.members);
+
+          let Teammate = potentailTeammate[0];
+          ghostTeam[freeRoles[i]].push(Teammate);
         }
       }
-      _Team.getTeamSize = () => {
-        return (_Team.backend.length + _Team.frontend.length + _Team.manager.length);
-      };
-      _Team.getScore = () => {
-        function add (a, b) {
-          return a + b;
+      ghostTeam.save((err, team) => {
+        if (err) {
+          return err;
         }
-        return _Team.score.reduce(add, 0);
-      };
-      _Team.getTimezones = () => {
-        let result = [];
-        for (let i = 0; i < _Team.backend.length; i++) {
-          result.push(_Team.backend[i].timezone);
+        if (!team) {
+          return new Error('Something went wrong when saving team');
         }
-        for (let i = 0; i < _Team.frontend.length; i++) {
-          result.push(_Team.frontend[i].timezone);
-        }
-        for (let i = 0; i < _Team.manager.length; i++) {
-          result.push(_Team.manager[i].timezone);
-        }
-        return result;
-      };
-      format(_Team);
+      });
     });
   });
 }
