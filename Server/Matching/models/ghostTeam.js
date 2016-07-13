@@ -57,7 +57,6 @@ TeamModel
           if (!user) {
             return next(new Error('User not found!'));
           }
-          console.log(user.id);
         });
       });
       next();
