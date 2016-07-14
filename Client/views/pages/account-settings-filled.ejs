@@ -28,19 +28,19 @@
             <label>Preferred Role
               <select id="role" name="role" required>
                 <option value="">Choose a development position...</option>
-                <option value="frontend">Frontend</option>
-                <option value="backend">Backend</option>
+                <option <% if (locals.preferred_role[0] == 'frontend') { %> SELECTED <% } %> value="frontend">Frontend</option>
+                <option <% if (locals.preferred_role[0] == 'backend') { %> SELECTED <% } %> value="backend">Backend</option>
               </select>
               <span class="form-error">Please choose a role.</span>
             </label>
             <label>Skill Level
               <select id="skill" name="skill" required>
                 <option value="">Choose a skill level...</option>
-                <option value="1">1 - Want to Learn</option>
-                <option value="2">2 - Beginner</option>
-                <option value="3">3 - Intermediate</option>
-                <option value="4">4 - Advanced</option>
-                <option value="5">5 - Master</option>
+                <option <% if (locals.skill_level == 1) { %> SELECTED <% } %> value="1">1 - Want to Learn</option>
+                <option <% if (locals.skill_level == 2) { %> SELECTED <% } %> value="2">2 - Beginner</option>
+                <option <% if (locals.skill_level == 3) { %> SELECTED <% } %> value="3">3 - Intermediate</option>
+                <option <% if (locals.skill_level == 4) { %> SELECTED <% } %> value="4">4 - Advanced</option>
+                <option <% if (locals.skill_level == 5) { %> SELECTED <% } %> value="5">5 - Master</option>
               </select>
               <span class="form-error">Please choose a skill level.</span>
             </label>
@@ -48,9 +48,9 @@
             <label>Preferred Team Size
               <select id="size" name="size" required>
                 <option value="">Choose a team size...</option>
-                <option value="3">Small</option>
-                <option value="5">Medium</option>
-                <option value="7">Large</option>
+                <option <% if (locals.project_size == 3) { %> SELECTED <% } %> value="3">Small</option>
+                <option <% if (locals.project_size == 5) { %> SELECTED <% } %> value="5">Medium</option>
+                <option <% if (locals.project_size == 7) { %> SELECTED <% } %> value="7">Large</option>
               </select>
               <span class="form-error">Please choose a team size.</span>
             </label>
@@ -63,7 +63,7 @@
               <select id="timezone" name="timezone" required>
                 <option value="">Choose a timezone offset...</option>
                 <% for (var i=-12; i<=12; i++) { %>
-                  <option value="<%= i%>">UTC/GMT <% if (i > 0) {%>+<% } %><%= i%></option>
+                  <option <% if (locals.timezone == i) { %> SELECTED <% } %> value="<%= i%>">UTC/GMT <% if (i > 0) {%>+<% } %><%= i%></option>
                 <% } %>
               </select>
               <span class="form-error">Please choose a timezone.</span>
@@ -73,12 +73,12 @@
                 <input class="switch-input" id="project-manager" name="projectmanager" type="checkbox" value="true" checked>
                 <label class="switch-paddle" for="project-manager">
                   <span class="show-for-sr">Willing to be project manager.</span>
-                  <span class="switch-inactive" aria-hidden="true">Yes</span>
-                  <span class="switch-active" aria-hidden="true">No</span>
+                  <span <% if (locals.project_manager) { %> class="switch-active" <% } %> class="switch-inactive" aria-hidden="true">Yes</span>
+                  <span <% if (locals.project_manager) { %> class="switch-inactive" <% } %> class="switch-active" aria-hidden="true">No</span>
                 </label>
               </div>
             </label>
-            <input type="hidden" name="submitted" value="false">
+            <input type="hidden" name="submitted" <% if (locals.submitted) { %> value="true" <% } %> value="false">
             <p><button class="button expanded">Save Profile</button></p>
           </div>
         </form>
