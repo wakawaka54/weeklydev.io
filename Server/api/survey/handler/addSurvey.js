@@ -8,7 +8,7 @@ const ghostUser = require(PATH + '/Matching/models/searchingUsers');
 
 function addToGhost (survey) {
   var ghost = new ghostUser();
-  ghost.user = survey.user_id;
+  ghost.userId = survey.user_id;
   ghost.preferred_role = survey.preferred_role;
   ghost.project_manager = survey.project_manager;
   ghost.skill_level = survey.skill_level;

@@ -33,13 +33,13 @@ TeamModel.virtual('score').get(function () {
 TeamModel.methods = {
   populateUsers(callback) {
     this.manager.forEach((user, index, array) => {
-      this.users.push({id: user.user, role: 'manager'});
+      this.users.push({id: user.userId, role: 'manager'});
     });
     this.frontend.forEach((user, index, array) => {
-      this.users.push({id: user.user, role: 'frontend'});
+      this.users.push({id: user.userId, role: 'frontend'});
     });
     this.backend.forEach((user, index, array) => {
-      this.users.push({id: user.user, role: 'backend'});
+      this.users.push({id: user.userId, role: 'backend'});
     });
     callback();
   }
