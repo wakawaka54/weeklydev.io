@@ -1,13 +1,13 @@
-var test = require(PATH + '/Matching/match/match.js');
-
 module.exports = {
   method: 'GET',
   path: '/',
   config: {
-    auth: 'jwt'
+    auth: false
   },
   handler: (req, res) => {
-    test(req.Token.id);
-    res('Look at the console :)').code(200);
+    res({
+      success: true,
+      message: 'Server is running!'
+    });
   }
 };
