@@ -11,7 +11,7 @@ const validateUserPass = require('./methods/validation.js').basic;
 const config = require('./config/config.js');
 const server = new Hapi.Server();
 
-global.PATH = process.env.PWD || process.cwd();
+global.PATH = process.env.PWD;
 
 // Setup hapi server
 server.connection({
