@@ -123,8 +123,10 @@ function sort (array, argument) {
   return array;
 }
 function doSomething (userId) {
-  GhostUser.find({ user: userId }, (err, user) => {
+  GhostUser.find({ userId: userId }, (err, user) => {
     if (err || user.length == 0) {
+      console.log(err);
+      console.log(user);
       console.log('user not found!');
       return;
     }
@@ -132,7 +134,7 @@ function doSomething (userId) {
     let projectOffset = getOffset(_PS_OFFSET);
     var User = user[0];
     GhostUser.find({
-      user: { $ne: userId },
+      userId: { $ne: userId },
       timezone: {$gte: (User.timezone - timeOffset), $lte: (User.timezone + timeOffset) },
     // project_size: {$gte: (User.project_size - projectOffset),$lte: (User.project_size + projectOffset)}
     }).sort({
@@ -148,7 +150,7 @@ function doSomething (userId) {
       // Get optimal skill leve
       let userSkillLevel = getUserSkillLevel(User.skill_level);
       // Populate free roles in 5 man team
-      var freeRoles = ['backend', 'backend', 'frontend', 'frontend', 'manager'];
+      const freeRoles = ['backend', 'backend', 'frontend', 'frontend', 'manager'];
 
       removeFromFreeRole(freeRoles, userRole);
 
@@ -158,9 +160,26 @@ function doSomething (userId) {
         var potentialRole = decideUserRole(potentailTeammate);
         // Check if role is free
         if (include(freeRoles, potentialRole)) {
-          if (inRange(userSkillLevel, potentailTeammate.skill_level)) {
-            ghostTeam[potentialRole].push(potentailTeammate);
-            removeFromFreeRole(freeRoles, potentialRole);
+          if (potentialRole === userRole) {
+            if (inRange(userSkillLevel, potentailTeammate.skill_level)) {
+              ghostTeam[potentialRole].push(potentailTeammate);
+              removeFromFreeRole(freeRoles, potentialRole);
+            }
+          }else {
+            if (freeRoles[0] !== 'manager') {
+              if (ghostTeam[potentialRole].length >= 1) {
+                if (inRange(getUserSkillLevel(ghostTeam[potentialRole][0]), potentailTeammate.skill_level)) {
+                  ghostTeam[potentialRole].push(potentailTeammate);
+                  removeFromFreeRole(freeRoles, potentialRole);
+                }
+              }else {
+                ghostTeam[potentialRole].push(potentailTeammate);
+                removeFromFreeRole(freeRoles, potentialRole);
+              }
+            }else {
+              ghostTeam[potentialRole].push(potentailTeammate);
+              removeFromFreeRole(freeRoles, potentialRole);
+            }
           }
         }
       });
