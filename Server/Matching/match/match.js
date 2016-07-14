@@ -122,7 +122,7 @@ function sort (array, argument) {
   });
   return array;
 }
-function doSomething (userId) {
+function createGhostTeam (userId) {
   GhostUser.find({ userId: userId }, (err, user) => {
     if (err || user.length == 0) {
       console.log(err);
@@ -199,11 +199,12 @@ function doSomething (userId) {
         if (!team) {
           return new Error('Something went wrong when saving team');
         }
+        process.stdout.write('.');
       });
     });
   });
 }
 
 module.exports = (userId) => {
-  return doSomething(userId);
+  return createGhostTeam(userId);
 };

@@ -10,6 +10,7 @@ const validateJwt = require('./validation.js').jwt;
 const validateUserPass = require('./validation.js').basic;
 const config = require('./config');
 const server = new Hapi.Server();
+const startMatchmaking = require('./Matching/start');
 
 global.PATH = process.env.PWD;
 
@@ -61,6 +62,7 @@ server.start((err) => {
       throw err;
     } else {
       console.log('Connected to MongoDB');
+      startMatchmaking();
     }
   });
 });

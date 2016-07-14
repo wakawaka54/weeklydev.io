@@ -32,5 +32,8 @@ const SurveyModel = new Schema({
 });
 
 // TODO: move all the check in route to pre
+SurveyModel.statics.findByUserId = function (userId, cb) {
+  return this.find({ user_id: userId}, cb);
+};
 
 module.exports = mongoose.model('Survey', SurveyModel, 'survey');
