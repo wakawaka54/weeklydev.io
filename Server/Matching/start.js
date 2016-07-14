@@ -10,7 +10,6 @@ module.exports = () => {
     console.log('\n--> Started the job!');
     GhostTeam.remove({}, (err, teams) => {
       console.log('--> Removing GhostTeam Database');
-      console.log(teams);
       if (err || teams.length > 0) {
         console.log('something went wrong');
         console.log(err);
