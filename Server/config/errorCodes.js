@@ -24,6 +24,8 @@ module.exports = {
   // Users
   userNotFound: applyErrorCode(Boom.create(404, 'User not found', {errorCode: 300})),
   userInTooManyTeams: applyErrorCode(Boom.create(400, 'User in too many Teams', { errorCode: 305 })),
+  // Survey
+  surveyNotFound: applyErrorCode(Boom.create(404, 'Survey not found', {errorCode: 400})),
   // Teams
   teamNotFound: applyErrorCode(Boom.create(404, 'Team not found', { errorCode: 500})),
   notOwner: applyErrorCode(Boom.create(401, 'You are not owner of this team', { errorCode: 501})),
