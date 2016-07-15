@@ -47,6 +47,21 @@ server.register([require('hapi-auth-jwt2'), require('hapi-auth-basic-weeklydev-l
   server.auth.default('jwt');
   // Add all the routes to the server
   allRoutes.forEach(routes => server.route(routes))
+
+  // Add index route to show server is running
+  server.route({
+    method: 'GET',
+    path: '/',
+    config: {
+      auth: false
+    },
+    handler: function(req, res){
+      res({
+        success: true,
+        message: 'Server is running!'
+      })
+    }
+  })
 });
 
 // Start the server

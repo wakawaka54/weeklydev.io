@@ -3,6 +3,7 @@ import User from '../../Models/User.js'
 import jwt from 'jsonwebtoken'
 import uuid from 'node-uuid'
 import Joi from 'joi'
+import { JWT_SECRET } from '../../config/config.js'
 
 export function verifyUniqueUser (req, res) {
   // Find an entry from the database that
@@ -57,7 +58,7 @@ export function authenticateUser (req, res) {
   });
 }
 
-function generateUUID(){
+export function generateUUID(){
   return uuid.v4(uuid.nodeRNG);
 }
 
@@ -116,7 +117,7 @@ export function createToken (user, expires) {
     id: user._id,
     uuid: user.token.uuid,
     scope: scopes
-  }, secret, {
+  }, JWT_SECRET, {
     algorithm: 'HS256',
     expiresIn: expires // exp: in 24H
   });
