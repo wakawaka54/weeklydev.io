@@ -1,6 +1,4 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 const Schema = mongoose.Schema;
 
 var ProjectModel = new Schema({
@@ -22,4 +20,4 @@ var ProjectModel = new Schema({
   }
 });
 
-module.exports = mongoose.model('Project', ProjectModel);
+export default const Project = mongoose.model('Project', ProjectModel, 'projects')

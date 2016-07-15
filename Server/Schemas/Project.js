@@ -1,6 +1,4 @@
-'use strict';
-
-const Joi = require('joi');
+import Joi from 'joi'
 
 const projectSchema = Joi.object({
   title: Joi.string().min(3).max(72).required(),
@@ -8,4 +6,4 @@ const projectSchema = Joi.object({
   deadline: Joi.date().min('now')
 });
 
-module.exports = projectSchema;
+export default projectSchema
