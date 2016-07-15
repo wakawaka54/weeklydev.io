@@ -1,4 +1,5 @@
-import { authenticateUser } from './util/userFunctions'
+import { authenticateUser, verifyUniqueUser } from './util.js'
+import createUserSchema from '../../Schemas/User.js'
 import * as users from './users.js'
 
 const routes = [
@@ -27,7 +28,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: somehandler
+    handler: users.logout
   },
 
   /*
