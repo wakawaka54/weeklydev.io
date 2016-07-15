@@ -4,50 +4,37 @@ var spawn = require('child_process').spawn
 
 var children = []
 
-var filesToCompile = [
-  './middleware/*.js',
-  './routes/*.js',
-  './src/index.js',
-  './app.js',
-  './bin/www',
-  './config/*.js'
-]
-var otherFiles = [
-  './views/**/*.ejs',
-  './public/**/*'
-]
 
-var allFiles = filesToCompile.concat(otherFiles)
-
-
-gulp.task('spy', ['build', 'copy', 'reload', 'watch'])
+gulp.task('spy', ['build', 'watch', 'reload'])
 
 gulp.task('watch', ['build'], function(){
-  gulp.watch(allFiles, ['build', 'copy', 'reload'] )
+  gulp.watch(files, ['build', 'reload'] )
 })
 
-
+var files = [
+  './api/**/*.js',
+  './config/*.js',
+  './methods/*.js',
+  './Models/*.js',
+  './Schemas/*.js',
+  './Utils/*.js',
+  './tests/**/*.js',
+  './Matching/**/*.js'
+  './app.js'
+]
 gulp.task('build', function(cb){
   while(children.length != 0){
     children.pop().kill()
   }
 
-  // build js files with babel
-  gulp.src(filesToCompile, { base: './' })
+  gulp.src(files, { base: './' })
     .pipe(babel())
     .pipe(gulp.dest('dist'))
     .on('end', cb)
 
 })
 
-gulp.task('copy', ['build'], function(cb){
-  //Copy view files
-  gulp.src(otherFiles, { base: './' }) 
-    .pipe(gulp.dest('dist'))
-    .on('end', cb)
-})
-
-gulp.task('reload', ['copy'], function(){
+gulp.task('reload', ['build'], function(){
   
   // If no child processes exist, make a new one
   if(children.length === 0){
@@ -61,7 +48,7 @@ gulp.task('reload', ['copy'], function(){
 })
 
 function startProcess(){
-  var proc = spawn('node', ['dist/bin/www'])
+  var proc = spawn('node', ['dist/app.js'])
 
   proc.stdout.on('data', function(data){
     console.log('stdout:', data.toString())

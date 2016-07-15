@@ -1,21 +1,21 @@
-<!-- views/pages/error.ejs -->
+<!-- views/pages/admin-dash.ejs -->
 
 <!DOCTYPE html>  
 <html lang="en">  
   <% include ../partials/head %>
   <body>
-
-  <% if (locals.auth) { %>
+  
     <% include ../partials/nav %>
-  <% } %>
-    
-    <div class="row">
+
+    <div class="row padded">
       <div class="large-12 columns text-center">
-        <h1>Whoops, something went wrong.</h1>
-        <%= error %>
+        <h1>Admin Dashboard</h1>
+        <p>Welcome admin, <%= locals.username %>.</p>
+        <p><%= locals.user_list %></p>
       </div>
     </div>
 
     <% include ../partials/scripts %>
   </body>
-</html>  
+
+</html>
