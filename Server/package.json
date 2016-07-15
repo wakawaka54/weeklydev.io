@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "watch": "gulp spy",
-    "test": "npm run build && mocha dist/tests/tests.js",
+    "test": "npm run build && mocha tests/tests.js",
     "build": "gulp build"
   },
   "repository": {
