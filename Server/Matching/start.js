@@ -6,15 +6,18 @@ const GhostTeam = require('./models/ghostTeam');
 const GhostUser = require('./models/searchingUsers');
 
 module.exports = () => {
-  let j = schedule.scheduleJob('*/2 * * * *', function () {
+  let j = schedule.scheduleJob('*/6 * * * *', function () {
     console.log('\n--> Started the job!');
-    GhostTeam.remove({}, (err, teams) => {
-      console.log('--> Removing GhostTeam Database');
-      if (err || teams.length > 0) {
+    GhostTeam.find({}, (err, teams) => {
+      if (err) {
         console.log('something went wrong');
         console.log(err);
         return;
       }
+      console.log('--> Removing GhostTeam Database');
+      teams.forEach((team, index, array) => {
+        team.remove();
+      });
       GhostUser.find({}, (err, users) => {
         console.log('--> Passing users to matchmaking functions');
         if (err || !users) {
