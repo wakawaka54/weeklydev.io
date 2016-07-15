@@ -7,5 +7,6 @@ module.exports = {
   getTeamsIn: require('./user/getTeamsIn'),
   updateUser: require('./user/id/updateUser'),
   deleteUser: require('./user/id/deleteUser'),
-  getCurrentUser: require('./user/getCurrentUser')
+  getCurrentUser: require('./user/getCurrentUser'),
+  joinMatchmaking: require('./user/joinTeamAutomatically')
 };

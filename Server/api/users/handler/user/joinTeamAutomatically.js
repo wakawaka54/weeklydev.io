@@ -7,9 +7,9 @@ const Team = require('../../../teams/models/Team');
 const Survey = require('../../../survey/models/Survey');
 const ghostUser = require(PATH + '/Matching/models/searchingUsers');
 
-function addToGhost (survey) {
-  var ghost = new ghostUser();
-  ghost.userId = survey.user_id;
+function addToGhost (survey, userId, callback) {
+  let ghost = new ghostUser();
+  ghost.userId = userId;
   ghost.preferred_role = survey.preferred_role;
   ghost.project_manager = survey.project_manager;
   ghost.skill_level = survey.skill_level;
@@ -17,7 +17,9 @@ function addToGhost (survey) {
   ghost.timezone = survey.timezone;
   ghost.save(err => {
     if (err) {
-      console.log(err);
+      callback(err);
+    }else {
+      callback(null);
     }
   });
 }
@@ -27,7 +29,12 @@ module.exports = (req, res) => {
     if (err || !survey) {
       res(Code.surveyNotFound);
     } else {
-      addToGhost(survey);
+      addToGhost(survey[0], req.Token.id, err => {
+        if (err) {
+          res(Boom.wrap(err));
+        }
+        res('ok').code(200);
+      });
     }
   });
 };

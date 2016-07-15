@@ -79,4 +79,14 @@ module.exports = [{
     auth: 'jwt'
   },
   handler: _.getTeamsIn
+}, {
+  /**
+   * Get user by request id
+   */
+  method: 'GET',
+  path: '/match/join',
+  config: {
+    auth: 'jwt'
+  },
+  handler: _.joinMatchmaking
 }];
