@@ -1,7 +1,6 @@
-'use strict';
+import bcrypt from 'bcrypt'
+import mongoose from 'mongoose'
 
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserModel = new Schema({

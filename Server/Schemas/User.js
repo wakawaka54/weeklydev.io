@@ -1,5 +1,3 @@
-'use strict';
-
 const Joi = require('joi');
 
 const createUserSchema = Joi.object({
@@ -8,4 +6,4 @@ const createUserSchema = Joi.object({
   password: Joi.string().min(6).required()
 });
 
-module.exports = createUserSchema;
+export default createUserSchema
