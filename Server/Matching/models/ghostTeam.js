@@ -63,4 +63,20 @@ TeamModel
     });
   });
 
+TeamModel
+  .pre('remove', function (next) {
+    this.users.forEach((user, index, array) => {
+      User.findByIdAndUpdate(user.id, {ghostTeams: [] }, (err, user) => {
+        if (err) {
+          console.log(err);
+          return next(err);
+        }
+        if (!user) {
+          return next(new Error('User not found!'));
+        }
+      });
+    });
+    next();
+  });
+
 module.exports = mongoose.model('ghostTeam', TeamModel, 'ghostTeams');
