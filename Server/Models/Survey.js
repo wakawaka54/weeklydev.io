@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema;
 
@@ -30,14 +29,9 @@ const SurveyModel = new Schema({
   }
 });
 
-<<<<<<< HEAD:Server/api/survey/models/Survey.js
-// TODO: move all the check in route to pre
 SurveyModel.statics.findByUserId = function (userId, cb) {
   return this.find({ user_id: userId}, cb);
 };
 
-module.exports = mongoose.model('Survey', SurveyModel, 'survey');
-=======
 const Survey = mongoose.model('Survey', SurveyModel, 'survey');
 export default Survey
->>>>>>> api-refactor:Server/Models/Survey.js
