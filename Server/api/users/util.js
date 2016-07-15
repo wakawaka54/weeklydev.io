@@ -122,3 +122,13 @@ export function createToken (user, expires) {
     expiresIn: expires // exp: in 24H
   });
 }
+
+export function validateUser(user, callback){
+  User.count({_id: user}, (err, count) => {
+    if (count > 0) {
+      callback(true);
+    }else {
+      callback(false);
+    }
+  });
+}
