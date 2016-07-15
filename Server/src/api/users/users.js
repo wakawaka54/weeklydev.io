@@ -10,21 +10,6 @@ import { generateUUID, formatUser, createToken } from './util.js'
 
 
 export function login(req, res){
-  // User.findById(req.Credentials.id, (err, user) => {
-  //   if (err || !user) {
-  //     res(Boom.unauthorized('user not found'));
-  //   }
-  //   user.token.valid = true;
-  //   user.token.uuid = generateUUID();
-  //   // user.token.full = createToken(user);
-  //   user.save((err, done) => {
-  //     if (err) {
-  //       throw Boom.badRequest(err);
-  //     }
-  //     res(formatUser(user, 'user')).code(200);
-  //   });
-  // });
-
   User.findById(req.Credentials.id)
     .catch((err) => res(Boom.unauthorized(err)))
     .then((_user) => {
@@ -41,27 +26,6 @@ export function login(req, res){
 }
 
 export function logout(req, res){
-  // User.findOne({'token.full': req.auth.token}, (err, user) => {
-  //   if (err || !user) {
-  //     res(Boom.unauthorized('user not found'));
-  //   }else {
-  //     if (!user.token.valid) {
-  //       res(Boom.unauthorized('user already logged out'));
-  //     }else {
-  //       user.token.valid = false;
-  //       user.save((err, done) => {
-  //         if (err) {
-  //           throw Boom.badRequest(err);
-  //         }
-  //         res({
-  //           succes: true,
-  //           message: 'successfully logged out'
-  //         });
-  //       });
-  //     }
-  //   }
-  // });
-  
   if (!req.auth.credentials.token.valid) {
     res(Boom.unauthorized('user not found'));
   } else {
@@ -85,7 +49,6 @@ export function addUser(req, res){
   user.admin = false;
   user.password = req.payload.password;
   user.token.uuid = generateUUID();
-  // user.token.full = createToken(user);
   user.token.valid = true;
   // user.token_expire.expire = (Date.now() + (24 * 60 * 60))
   user.save((err, user) => {
@@ -93,7 +56,6 @@ export function addUser(req, res){
       throw Boom.badRequest(err);
     }
     // If the user is saved successfully, Send a JWT
-    // res(formatUser(user, 'user')).code(201);
     let token = createToken(user);
     res({ token, user: formatUser(user, 'user') }).code(201);
   });

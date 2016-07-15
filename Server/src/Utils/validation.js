@@ -20,7 +20,6 @@ export function jwtAuth (decoded, request, callback) {
         if (decoded.jti !== user.token.uuid) {
           callback(null, false);
         }else {
-          // callback(null, true);
           callback(null, true, user);
         }
       }
@@ -45,10 +44,6 @@ export function basicAuth (request, Username, password, callback) {
         if (err) {
           callback(err);
         }
-        // callback(null, res, {
-        //   id: user._id,
-        //   username: user.username
-        // });
         callback(null, res, formatUser(user, 'user'));
       });
     });
@@ -68,11 +63,6 @@ export function basicAuth (request, Username, password, callback) {
         if (err) {
           callback(err);
         }
-        // var credentials = {
-        //   id: user._id,
-        //   username: user.username
-        // };
-        // callback(null, res, credentials);
         callback(null, res, formatUser(user, 'user'));
       });
     });

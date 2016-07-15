@@ -81,8 +81,7 @@ export function formatUser(user, opts) {
         admin: user.admin,
         team: user.team,
         ghostTeams: user.ghostTeams,
-        project: user.project,
-        // token: user.token.full
+        project: user.project
       };
     case 'users':
       return {
@@ -111,12 +110,9 @@ export function createToken (user, expires = '365 days') {
     scopes = 'admin';
   }
 
-  // expires = expires || '365 days';
-
   // Sign the JWT
   return jwt.sign({
     id: user._id,
-    // uuid: user.token.uuid,
     scope: scopes
   }, JWT_SECRET, {
     algorithm: 'HS256',
