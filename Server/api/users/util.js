@@ -1,4 +1,4 @@
-import Boom from 'Boom'
+import Boom from 'boom'
 import User from '../../Models/User.js'
 import jwt from 'jsonwebtoken'
 import uuid from 'node-uuid'

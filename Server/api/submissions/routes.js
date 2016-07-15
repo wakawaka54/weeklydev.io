@@ -15,7 +15,7 @@ const routes = [
     path: '/submissions/new',
     config: {
       validate: {
-        payload: newSubmissionSchema
+        payload: submissionSchema
       },
       auth: 'jwt'
     },

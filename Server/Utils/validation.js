@@ -1,5 +1,6 @@
 import Boom from 'boom'
 import User from '../Models/User.js'
+import Joi from 'joi'
 
 
 export function jwtAuth (decoded, request, callback) {

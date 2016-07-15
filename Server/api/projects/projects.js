@@ -13,7 +13,7 @@ export function getProjects(req, res){
 /*
  * Add a  project
  */
-export function getProjects(req, res){
+export function addProject(req, res){
   let project = new Project();
 
   project.title = req.payload.title,
@@ -32,9 +32,13 @@ export function getProjects(req, res){
 /*
  * Get a  project
  */
-export function getProjects(req, res){
+export function getProject(req, res){
   Project.findById(req.params.id, (err, project) => {
-    if (err) return console.error(err);
+    if (err){
+      console.error(err);
+      // Todo change to actual boom error
+      res(error)
+    } 
     res(project);
   });
 }
@@ -43,7 +47,7 @@ export function getProjects(req, res){
 /*
  * Update a  project
  */
-export function getProjects(req, res){
+export function updateProject(req, res){
   function update () {
     let obj = {};
     if (req.payload.title) {

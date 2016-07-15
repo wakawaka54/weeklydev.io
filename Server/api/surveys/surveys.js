@@ -6,7 +6,7 @@ import * as Code from '../../Utils/errorCodes.js'
 /*
  * Add a survey
  */
-export default function addSurvey(req, res){
+export function addSurvey(req, res){
   User.findById(req.Token.id, (err, user) => {
     if (err || !user) {
       res(Code.userNotFound);

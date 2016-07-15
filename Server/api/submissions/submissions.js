@@ -45,7 +45,7 @@ export function getSubmissions(req, res){
 /*
  * Delete Submissions
  */
-export function deleteSubmissions(req, res){
+export function deleteSubmission(req, res){
   Submission.findByIdAndDelete(req.params.id, (err, submissions) => {
     if (err) {
       res(Boom.badRequest(err));
@@ -58,7 +58,7 @@ export function deleteSubmissions(req, res){
 /*
  * Update Submissions
  */
-export function updateSubmissions(req, res){
+export function updateSubmission(req, res){
   let p = req.payload;
   function update () {
     // TODO: for the love of all holy make this something nicer

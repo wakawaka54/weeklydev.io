@@ -18,6 +18,7 @@ var files = [
   './Models/*.js',
   './Schemas/*.js',
   './Utils/*.js',
+  './tests/**/*.js',
   './app.js'
 ]
 gulp.task('build', function(cb){
