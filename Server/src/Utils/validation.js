@@ -1,5 +1,6 @@
 import Boom from 'boom'
-import User from '../Models/User.js'
+import User from '../Models/User'
+import { formatUser } from '../api/users/util';
 import Joi from 'joi'
 
 
@@ -16,10 +17,11 @@ export function jwtAuth (decoded, request, callback) {
       if (!user.token.valid) {
         callback(null, false);
       } else {
-        if (decoded.uuid !== user.token.uuid) {
+        if (decoded.jti !== user.token.uuid) {
           callback(null, false);
         }else {
-          callback(null, true);
+          // callback(null, true);
+          callback(null, true, user);
         }
       }
     }
@@ -43,10 +45,11 @@ export function basicAuth (request, Username, password, callback) {
         if (err) {
           callback(err);
         }
-        callback(null, res, {
-          id: user._id,
-          username: user.username
-        });
+        // callback(null, res, {
+        //   id: user._id,
+        //   username: user.username
+        // });
+        callback(null, res, formatUser(user, 'user'));
       });
     });
   } else {
@@ -65,11 +68,12 @@ export function basicAuth (request, Username, password, callback) {
         if (err) {
           callback(err);
         }
-        var credentials = {
-          id: user._id,
-          username: user.username
-        };
-        callback(null, res, credentials);
+        // var credentials = {
+        //   id: user._id,
+        //   username: user.username
+        // };
+        // callback(null, res, credentials);
+        callback(null, res, formatUser(user, 'user'));
       });
     });
   }

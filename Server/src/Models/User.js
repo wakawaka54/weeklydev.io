@@ -51,7 +51,7 @@ const UserSchema = new Schema({
     default: Date.now
   },
   token: {
-    full: String,
+    // full: String,
     uuid: String,
     valid: Boolean
   },

@@ -146,6 +146,6 @@ const routes = [
     },
     handler: users.getGhostTeams
   }
-]
+];
 
-export default routes
+export default routes;
