@@ -1,4 +1,5 @@
 import { authenticateUser } from './util/userFunctions'
+import * as users from './users.js'
 
 const routes = [
   /**
@@ -14,7 +15,7 @@ const routes = [
       }],
       auth: 'userPass' // Requires basic auth (username:password)
     },
-    handler: _.login
+    handler: users.login
   },
 
   /**
@@ -48,7 +49,7 @@ const routes = [
       // to register user does not need any authentication
       auth: false
     },
-    handler: _.addUser
+    handler: users.addUser
   },
 
   /**
@@ -60,7 +61,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: _.getUsers
+    handler: users.getUsers
   },
 
   /**
@@ -72,7 +73,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: _.updateUser
+    handler: users.updateUser
   },
 
   {
@@ -84,7 +85,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: _.getUser
+    handler: users.getUser
   },
   
   /**
@@ -96,7 +97,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: _.deleteUser
+    handler: users.deleteUser
   },
 
   /**
@@ -108,7 +109,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: _.getCurrentUser
+    handler: users.getCurrentUser
   },
 
   /**
@@ -120,7 +121,7 @@ const routes = [
     config: {
       auth: 'jwt'
     },
-    handler: _.getTeamsIn
+    handler: users.getTeamsIn
   }
 ]
 

@@ -1,11 +1,11 @@
-'use strict';
+import Boom from 'Boom'
+import User from '../../Models/User.js'
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from '../../config/config.js'
+import uuid from 'node-uuid'
+import Joi from 'joi'
 
-const Boom = require('boom');
-const User = require('../models/User');
-const createToken = require('./token');
-const generateUUID = require('../../../methods/generateUUID');
-
-function verifyUniqueUser (req, res) {
+export function verifyUniqueUser (req, res) {
   // Find an entry from the database that
   // matches either the email or username
   User.findOne({
@@ -33,7 +33,7 @@ function verifyUniqueUser (req, res) {
   });
 }
 
-function authenticateUser (req, res) {
+export function authenticateUser (req, res) {
   // TODO: [1] remove all of this shit and rewrite it all
   User.findById(req.Credentials.id, (err, user) => {
     if (err) {
@@ -58,7 +58,11 @@ function authenticateUser (req, res) {
   });
 }
 
-function userModel (user, opts) {
+function generateUUID(){
+  return uuid.v4(uuid.nodeRNG);
+}
+
+export function formatUser(user, opts) {
   switch (opts) {
     case 'admin':
       return {
@@ -97,8 +101,24 @@ function userModel (user, opts) {
   }
 }
 
-module.exports = {
-  verifyUniqueUser: verifyUniqueUser,
-  authenticateUser: authenticateUser,
-  formatUser: userModel
-};
+export function createToken (user, expires) {
+  let scopes = 'user';
+  // Check if the user object passed in
+  // has admin set to true, and if so, set
+  // scopes to admin
+  if (user.admin) {
+    scopes = 'admin';
+  }
+
+  expires = expires || '365 days';
+
+  // Sign the JWT
+  return jwt.sign({
+    id: user._id,
+    uuid: user.token.uuid,
+    scope: scopes
+  }, secret, {
+    algorithm: 'HS256',
+    expiresIn: expires // exp: in 24H
+  });
+}
