@@ -12,7 +12,6 @@
 //  Team          :   5xx
 //  Projects      :   6xx
 //  Submissions   :   7xx
-'use strict';
 
 import Boom from 'boom'
 
@@ -27,6 +26,9 @@ export const internalServerError = applyErrorCode(Boom.create(500, 'Sorry, somet
 // Users
 export const userNotFound = applyErrorCode(Boom.create(404, 'User not found', {errorCode: 300}))
 export const userInTooManyTeams = applyErrorCode(Boom.create(400, 'User in too many Teams', { errorCode: 305 }))
+
+// Surveys
+export const surveyNotFound = applyErrorCode(Boom.create(404, 'Survey not found', {errorCode: 400}))
 
 // Teams
 export const teamNotFound = applyErrorCode(Boom.create(404, 'Team not found', { errorCode: 500}))

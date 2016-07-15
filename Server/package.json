@@ -34,8 +34,9 @@
     "joi": "^8.4.1",
     "jsonwebtoken": "^7.0.0",
     "mongoose": "^4.4.20",
+    "node-schedule": "^1.1.1",
     "node-uuid": "^1.4.7",
-    "nodemailer": "^2.4.2"
+    "nodemailer": "*"
   },
   "devDependencies": {
     "chai": "^3.5.0",

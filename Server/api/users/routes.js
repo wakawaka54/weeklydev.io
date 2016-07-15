@@ -123,6 +123,28 @@ const routes = [
       auth: 'jwt'
     },
     handler: users.getTeamsIn
+  },
+  {
+    /**
+     * Get user by request id
+     */
+    method: 'GET',
+    path: '/match/join',
+    config: {
+      auth: 'jwt'
+    },
+    handler: users.joinMatchmaking
+  },
+  {
+    /**
+     * Get user by request id
+     */
+    method: 'GET',
+    path: '/match/teams',
+    config: {
+      auth: 'jwt'
+    },
+    handler: users.getGhostTeams
   }
 ]
 

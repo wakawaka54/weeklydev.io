@@ -1,6 +1,9 @@
 import Boom from 'boom'
 
 import User from '../../Models/User.js'
+import Team from '../../Models/Team.js'
+import Survey from '../../Models/Survey.js'
+import GhostUser from '../../Models/GhostUser.js'
 import * as Code from '../../Utils/errorCodes.js'
 
 import { generateUUID, formatUser, createToken } from './util.js'
@@ -145,3 +148,52 @@ export function updateUser(req, res){
   });
 }
 
+/*
+ * Get a ghost team for matchmaking
+ */
+export function getGhostTeams(req, res){
+  User.findById(req.Token.id).populate('ghostTeams', 'confirmed manager frontend backend score').exec((err, user) => {
+    if (err || !user) {
+      res(Code.userNotFound);
+    }else {
+      res(user.ghostTeams);
+    }
+  });
+}
+
+/*
+ * Join a team automatically
+ */
+
+export function joinMatchmaking(req, res){
+  // TODO: add check for email confirmation
+  Survey.findByUserId(req.Token.id, (err, survey) => {
+    if (err || !survey) {
+      res(Code.surveyNotFound);
+    } else {
+      addToGhost(survey[0], req.Token.id, err => {
+        if (err) {
+          res(Boom.wrap(err));
+        }
+        res('ok').code(200);
+      });
+    }
+  });
+}
+
+function addToGhost (survey, userId, callback) {
+  let ghost = new GhostUser();
+  ghost.userId = userId;
+  ghost.preferred_role = survey.preferred_role;
+  ghost.project_manager = survey.project_manager;
+  ghost.skill_level = survey.skill_level;
+  ghost.project_size = survey.project_size;
+  ghost.timezone = survey.timezone;
+  ghost.save(err => {
+    if (err) {
+      callback(err);
+    }else {
+      callback(null);
+    }
+  });
+}

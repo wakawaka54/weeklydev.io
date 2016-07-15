@@ -18,6 +18,7 @@ import projectRoutes from './api/projects/routes.js'
 const allRoutes = [userRoutes, teamRoutes, surveyRoutes, submissionRoutes, projectRoutes]
 
 const server = new Hapi.Server();
+const startMatchmaking = require('./Matching/start');
 
 global.PATH = process.env.PWD || process.cwd();
 
@@ -77,6 +78,7 @@ server.start((err) => {
       throw err;
     } else {
       console.log('Connected to MongoDB');
+      startMatchmaking();
     }
   });
 });
