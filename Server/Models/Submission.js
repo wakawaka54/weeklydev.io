@@ -1,6 +1,4 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 const Schema = mongoose.Schema;
 
 const SubmissionModel = new Schema({
@@ -23,4 +21,4 @@ const SubmissionModel = new Schema({
   }
 });
 
-module.exports = mongoose.model('Submission', SubmissionModel, 'submissions');
+export default const Submission = mongoose.model('Submission', SubmissionModel, 'submissions')

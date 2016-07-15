@@ -1,6 +1,4 @@
-'use strict';
-
-const Joi = require('joi');
+import Joi from 'joi'
 
 const submissionSchema = Joi.object({
   team: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
@@ -12,4 +10,4 @@ const submissionSchema = Joi.object({
   date: Joi.date().min('now')
 });
 
-module.exports = submissionSchema;
+export default submissionSchema

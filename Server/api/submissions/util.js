@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = (domains, tld) => {
+export function urlRegEx(domains, tld){
   let validUrl = '';
   for (let i = domains.length - 1; i >= 0; i--) {
     if (i !== 0) {
@@ -26,4 +24,4 @@ module.exports = (domains, tld) => {
     '$', 'i'
   );
   return reg;
-};
+}
