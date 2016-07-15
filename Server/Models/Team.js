@@ -1,6 +1,4 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoogse from 'mongoose'
 const Schema = mongoose.Schema;
 
 const TeamModel = new Schema({
@@ -53,4 +51,4 @@ const TeamModel = new Schema({
   }
 });
 
-module.exports = mongoose.model('Team', TeamModel, 'teams');
+export default const Team = mongoose.model('Team', TeamModel, 'teams')

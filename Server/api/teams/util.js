@@ -1,6 +1,5 @@
-'use strict';
 
-function checkArrayLength (role, role_level) {
+export function checkArrayLength (role, role_level) {
   if (role.length !== role_level.length) {
     return false;
   }else {
@@ -8,16 +7,17 @@ function checkArrayLength (role, role_level) {
   }
 }
 
-function roleCompare (role, role_level) {
+export function roleCompare (role, role_level) {
   let arr = [];
   for (var i = 0; i < role.length; i++) {
     arr.push({user: role[i], role: role_level[i]});
   }
   return arr;
 }
+
 // return true if the arrays are the same lenght
 // otherwise return false
-function arrayChecker (role, role_level) {
+export function arrayChecker (role, role_level) {
   if (checkArrayLength(role, role_level)) {
     for (var i = 0; i < role.length; i++) {
       if (!checkArrayLength(role[i], role_level[i])) {
@@ -28,7 +28,7 @@ function arrayChecker (role, role_level) {
   }
 }
 
-function findUserInTeam (user, arrayOfRoles) {
+export function findUserInTeam (user, arrayOfRoles) {
   function userFind (array) {
     return array.user == user;
   }
@@ -39,9 +39,3 @@ function findUserInTeam (user, arrayOfRoles) {
   }
   return false;
 }
-
-module.exports = {
-  arrayChecker: arrayChecker,
-  getRoles: roleCompare,
-  findUserInTeam: findUserInTeam
-};

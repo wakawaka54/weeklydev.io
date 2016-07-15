@@ -1,5 +1,3 @@
-'use strict';
-
 const Joi = require('joi');
 
 const teamSchema = Joi.object({
@@ -9,4 +7,4 @@ const teamSchema = Joi.object({
   })).max(5)
 });
 
-module.exports = teamSchema;
+export default teamSchema;

@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 const Schema = mongoose.Schema;
 
-const UserModel = new Schema({
+const UserSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -58,7 +58,7 @@ const UserModel = new Schema({
   salt: String
 });
 
-UserModel
+UserSchema
   .path('password')
   .validate(function (password) {
     return password.length;
@@ -68,7 +68,7 @@ var validatePresenceOf = function (value) {
   return value && value.length;
 };
 
-UserModel
+UserSchema
   .pre('save', function (next) {
     // Handle new/update passwords
     if (!this.isModified('password')) {
@@ -95,7 +95,7 @@ UserModel
     });
   });
 
-UserModel.methods = {
+UserSchema.methods = {
 
   /**
    * Authenticate - check if the passwords are the same
@@ -182,4 +182,4 @@ UserModel.methods = {
   }
 };
 
-module.exports = mongoose.model('User', UserModel, 'users');
+export default const User = mongoose.model('User', UserSchema, 'users');
