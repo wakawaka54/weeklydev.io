@@ -1,7 +1,7 @@
 const match = require('./match/match');
 const schedule = require('node-schedule');
 const GhostTeam = require('../Models/GhostTeam.js');
-const GhostUser = require('./Models/GhostUser');
+const GhostUser = require('../Models/GhostUser');
 
 module.exports = () => {
   let j = schedule.scheduleJob('*/6 * * * *', function () {
