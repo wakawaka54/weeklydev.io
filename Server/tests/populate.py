@@ -49,11 +49,17 @@ def postSurvey(token):
 	    }
 	return  requests.request("POST", url, data=payload, headers=headers)
 
+def joinMatchmaking(token):
+	url = "http://localhost:1337/match/join"
+	headers = { 'authorization': "bearer {0}".format(token) }
+	return  requests.request("GET", url, headers=headers)
+
 for i in range(1,userNumber):
 	username = randomName(True)
 	userResponse = createNewUser(username)
 	token = json.loads(userResponse.text)['token']
 	surveyResponse = postSurvey(token);
+	matchmakingResponse = joinMatchmaking(token)
 	printToken = False;
 	
 	print '{0}\t{1}\n\ttesttest'.format(i,username)
@@ -70,6 +76,14 @@ for i in range(1,userNumber):
 	else:
 		print '\033[31m||  something went wrong while creating survey\033[0m'
 		print surveyResponse.text
+		print '============================================================='
+	if matchmakingResponse.status_code == 200:
+		print '  --> Joined Matchmaking'
+		if printToken:
+			print '\nUser Token: {0}'.format(token)
+	else:
+		print '\033[31m||  something went wrong while applying for matchmaking\033[0m'
+		print matchmakingResponse.text
 		print '============================================================='
 	print '______________'
 endTime = (time.time() - start_time)
