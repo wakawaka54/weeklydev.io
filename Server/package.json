@@ -4,9 +4,10 @@
   "description": "A RESTful api for interacting with the weekly dev databases",
   "main": "app.js",
   "scripts": {
-    "test": "mocha tests/tests.js",
     "start": "node app.js",
-    "watch": "gulp spy"
+    "watch": "gulp spy",
+    "test": "npm run build && mocha dist/tests/tests.js",
+    "build": "gulp build"
   },
   "repository": {
     "type": "git",
