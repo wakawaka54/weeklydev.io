@@ -16,7 +16,7 @@ Finally, to start the server and view the application, run `npm start` and visit
 
 # Installation (with Docker)
 
-* Pull this repository: `$ git clone https://github.com/weeklydev/weeklydev.io.git`
+* Clone this repository: `$ git clone https://github.com/weeklydev/weeklydev.io.git`
 * Install docker: https://www.docker.com/
 * Run `$ docker-compose up --build` (where **`--build`** will rebuild changes)
 
