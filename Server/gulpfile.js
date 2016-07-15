@@ -14,8 +14,11 @@ gulp.task('watch', ['build'], function(){
 var files = [
   './api/**/*.js',
   './config/*.js',
-  './src/index.js',
   './methods/*.js',
+  './Models/*.js',
+  './Schemas/*.js',
+  './Utils/*.js',
+  './tests/**/*.js',
   './app.js'
 ]
 gulp.task('build', function(cb){

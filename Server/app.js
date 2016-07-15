@@ -1,14 +1,22 @@
-'use strict';
+import Hapi from 'hapi'
+import mongoose from 'mongoose'
+import Boom from 'boom'
+import glob from 'glob'
+import path from 'path'
+import jwt from 'jsonwebtoken'
 
-const Hapi = require('hapi');
-const mongoose = require('mongoose');
-const Boom = require('boom');
-const glob = require('glob');
-const path = require('path');
-const jwt = require('jsonwebtoken');
-const validateJwt = require('./methods/validation.js').jwt;
-const validateUserPass = require('./methods/validation.js').basic;
-const config = require('./config/config.js');
+import { jwtAuth as validateJwt, basicAuth as validateUserPass } from './Utils/validation.js'
+import * as config from './config/config.js'
+
+// Import routes
+import userRoutes from './api/users/routes.js'
+import teamRoutes from './api/teams/routes.js'
+import surveyRoutes from './api/surveys/routes.js'
+import submissionRoutes from './api/submissions/routes.js'
+import projectRoutes from './api/projects/routes.js'
+
+const allRoutes = [userRoutes, teamRoutes, surveyRoutes, submissionRoutes, projectRoutes]
+
 const server = new Hapi.Server();
 
 global.PATH = process.env.PWD || process.cwd();
@@ -37,15 +45,23 @@ server.register([require('hapi-auth-jwt2'), require('hapi-auth-basic-weeklydev-l
   });
 
   server.auth.default('jwt');
-  // Look through the routes in
-  // all the subdirectories of API
-  // and create a new route for each
-  glob.sync('api/**/routes/*.js', {
-    root: __dirname
-  }).forEach(file => {
-    const route = require(path.join(__dirname, file));
-    server.route(route);
-  });
+  // Add all the routes to the server
+  allRoutes.forEach(routes => server.route(routes))
+
+  // Add index route to show server is running
+  server.route({
+    method: 'GET',
+    path: '/',
+    config: {
+      auth: false
+    },
+    handler: function(req, res){
+      res({
+        success: true,
+        message: 'Server is running!'
+      })
+    }
+  })
 });
 
 // Start the server
