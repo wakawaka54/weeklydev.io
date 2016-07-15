@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema;
 
@@ -29,6 +28,10 @@ const SurveyModel = new Schema({
     required: true
   }
 });
+
+SurveyModel.statics.findByUserId = function (userId, cb) {
+  return this.find({ user_id: userId}, cb);
+};
 
 const Survey = mongoose.model('Survey', SurveyModel, 'survey');
 export default Survey

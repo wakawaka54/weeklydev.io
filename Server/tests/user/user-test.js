@@ -1,5 +1,5 @@
 'use strict';
-const server = require('../../app.js');
+const server = require('../../dist/app.js');
 let res;
 let loginRes;
 const user = {

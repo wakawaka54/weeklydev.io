@@ -1,4 +1,5 @@
-const server = require('../../app.js');
+'use-strict';
+const server = require('../../dist/app.js');
 
 describe('Validate Server is up and running', () => {
   it('Respond with 200', (done) => {

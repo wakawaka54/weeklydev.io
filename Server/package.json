@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "watch": "gulp spy",
-    "test": "npm run build && mocha dist/tests/tests.js",
+    "test": "npm run build && mocha tests/tests.js",
     "build": "gulp build"
   },
   "repository": {
@@ -34,8 +34,9 @@
     "joi": "^8.4.1",
     "jsonwebtoken": "^7.0.0",
     "mongoose": "^4.4.20",
+    "node-schedule": "^1.1.1",
     "node-uuid": "^1.4.7",
-    "nodemailer": "^2.4.2"
+    "nodemailer": "*"
   },
   "devDependencies": {
     "chai": "^3.5.0",
