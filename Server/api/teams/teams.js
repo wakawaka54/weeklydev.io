@@ -1,8 +1,8 @@
 import Boom from 'boom'
 import Team from '../../Models/Team'
 import User from '../../Models/User'
-import * as Code from '../../config/errorCodes.js'
-import { validateUser } from '../users/util.js'
+import * as Code from '../../Utils/errorCodes.js'
+import { validateUser } from '../../Utils/validation.js'
 import { findUserInTeam } from './util.js'
 
 /*

@@ -1,9 +1,9 @@
 import Boom from 'boom'
 
 import User from '../../Models/User.js'
-import * as Code from '../../config/errorCodes.js'
+import * as Code from '../../Utils/errorCodes.js'
 
-import { generateUUID, formatUser, createToken } from './auth.js'
+import { generateUUID, formatUser, createToken } from './util.js'
 
 
 export function login(req, res){

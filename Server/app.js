@@ -1,14 +1,13 @@
-'use strict';
+import Hapi from 'hapi'
+import mongoose from 'mongoose'
+import Boom from 'boom'
+import glob from 'glob'
+import path from 'path'
+import jwt from 'jsonwebtoken'
 
-const Hapi = require('hapi');
-const mongoose = require('mongoose');
-const Boom = require('boom');
-const glob = require('glob');
-const path = require('path');
-const jwt = require('jsonwebtoken');
-const validateJwt = require('./methods/validation.js').jwt;
-const validateUserPass = require('./methods/validation.js').basic;
-const config = require('./config/config.js');
+import { jwtAuth as validateJwt, basicAuth as validateUserPass } from './Utils/validation.js'
+import * as config from './config/config.js'
+
 const server = new Hapi.Server();
 
 global.PATH = process.env.PWD;

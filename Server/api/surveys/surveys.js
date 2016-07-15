@@ -1,7 +1,7 @@
 import Boom from 'boom'
 import Survey from '../../Models/Survey.js'
 import User from '../../Models/User.js'
-import * as Code from '../../config/errorCodes.js'
+import * as Code from '../../Utils/errorCodes.js'
 
 /*
  * Add a survey

@@ -1,10 +1,8 @@
-'use strict';
+import Boom from 'boom'
+import User from '../Models/User.js'
 
-const User = require('../api/users/models/User');
-const validateEmail = require('./validateEmail');
-const Boom = require('boom');
 
-function jwtAuth (decoded, request, callback) {
+export function jwtAuth (decoded, request, callback) {
   // do your checks to see if the person is valid
   if (decoded.exp >= Date.now()) {
     callback('Token Expired', false);
@@ -27,7 +25,7 @@ function jwtAuth (decoded, request, callback) {
   });
 }
 
-function basicAuth (request, Username, password, callback) {
+export function basicAuth (request, Username, password, callback) {
   if (!validateEmail(Username)) {
     User.findOne({
       username: Username
@@ -76,7 +74,18 @@ function basicAuth (request, Username, password, callback) {
   }
 }
 
-module.exports = {
-  jwt: jwtAuth,
-  basic: basicAuth
-};
+export function validateEmail(email){
+  const schema = { email: Joi.string().email({minDomainAtoms: 2}) };
+  return ((Joi.validate({email: email}, schema).error === null) ? true : false);
+}
+
+export function validateUser(user, callback){
+  User.count({_id: user}, (err, count) => {
+    if (count > 0) {
+      callback(true);
+    }else {
+      callback(false);
+    }
+  });
+  
+}

@@ -1,7 +1,6 @@
 import Boom from 'Boom'
 import User from '../../Models/User.js'
 import jwt from 'jsonwebtoken'
-import { JWT_SECRET } from '../../config/config.js'
 import uuid from 'node-uuid'
 import Joi from 'joi'
 
@@ -120,15 +119,5 @@ export function createToken (user, expires) {
   }, secret, {
     algorithm: 'HS256',
     expiresIn: expires // exp: in 24H
-  });
-}
-
-export function validateUser(user, callback){
-  User.count({_id: user}, (err, count) => {
-    if (count > 0) {
-      callback(true);
-    }else {
-      callback(false);
-    }
   });
 }

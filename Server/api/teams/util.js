@@ -1,4 +1,3 @@
-
 export function checkArrayLength (role, role_level) {
   if (role.length !== role_level.length) {
     return false;

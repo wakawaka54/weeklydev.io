@@ -1,5 +1,3 @@
-'use strict';
-
 const JWT_SECRET_DEFAULT = 'MememememmememexkådkksokfopsekfskfdfpkapkdapwkdpakdpokpokkkKPOKPOKPKkPOkPkpkPkpkPOkPOkPkPkkpkpkpKpOKpOKPOKPkPokPkpKpkPkppkmememems';
 const SUPPLIED_JWT_SECRET = process.env.JWT_SECRET;
 
@@ -27,4 +25,3 @@ function getMongoUrl() {
 export const MONGO_URL = getMongoUrl()
 export const JWT_SECRET = getJWTSecret()
 export const PORT = process.env.PORT || 1337
-
