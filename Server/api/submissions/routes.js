@@ -1,7 +1,7 @@
 import * as submissions from './submissions.js'
 import submissionSchema from '../../Schemas/Submission.js'
 
-export default const routes = [
+const routes = [
   {
     method: 'GET',
     path: '/submissions',
@@ -41,3 +41,5 @@ export default const routes = [
     handler: submissions.deleteSubmission
   }
 ]
+
+export default routes

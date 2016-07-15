@@ -51,4 +51,5 @@ const TeamModel = new Schema({
   }
 });
 
-export default const Team = mongoose.model('Team', TeamModel, 'teams')
+const Team = mongoose.model('Team', TeamModel, 'teams')
+export default Team

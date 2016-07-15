@@ -182,4 +182,5 @@ UserSchema.methods = {
   }
 };
 
-export default const User = mongoose.model('User', UserSchema, 'users');
+const User = mongoose.model('User', UserSchema, 'users');
+export default User

@@ -21,4 +21,5 @@ const SubmissionModel = new Schema({
   }
 });
 
-export default const Submission = mongoose.model('Submission', SubmissionModel, 'submissions')
+const Submission = mongoose.model('Submission', SubmissionModel, 'submissions')
+export default Submission

@@ -1,7 +1,7 @@
 import * as teams from './teams.js'
 import teamSchema from '../../Schemas/Team.js'
 
-export const routes = [
+const routes = [
   {
     // Lists all Teams (disabled or not)
     method: 'GET',
@@ -84,3 +84,6 @@ export const routes = [
     handler: teams.requestJoinToTeam
   }
 ]
+
+
+export default routes

@@ -1,7 +1,7 @@
 import * as surveys from './surveys.js'
 import surveySchema from '../../Schemas/Survey.js'
 
-export default const routes = [
+const routes = [
   {
     method: 'GET',
     path: '/survey',
@@ -40,3 +40,5 @@ export default const routes = [
     handler: surveys.addSurvey
   }
 ]
+
+export default routes

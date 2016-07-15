@@ -1,7 +1,7 @@
 import * as projects from './projects.js'
 import projectSchema from '../../Schemas/Project.js'
 
-export default const routes = [
+const routes = [
   {
     // Return all documents from the projects collection
     method: 'GET',
@@ -43,3 +43,5 @@ export default const routes = [
     handler: projects.updateProject
   }
 ]
+
+export default routes
