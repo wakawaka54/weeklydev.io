@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 import Boom from 'boom';
-import User from '../Models/User.js';
-import Joi from 'joi';
-=======
-import Boom from 'boom'
-import User from '../Models/User'
+import User from '../Models/User';
 import { formatUser } from '../api/users/util';
-import Joi from 'joi'
-
->>>>>>> development
+import Joi from 'joi';
 
 export function jwtAuth (decoded, request, callback) {
   // do your checks to see if the person is valid

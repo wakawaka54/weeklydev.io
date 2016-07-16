@@ -1,5 +1,4 @@
 import Boom from 'boom';
-
 import User from '../../Models/User.js';
 import Team from '../../Models/Team.js';
 import Survey from '../../Models/Survey.js';
@@ -8,7 +7,6 @@ import * as Code from '../../Utils/errorCodes.js';
 
 import { generateUUID, formatUser, createToken } from './util.js';
 
-<<<<<<< HEAD
 export function login (req, res) {
   User.findById(req.Credentials.id, (err, user) => {
     if (err || !user) {
@@ -48,9 +46,8 @@ export function logout (req, res) {
     }
   });
 };
-=======
 
-export function login(req, res){
+export function login (req, res) {
   User.findById(req.Credentials.id)
     .catch((err) => res(Boom.unauthorized(err)))
     .then((_user) => {
@@ -61,12 +58,12 @@ export function login(req, res){
       };
       return _user.save();
     }).then((user) => {
-      let token = createToken(user);
-      res({ token, user: formatUser(user, 'user') }).code(200);
-    });
-}
+    let token = createToken(user);
+    res({ token, user: formatUser(user, 'user') }).code(200);
+  });
+};
 
-export function logout(req, res){
+export function logout (req, res) {
   if (!req.auth.credentials.token.valid) {
     res(Boom.unauthorized('user not found'));
   } else {
@@ -81,8 +78,7 @@ export function logout(req, res){
         });
       });
   }
-}
->>>>>>> development
+};
 
 export function addUser (req, res) {
   let user = new User();
@@ -103,12 +99,8 @@ export function addUser (req, res) {
   });
 };
 
-<<<<<<< HEAD
 export function getCurrentUser (req, res) {
-=======
-export function getCurrentUser(req, res){
   console.log('token:', req.Token);
->>>>>>> development
   User.findById(req.Token.id, (err, user) => {
     if (err || !user) {
       res(Boom.unauthorized('user not found'));
