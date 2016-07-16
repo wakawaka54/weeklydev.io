@@ -10,13 +10,13 @@ Install [MongoDB](https://docs.mongodb.com/manual/installation/) and run it.
 
 Then, cd into your new weekly-dev-site folder and install dependencies by running `npm install` and `bower install` within both the `Client` and `Server` directories.
 
-To compile stylesheets, run `npm run watch`.
+To run the projects, run `npm run watch` within both directories. It will watch your code for changes and restart the process, and compile es6 with babel.
 
 Finally, to start the server and view the application, run `npm start` and visit http://localhost:3000/
 
 # Installation (with Docker)
 
-* Pull this repository: `$ git clone https://github.com/weeklydev/weeklydev.io.git`
+* Clone this repository: `$ git clone https://github.com/weeklydev/weeklydev.io.git`
 * Install docker: https://www.docker.com/
 * Run `$ docker-compose up --build` (where **`--build`** will rebuild changes)
 

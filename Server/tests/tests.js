@@ -1,5 +1,4 @@
-'use strict';
-global.server = require('../app.js');
+global.server = require('../dist/app.js');
 global.chai = require('chai');
 global.expect = global.chai.expect;
 

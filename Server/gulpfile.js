@@ -11,19 +11,14 @@ gulp.task('watch', ['build'], function(){
   gulp.watch(files, ['build', 'reload'] )
 })
 
-var files = [
-  './api/**/*.js',
-  './config/*.js',
-  './src/index.js',
-  './methods/*.js',
-  './app.js'
-]
+var files = './src/**/*.js'
+
 gulp.task('build', function(cb){
   while(children.length != 0){
     children.pop().kill()
   }
 
-  gulp.src(files, { base: './' })
+  gulp.src(files, { base: './src' })
     .pipe(babel())
     .pipe(gulp.dest('dist'))
     .on('end', cb)
