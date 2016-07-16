@@ -25,13 +25,13 @@ describe('Creating new user', () => {
   });
 
   it('Response matches with user data', () => {
-    expect(res.username).to.equal(user.username);
-    expect(res.email).to.equal(user.email);
+    expect(res.user.username).to.equal(user.username);
+    expect(res.user.email).to.equal(user.email);
   });
 
   it('Respond with ID', () => {
-    expect(res.id).to.be.a('string');
-    expect(res).to.include.keys('id');
+    expect(res.user.id).to.be.a('string');
+    expect(res.user).to.include.keys('id');
   });
   it('Respond with Token', () => {
     expect(res.token).to.be.a('string');
@@ -39,17 +39,17 @@ describe('Creating new user', () => {
   });
 
   it('User is not admin', () => {
-    expect(res.admin).to.be.false;
+    expect(res.user.admin).to.be.false;
   });
 
   it('User is not in team', () => {
-    expect(res.team).to.be.a('array');
-    expect(res.team).to.have.length.below(1);
+    expect(res.user.team).to.be.a('array');
+    expect(res.user.team).to.have.length.below(1);
   });
 
   it('User does not have any projects', () => {
-    expect(res.project).to.be.a('array');
-    expect(res.project).to.have.length.below(1);
+    expect(res.user.project).to.be.a('array');
+    expect(res.user.project).to.have.length.below(1);
   });
 });
 
@@ -141,7 +141,7 @@ describe('Deleting user :', () => {
   it('Respond with succes', (done) => {
     server.inject({
       method: 'DELETE',
-      url: '/users/' + res.id,
+      url: '/users/' + res.user.id,
       headers: {
         Authorization: 'bearer ' + loginRes.token
       }
@@ -157,32 +157,11 @@ describe('Deleting user :', () => {
     expect(deleteRes).to.include.keys('id');
   });
 
-  it('Respond with Token', () => {
-    expect(res.token).to.be.a('string');
-    expect(deleteRes).to.include.keys('token');
-  });
-
   it('Respond with Username and Email', () => {
     expect(deleteRes.username).to.be.a('string');
     expect(deleteRes.username).to.be.equal(user.username);
     expect(deleteRes.email).to.be.a('string');
     expect(deleteRes.email).to.be.equal(user.email);
-  });
-
-  it('Invalidate Token', (done) => {
-    server.inject({
-      method: 'GET',
-      url: '/users/me',
-      headers: {
-        Authorization: 'bearer ' + deleteRes.token
-      }
-    }, (res) => {
-      expect(res.statusCode).to.be.equal(401);
-      expect(res.result.message).to.be.equal('Invalid credentials');
-      expect(res.result.error).to.be.equal('Unauthorized');
-
-      done();
-    });
   });
 
   it('Login after deleted with username', (done) => {
