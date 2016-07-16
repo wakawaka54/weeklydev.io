@@ -81,8 +81,7 @@ export function formatUser (user, opts) {
         admin: user.admin,
         team: user.team,
         ghostTeams: user.ghostTeams,
-        project: user.project,
-        token: user.token.full
+        project: user.project
       };
     case 'users':
       return {
@@ -102,7 +101,7 @@ export function formatUser (user, opts) {
   }
 };
 
-export function createToken (user, expires) {
+export function createToken (user, expires = '365 days') {
   let scopes = 'user';
   // Check if the user object passed in
   // has admin set to true, and if so, set
@@ -111,15 +110,13 @@ export function createToken (user, expires) {
     scopes = 'admin';
   }
 
-  expires = expires || '365 days';
-
   // Sign the JWT
   return jwt.sign({
     id: user._id,
-    uuid: user.token.uuid,
     scope: scopes
   }, JWT_SECRET, {
     algorithm: 'HS256',
+    jwtid: user.token.uuid,
     expiresIn: expires // exp: in 24H
   });
 };
