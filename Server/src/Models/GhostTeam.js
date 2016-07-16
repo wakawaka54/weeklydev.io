@@ -1,5 +1,5 @@
-const User = require('./User.js');
-const mongoose = require('mongoose');
+import User from './User.js';
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const GhostTeamModel = new Schema({
@@ -78,6 +78,4 @@ GhostTeamModel
     next();
   });
 
-const GhostTeam =  mongoose.model('ghostTeam', GhostTeamModel, 'ghostTeams');
-export default GhostTeam
-
+export default mongoose.model('ghostTeam', GhostTeamModel, 'ghostTeams');

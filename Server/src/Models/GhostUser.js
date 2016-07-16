@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const searchingUsers = new Schema({
@@ -14,5 +14,4 @@ const searchingUsers = new Schema({
   timezone: Number
 });
 
-const searchingUser = mongoose.model('searchingUser', searchingUsers, 'searchingUsers');
-export default searchingUser
+export default mongoose.model('searchingUser', searchingUsers, 'searchingUsers');
