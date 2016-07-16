@@ -1,10 +1,10 @@
-import Boom from 'boom'
-import Submission from '../../Models/Submission.js'
+import Boom from 'boom';
+import Submission from '../../Models/Submission.js';
 
 /*
  * Add a submission
  */
-export function addSubmission(req, res){
+export function addSubmission (req, res) {
   let submission = new Submission();
   let p = req.payload;
   submission.project = p.project;
@@ -26,39 +26,36 @@ export function addSubmission(req, res){
     }
     res(submission);
   });
-
-}
+};
 
 /*
  * Get Submissions
  */
-export function getSubmissions(req, res){
+export function getSubmissions (req, res) {
   Submission.find((err, submissions) => {
     if (err) {
       res(Boom.badRequest(err));
     }
     res(submissions);
   });
-}
-
+};
 
 /*
  * Delete Submissions
  */
-export function deleteSubmission(req, res){
+export function deleteSubmission (req, res) {
   Submission.findByIdAndDelete(req.params.id, (err, submissions) => {
     if (err) {
       res(Boom.badRequest(err));
     }
     res(submissions);
   });
-}
-
+};
 
 /*
  * Update Submissions
  */
-export function updateSubmission(req, res){
+export function updateSubmission (req, res) {
   let p = req.payload;
   function update () {
     // TODO: for the love of all holy make this something nicer
@@ -87,4 +84,4 @@ export function updateSubmission(req, res){
     }
     res(submissions);
   });
-}
+};

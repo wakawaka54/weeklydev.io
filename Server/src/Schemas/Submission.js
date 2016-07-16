@@ -1,5 +1,5 @@
-import Joi from 'joi'
-import { urlRegEx } from '../api/submissions/util.js'
+import Joi from 'joi';
+import { urlRegEx } from '../api/submissions/util.js';
 
 const submissionSchema = Joi.object({
   team: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
@@ -11,4 +11,4 @@ const submissionSchema = Joi.object({
   date: Joi.date().min('now')
 });
 
-export default submissionSchema
+export default submissionSchema;

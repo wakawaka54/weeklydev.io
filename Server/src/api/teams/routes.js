@@ -1,5 +1,5 @@
-import * as teams from './teams.js'
-import teamSchema from '../../Schemas/Team.js'
+import * as teams from './teams.js';
+import teamSchema from '../../Schemas/Team.js';
 
 const routes = [
   {
@@ -83,7 +83,6 @@ const routes = [
     },
     handler: teams.requestJoinToTeam
   }
-]
+];
 
-
-export default routes
+export default routes;

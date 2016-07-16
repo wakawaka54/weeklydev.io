@@ -1,24 +1,27 @@
-import Hapi from 'hapi'
-import mongoose from 'mongoose'
-import Boom from 'boom'
-import glob from 'glob'
-import path from 'path'
-import jwt from 'jsonwebtoken'
+import Hapi from 'hapi';
+import mongoose from 'mongoose';
+import Boom from 'boom';
+import glob from 'glob';
+import path from 'path';
+import jwt from 'jsonwebtoken';
 
-import { jwtAuth as validateJwt, basicAuth as validateUserPass } from './Utils/validation.js'
-import * as config from './config/config.js'
+import hapiAuthJwt2 from 'hapi-auth-jwt2';
+import hapiBasicAuth from 'hapi-auth-basic-weeklydev-login';
+
+import { jwtAuth as validateJwt, basicAuth as validateUserPass } from './Utils/validation.js';
+import * as config from './config/config.js';
 
 // Import routes
-import userRoutes from './api/users/routes.js'
-import teamRoutes from './api/teams/routes.js'
-import surveyRoutes from './api/surveys/routes.js'
-import submissionRoutes from './api/submissions/routes.js'
-import projectRoutes from './api/projects/routes.js'
+import userRoutes from './api/users/routes.js';
+import teamRoutes from './api/teams/routes.js';
+import surveyRoutes from './api/surveys/routes.js';
+import submissionRoutes from './api/submissions/routes.js';
+import projectRoutes from './api/projects/routes.js';
 
-const allRoutes = [userRoutes, teamRoutes, surveyRoutes, submissionRoutes, projectRoutes]
+const allRoutes = [userRoutes, teamRoutes, surveyRoutes, submissionRoutes, projectRoutes];
 
 const server = new Hapi.Server();
-const startMatchmaking = require('./Matching/start');
+import startMatchmaking from './Matching/start';
 
 global.PATH = process.env.PWD || process.cwd();
 
@@ -31,7 +34,7 @@ server.connection({
 });
 
 // Register the jwt auth plugin
-server.register([require('hapi-auth-jwt2'), require('hapi-auth-basic-weeklydev-login')], (err) => {
+server.register([hapiAuthJwt2, hapiBasicAuth], (err) => {
 
   server.auth.strategy('jwt', 'jwt', {
     key: config.JWT_SECRET, // Never Share your secret key
@@ -47,7 +50,7 @@ server.register([require('hapi-auth-jwt2'), require('hapi-auth-basic-weeklydev-l
 
   server.auth.default('jwt');
   // Add all the routes to the server
-  allRoutes.forEach(routes => server.route(routes))
+  allRoutes.forEach(routes => server.route(routes));
 
   // Add index route to show server is running
   server.route({
@@ -56,13 +59,13 @@ server.register([require('hapi-auth-jwt2'), require('hapi-auth-basic-weeklydev-l
     config: {
       auth: false
     },
-    handler: function(req, res){
+    handler: function (req, res) {
       res({
         success: true,
         message: 'Server is running!'
-      })
+      });
     }
-  })
+  });
 });
 
 // Start the server

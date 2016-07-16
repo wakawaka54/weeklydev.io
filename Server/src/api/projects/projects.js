@@ -1,19 +1,19 @@
-import Project from '../../Models/Project.js'
+import Project from '../../Models/Project.js';
 
 /*
  * Get projects
  */
-export function getProjects(req, res){
+export function getProjects (req, res) {
   Project.find((err, projects) => {
     if (err) return console.error(err);
     res(projects);
   });
-}
+};
 
 /*
  * Add a  project
  */
-export function addProject(req, res){
+export function addProject (req, res) {
   let project = new Project();
 
   project.title = req.payload.title,
@@ -26,28 +26,26 @@ export function addProject(req, res){
     if (err) return console.log(err);
     res(newProject);
   });
-}
-
+};
 
 /*
  * Get a  project
  */
-export function getProject(req, res){
+export function getProject (req, res) {
   Project.findById(req.params.id, (err, project) => {
-    if (err){
+    if (err) {
       console.error(err);
       // Todo change to actual boom error
-      res(error)
-    } 
+      res(error);
+    }
     res(project);
   });
-}
-
+};
 
 /*
  * Update a  project
  */
-export function updateProject(req, res){
+export function updateProject (req, res) {
   function update () {
     let obj = {};
     if (req.payload.title) {
@@ -68,4 +66,4 @@ export function updateProject(req, res){
       res(project);
     }
   });
-}
+};

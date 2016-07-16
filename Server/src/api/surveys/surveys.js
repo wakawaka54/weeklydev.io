@@ -1,12 +1,12 @@
-import Boom from 'boom'
-import Survey from '../../Models/Survey.js'
-import User from '../../Models/User.js'
-import * as Code from '../../Utils/errorCodes.js'
+import Boom from 'boom';
+import Survey from '../../Models/Survey.js';
+import User from '../../Models/User.js';
+import * as Code from '../../Utils/errorCodes.js';
 
 /*
  * Add a survey
  */
-export function addSurvey(req, res){
+export function addSurvey (req, res) {
   User.findById(req.Token.id, (err, user) => {
     if (err || !user) {
       res(Code.userNotFound);
@@ -37,12 +37,12 @@ export function addSurvey(req, res){
         });
       }}
   });
-}
+};
 
 /*
  * Get a survey
  */
-export function getSurvey(req, res){
+export function getSurvey (req, res) {
   Survey.findOne({
     user_id: req.Token.id
   }, (err, survey) => {
@@ -50,12 +50,12 @@ export function getSurvey(req, res){
       error: 'No Survey found!'
     })).code(200);
   });
-}
+};
 
 /*
  * Update a survey
  */
-export function updateSurvey(req, res){
+export function updateSurvey (req, res) {
   let payload = req.payload;
   Survey.findOneAndUpdate({
     user_id: req.Token.id
@@ -90,4 +90,4 @@ export function updateSurvey(req, res){
       });
     });
   });
-}
+};

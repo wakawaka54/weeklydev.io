@@ -1,7 +1,6 @@
-import Boom from 'boom'
-import User from '../Models/User.js'
-import Joi from 'joi'
-
+import Boom from 'boom';
+import User from '../Models/User.js';
+import Joi from 'joi';
 
 export function jwtAuth (decoded, request, callback) {
   // do your checks to see if the person is valid
@@ -24,7 +23,7 @@ export function jwtAuth (decoded, request, callback) {
       }
     }
   });
-}
+};
 
 export function basicAuth (request, Username, password, callback) {
   if (!validateEmail(Username)) {
@@ -73,14 +72,14 @@ export function basicAuth (request, Username, password, callback) {
       });
     });
   }
-}
+};
 
-export function validateEmail(email){
+export function validateEmail (email) {
   const schema = { email: Joi.string().email({minDomainAtoms: 2}) };
   return ((Joi.validate({email: email}, schema).error === null) ? true : false);
-}
+};
 
-export function validateUser(user, callback){
+export function validateUser (user, callback) {
   User.count({_id: user}, (err, count) => {
     if (count > 0) {
       callback(true);
@@ -88,5 +87,4 @@ export function validateUser(user, callback){
       callback(false);
     }
   });
-  
-}
+};

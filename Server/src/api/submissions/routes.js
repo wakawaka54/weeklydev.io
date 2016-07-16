@@ -1,5 +1,5 @@
-import * as submissions from './submissions.js'
-import submissionSchema from '../../Schemas/Submission.js'
+import * as submissions from './submissions.js';
+import submissionSchema from '../../Schemas/Submission.js';
 
 const routes = [
   {
@@ -40,6 +40,6 @@ const routes = [
     },
     handler: submissions.deleteSubmission
   }
-]
+];
 
-export default routes
+export default routes;

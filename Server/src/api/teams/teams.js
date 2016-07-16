@@ -1,15 +1,15 @@
-import Boom from 'boom'
-import Team from '../../Models/Team'
-import User from '../../Models/User'
-import * as Code from '../../Utils/errorCodes.js'
-import { validateUser } from '../../Utils/validation.js'
-import { findUserInTeam } from './util.js'
+import Boom from 'boom';
+import Team from '../../Models/Team';
+import User from '../../Models/User';
+import * as Code from '../../Utils/errorCodes.js';
+import { validateUser } from '../../Utils/validation.js';
+import { findUserInTeam } from './util.js';
 
 /*
  * Add Team 
  */
 
-export function addTeam(req, res){
+export function addTeam (req, res) {
   var team = new Team();
   team['owner'] = req.Token.id;
   if (req.payload.role) {
@@ -35,7 +35,7 @@ export function addTeam(req, res){
   }else {
     saveTeam(team, res);
   }
-}
+};
 
 function updateUsers (team, callback) {
   team.meta.members.forEach((user, array, index) => {
@@ -66,20 +66,19 @@ function saveTeam (team, res) {
   });
 }
 
-
 /*
  * Get Team
  */
-export function getTeams(req, res){
+export function getTeams (req, res) {
   Team.find().populate('manager frontend backend', 'id username is_searching project team').exec((err, team) => {
     res(team);
   });
-}
+};
 
 /*
  * Add user to team
  */
-export function addUserToTeam(req, res){
+export function addUserToTeam (req, res) {
   // TODO: Rewrite this with promises!!!!
   Team.findById(req.params.id, (err, team) => {
     if (err || !team) {
@@ -158,12 +157,12 @@ export function addUserToTeam(req, res){
       });
     }
   });
-}
+};
 
 /*
  * Delete team
  */
-export function deleteTeam(req, res){
+export function deleteTeam (req, res) {
   Team.findByIdAndRemove(req.params.id, (err, team) => {
     if (err || !team) {
       // Team not found
@@ -172,21 +171,21 @@ export function deleteTeam(req, res){
       res({msg: 'success', team: team});
     }
   });
-}
+};
 
 /*
  * Get team by id
  */
-export function getTeam(req, res){
+export function getTeam (req, res) {
   Team.findById(req.params.id).populate('manager.user frontend.user backend.user', 'id username is_searching project team').exec((err, team) => {
     res(team);
   });
-}
+};
 
 /*
  * Request to join a team
  */
-export function requestJoinToTeam(req, res){
+export function requestJoinToTeam (req, res) {
   Team.findById(req.params.id, (err, team) => {
     if (team.requests.length >= 10) {
       res(Code.maxRequestsReached);
@@ -199,13 +198,12 @@ export function requestJoinToTeam(req, res){
       }
     }
   });
-
-}
+};
 
 /*
  * Update a team
  */
-export function updateTeam(req, res){
+export function updateTeam (req, res) {
   Team.findById(req.params.id, (err, team) => {
     if (req.Token.id !== team.owner) {
       res(Boom.unauthorized('only team owner can update team details'));
@@ -219,4 +217,4 @@ export function updateTeam(req, res){
       team.backend.push({user: req.payload.backend, role: req.payload.backend_role});
     }
   });
-}
+};

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 var ProjectModel = new Schema({
@@ -20,5 +20,4 @@ var ProjectModel = new Schema({
   }
 });
 
-const Project = mongoose.model('Project', ProjectModel, 'projects')
-export default Project
+export default mongoose.model('Project', ProjectModel, 'projects');

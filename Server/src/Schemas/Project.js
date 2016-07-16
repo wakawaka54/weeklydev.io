@@ -1,4 +1,4 @@
-import Joi from 'joi'
+import Joi from 'joi';
 
 const projectSchema = Joi.object({
   title: Joi.string().min(3).max(72).required(),
@@ -6,4 +6,4 @@ const projectSchema = Joi.object({
   deadline: Joi.date().min('now')
 });
 
-export default projectSchema
+export default projectSchema;

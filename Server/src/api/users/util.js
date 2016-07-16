@@ -1,9 +1,9 @@
-import Boom from 'boom'
-import User from '../../Models/User.js'
-import jwt from 'jsonwebtoken'
-import uuid from 'node-uuid'
-import Joi from 'joi'
-import { JWT_SECRET } from '../../config/config.js'
+import Boom from 'boom';
+import User from '../../Models/User.js';
+import jwt from 'jsonwebtoken';
+import uuid from 'node-uuid';
+import Joi from 'joi';
+import { JWT_SECRET } from '../../config/config.js';
 
 export function verifyUniqueUser (req, res) {
   // Find an entry from the database that
@@ -31,7 +31,7 @@ export function verifyUniqueUser (req, res) {
     // to the route handler
     res(req.payload);
   });
-}
+};
 
 export function authenticateUser (req, res) {
   // TODO: [1] remove all of this shit and rewrite it all
@@ -56,13 +56,13 @@ export function authenticateUser (req, res) {
       res(req.payload);
     });
   });
-}
+};
 
-export function generateUUID(){
+export function generateUUID () {
   return uuid.v4(uuid.nodeRNG);
-}
+};
 
-export function formatUser(user, opts) {
+export function formatUser (user, opts) {
   switch (opts) {
     case 'admin':
       return {
@@ -100,7 +100,7 @@ export function formatUser(user, opts) {
         project: user.project
       };
   }
-}
+};
 
 export function createToken (user, expires) {
   let scopes = 'user';
@@ -122,4 +122,4 @@ export function createToken (user, expires) {
     algorithm: 'HS256',
     expiresIn: expires // exp: in 24H
   });
-}
+};

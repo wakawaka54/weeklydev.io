@@ -1,9 +1,5 @@
-// const User = require('../../api/users/models/User')
-// const Team = require('../../api/teams/models/Team')
-// const Survey = require('../../api/survey/models/Survey')
-
-const GhostUser = require('../../Models/GhostUser');
-const GhostTeam = require('../../Models/GhostTeam');
+import GhostUser from '../../Models/GhostUser';
+import GhostTeam from '../../Models/GhostTeam';
 
 const _TZ_OFFSET = 1;
 const _PS_OFFSET = 2;
@@ -203,6 +199,4 @@ function createGhostTeam (userId) {
   });
 }
 
-module.exports = (userId) => {
-  return createGhostTeam(userId);
-};
+export default createGhostTeam;

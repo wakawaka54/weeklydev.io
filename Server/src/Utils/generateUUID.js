@@ -1,6 +1,5 @@
-'use strict';
-const uuid = require('node-uuid');
+import uuid from 'node-uuid';
 
-module.exports = () => {
+export default function() {
   return uuid.v4(uuid.nodeRNG);
 };

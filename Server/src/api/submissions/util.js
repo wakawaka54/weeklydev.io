@@ -1,4 +1,4 @@
-export function urlRegEx(domains, tld){
+export function urlRegEx (domains, tld) {
   let validUrl = '';
   for (let i = domains.length - 1; i >= 0; i--) {
     if (i !== 0) {
@@ -24,4 +24,4 @@ export function urlRegEx(domains, tld){
     '$', 'i'
   );
   return reg;
-}
+};

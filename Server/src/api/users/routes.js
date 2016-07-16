@@ -1,6 +1,6 @@
-import { authenticateUser, verifyUniqueUser } from './util.js'
-import createUserSchema from '../../Schemas/User.js'
-import * as users from './users.js'
+import { authenticateUser, verifyUniqueUser } from './util.js';
+import createUserSchema from '../../Schemas/User.js';
+import * as users from './users.js';
 
 const routes = [
   /**
@@ -78,9 +78,9 @@ const routes = [
   },
 
   {
-  /**
-   * Get users one user by id
-   */
+    /**
+     * Get users one user by id
+     */
     method: 'GET',
     path: '/users/{id}',
     config: {
@@ -88,7 +88,7 @@ const routes = [
     },
     handler: users.getUser
   },
-  
+
   /**
    * Update user by ID
    */
@@ -146,6 +146,6 @@ const routes = [
     },
     handler: users.getGhostTeams
   }
-]
+];
 
-export default routes
+export default routes;

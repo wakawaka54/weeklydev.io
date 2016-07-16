@@ -1,5 +1,5 @@
-import * as surveys from './surveys.js'
-import surveySchema from '../../Schemas/Survey.js'
+import * as surveys from './surveys.js';
+import surveySchema from '../../Schemas/Survey.js';
 
 const routes = [
   {
@@ -39,6 +39,6 @@ const routes = [
     },
     handler: surveys.addSurvey
   }
-]
+];
 
-export default routes
+export default routes;

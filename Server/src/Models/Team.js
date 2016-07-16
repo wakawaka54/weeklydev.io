@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const TeamModel = new Schema({
@@ -51,5 +51,4 @@ const TeamModel = new Schema({
   }
 });
 
-const Team = mongoose.model('Team', TeamModel, 'teams')
-export default Team
+export default mongoose.model('Team', TeamModel, 'teams');

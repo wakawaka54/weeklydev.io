@@ -1,5 +1,5 @@
-import * as projects from './projects.js'
-import projectSchema from '../../Schemas/Project.js'
+import * as projects from './projects.js';
+import projectSchema from '../../Schemas/Project.js';
 
 const routes = [
   {
@@ -42,6 +42,6 @@ const routes = [
     },
     handler: projects.updateProject
   }
-]
+];
 
-export default routes
+export default routes;

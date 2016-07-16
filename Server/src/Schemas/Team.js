@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const teamSchema = Joi.object({
   role: Joi.array().items(Joi.object().keys({

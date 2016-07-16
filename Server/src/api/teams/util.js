@@ -4,7 +4,7 @@ export function checkArrayLength (role, role_level) {
   }else {
     return true;
   }
-}
+};
 
 export function roleCompare (role, role_level) {
   let arr = [];
@@ -12,7 +12,7 @@ export function roleCompare (role, role_level) {
     arr.push({user: role[i], role: role_level[i]});
   }
   return arr;
-}
+};
 
 // return true if the arrays are the same lenght
 // otherwise return false
@@ -25,7 +25,7 @@ export function arrayChecker (role, role_level) {
     }
     return true;
   }
-}
+};
 
 export function findUserInTeam (user, arrayOfRoles) {
   function userFind (array) {
@@ -37,4 +37,4 @@ export function findUserInTeam (user, arrayOfRoles) {
     }
   }
   return false;
-}
+};

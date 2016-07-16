@@ -1,4 +1,4 @@
-import Joi from 'joi'
+import Joi from 'joi';
 
 const surveySchema = Joi.object({
   role: Joi.array().items(Joi.string().allow(['frontend', 'backend', 'manager'])).min(1).max(3).required(),
@@ -8,4 +8,4 @@ const surveySchema = Joi.object({
   timezone: Joi.number().min(-12).max(12).required()
 });
 
-export default surveySchema
+export default surveySchema;

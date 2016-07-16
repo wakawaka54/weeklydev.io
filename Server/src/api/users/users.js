@@ -1,15 +1,14 @@
-import Boom from 'boom'
+import Boom from 'boom';
 
-import User from '../../Models/User.js'
-import Team from '../../Models/Team.js'
-import Survey from '../../Models/Survey.js'
-import GhostUser from '../../Models/GhostUser.js'
-import * as Code from '../../Utils/errorCodes.js'
+import User from '../../Models/User.js';
+import Team from '../../Models/Team.js';
+import Survey from '../../Models/Survey.js';
+import GhostUser from '../../Models/GhostUser.js';
+import * as Code from '../../Utils/errorCodes.js';
 
-import { generateUUID, formatUser, createToken } from './util.js'
+import { generateUUID, formatUser, createToken } from './util.js';
 
-
-export function login(req, res){
+export function login (req, res) {
   User.findById(req.Credentials.id, (err, user) => {
     if (err || !user) {
       res(Boom.unauthorized('user not found'));
@@ -23,11 +22,10 @@ export function login(req, res){
       }
       res(formatUser(user, 'user')).code(200);
     });
-  })
+  });
+};
 
-}
-
-export function logout(req, res){
+export function logout (req, res) {
   User.findOne({'token.full': req.auth.token}, (err, user) => {
     if (err || !user) {
       res(Boom.unauthorized('user not found'));
@@ -48,9 +46,9 @@ export function logout(req, res){
       }
     }
   });
-}
+};
 
-export function addUser(req, res){
+export function addUser (req, res) {
   let user = new User();
   user.email = req.payload.email;
   user.username = req.payload.username;
@@ -67,9 +65,9 @@ export function addUser(req, res){
     // If the user is saved successfully, Send a JWT
     res(formatUser(user, 'user')).code(201);
   });
-}
+};
 
-export function getCurrentUser(req, res){
+export function getCurrentUser (req, res) {
   User.findById(req.Token.id, (err, user) => {
     if (err || !user) {
       res(Boom.unauthorized('user not found'));
@@ -77,9 +75,9 @@ export function getCurrentUser(req, res){
       res(formatUser(user, 'user'));
     }
   });
-}
+};
 
-export function getTeamsIn(req, res){
+export function getTeamsIn (req, res) {
   User.findById(req.Token.id).populate('team').exec((err, user) => {
     if (err || !user) {
       res(Code.userNotFound);
@@ -87,9 +85,9 @@ export function getTeamsIn(req, res){
       res(user.team);
     }
   });
-}
+};
 
-export function getUsers(req, res){
+export function getUsers (req, res) {
   User.find(function (err, users) {
     if (err) {
       res(Boom.badRequest(err));
@@ -104,9 +102,9 @@ export function getUsers(req, res){
       res(Users);
     }
   });
-}
+};
 
-export function deleteUser(req, res){
+export function deleteUser (req, res) {
   if (req.Token.id === req.params.id || req.Token.scope === 'admin') {
     User.findByIdAndRemove(req.params.id, (err, user) => {
       if (err) {
@@ -122,9 +120,9 @@ export function deleteUser(req, res){
   } else {
     res(Boom.unauthorized('you cannot delete account that is not yours'));
   }
-}
+};
 
-export function getUser(req, res){
+export function getUser (req, res) {
   User.findById(req.params.id, function (err, user) {
     if (err || !user) {
       res(Code.userNotFound);
@@ -132,9 +130,9 @@ export function getUser(req, res){
     }
     res(formatUser(user, 'users')).code(200);
   });
-}
+};
 
-export function updateUser(req, res){
+export function updateUser (req, res) {
   User.findByIdAndUpdate(req.params.id, {
     $set: {
       username: req.payload.username,
@@ -146,12 +144,12 @@ export function updateUser(req, res){
     if (err) return console.error(err);
     res(formatUser(user), 'user');
   });
-}
+};
 
 /*
  * Get a ghost team for matchmaking
  */
-export function getGhostTeams(req, res){
+export function getGhostTeams (req, res) {
   User.findById(req.Token.id).populate('ghostTeams', 'confirmed manager frontend backend score').exec((err, user) => {
     if (err || !user) {
       res(Code.userNotFound);
@@ -159,13 +157,13 @@ export function getGhostTeams(req, res){
       res(user.ghostTeams);
     }
   });
-}
+};
 
 /*
  * Join a team automatically
  */
 
-export function joinMatchmaking(req, res){
+export function joinMatchmaking (req, res) {
   // TODO: add check for email confirmation
   Survey.findByUserId(req.Token.id, (err, survey) => {
     if (err || !survey) {
@@ -179,7 +177,7 @@ export function joinMatchmaking(req, res){
       });
     }
   });
-}
+};
 
 function addToGhost (survey, userId, callback) {
   let ghost = new GhostUser();

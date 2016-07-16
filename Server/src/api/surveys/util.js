@@ -1,7 +1,7 @@
-import Survey from '../../Models/Survey.js'
-import Boom from 'boom'
+import Survey from '../../Models/Survey.js';
+import Boom from 'boom';
 
-export function createNewSurvey(req, res){
+export function createNewSurvey (req, res) {
   Survey.findOne({
     user_id: req.Token.id
   }, (err, survey) => {
@@ -15,4 +15,4 @@ export function createNewSurvey(req, res){
       res(Boom.badRequest('To update your survey use PUT!'));
     }
   });
-}
+};
