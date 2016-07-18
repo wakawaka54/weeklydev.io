@@ -1,12 +1,13 @@
 class LoginController {
   constructor() {
     this.text = "This is the LOGIN COMPONENT!";
-    this.test = "HELLLLO";
   }
 }
 
-export const login = {
+const LoginComponent = {
   url: '/login',
-  templateUrl: 'app/components/Login/Login.html',
+  templateUrl: 'app/components/Login/login.html',
   controller: LoginController
 };
+
+export default LoginComponent;

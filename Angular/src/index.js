@@ -1,15 +1,18 @@
 // Angular
 import angular from 'angular';
-import 'angular-ui-router';
+import uiRouter from 'angular-ui-router';
 
 // Main App and Routes
-import { MainApp } from './app/app';
+import { MainApp } from './app/MainApp';
 import routesConfig from './routes';
 
 // Require Main SCSS
 import './index.scss';
 
-angular
-  .module('app', ['ui.router'])
+var root = angular
+  .module('app', [uiRouter])
   .config(routesConfig)
-  .component('app', MainApp);
+  .component('app', MainApp)
+  .name;
+
+export default root;

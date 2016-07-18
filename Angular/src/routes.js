@@ -1,7 +1,7 @@
 export default routesConfig;
 
 // Import Components
-import { login } from './app/components/Login/Login'
+import { login } from './app/components/Login/login.component'
 
 /** @ngInject */
 function routesConfig($stateProvider, $urlRouterProvider, $locationProvider) {
