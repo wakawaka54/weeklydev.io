@@ -67,25 +67,27 @@ export function formatUser (user, opts) {
     case 'admin':
       return {
         id: user.id,
+        userId: user.userId,
         email: user.email,
         username: user.username,
-        admin: user.admin,
+        access: user.scope,
         team: user.team,
         project: user.project
       };
     case 'user':
       return {
         id: user.id,
+        userId: user.userId,
         email: user.email,
         username: user.username,
-        admin: user.admin,
+        access: user.scope,
         team: user.team,
         ghostTeams: user.ghostTeams,
         project: user.project
       };
     case 'users':
       return {
-        id: user.id,
+        id: user.userId,
         username: user.username,
         admin: user.admin,
         team: user.team,
@@ -93,7 +95,7 @@ export function formatUser (user, opts) {
       };
     default:
       return {
-        id: user.id,
+        id: user.userId,
         username: user.username,
         team: user.team,
         project: user.project
@@ -103,17 +105,10 @@ export function formatUser (user, opts) {
 
 export function createToken (user, expires = '365 days') {
   let scopes = 'user';
-  // Check if the user object passed in
-  // has admin set to true, and if so, set
-  // scopes to admin
-  if (user.admin) {
-    scopes = 'admin';
-  }
 
   // Sign the JWT
   return jwt.sign({
-    id: user._id,
-    scope: scopes
+    id: user._id
   }, JWT_SECRET, {
     algorithm: 'HS256',
     jwtid: user.token.uuid,

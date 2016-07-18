@@ -15,13 +15,14 @@ export function addSurvey (req, res) {
         res('Survey already submitted!');
       }else {
         let payload = req.payload;
-        let survey = new Survey();
-        survey.user_id = user.id;
-        survey.preferred_role = payload.role;
-        survey.project_manager = payload.projectManager;
-        survey.skill_level = payload.skill;
-        survey.project_size = payload.size;
-        survey.timezone = payload.timezone;
+        let survey = new Survey({
+          user_id: user.id,
+          preferred_role: payload.role,
+          project_manager: payload.projectManager,
+          skill_level: payload.skill,
+          project_size: payload.size,
+          timezone: payload.timezone
+        });
         survey.save((err, survey) => {
           if (err) {
             throw Boom.badRequest(err);

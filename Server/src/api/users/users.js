@@ -1,51 +1,13 @@
 import Boom from 'boom';
+import shortid from 'shortid';
 import User from '../../Models/User.js';
 import Team from '../../Models/Team.js';
 import Survey from '../../Models/Survey.js';
 import GhostUser from '../../Models/GhostUser.js';
 import * as Code from '../../Utils/errorCodes.js';
+import { isAdmin } from '../../Utils/validation.js';
 
 import { generateUUID, formatUser, createToken } from './util.js';
-
-export function login (req, res) {
-  User.findById(req.Credentials.id, (err, user) => {
-    if (err || !user) {
-      res(Boom.unauthorized('user not found'));
-    }
-    user.token.valid = true;
-    user.token.uuid = generateUUID();
-    user.token.full = createToken(user);
-    user.save((err, done) => {
-      if (err) {
-        throw Boom.badRequest(err);
-      }
-      res(formatUser(user, 'user')).code(200);
-    });
-  });
-};
-
-export function logout (req, res) {
-  User.findOne({'token.full': req.auth.token}, (err, user) => {
-    if (err || !user) {
-      res(Boom.unauthorized('user not found'));
-    }else {
-      if (!user.token.valid) {
-        res(Boom.unauthorized('user already logged out'));
-      }else {
-        user.token.valid = false;
-        user.save((err, done) => {
-          if (err) {
-            throw Boom.badRequest(err);
-          }
-          res({
-            succes: true,
-            message: 'successfully logged out'
-          });
-        });
-      }
-    }
-  });
-};
 
 export function login (req, res) {
   User.findById(req.Credentials.id)
@@ -81,14 +43,18 @@ export function logout (req, res) {
 };
 
 export function addUser (req, res) {
-  let user = new User();
-  user.email = req.payload.email;
-  user.username = req.payload.username;
-  user.admin = false;
-  user.password = req.payload.password;
-  user.token.uuid = generateUUID();
-  user.token.valid = true;
-  // user.token_expire.expire = (Date.now() + (24 * 60 * 60))
+  let payload = req.payload;
+  let user = new User({
+    userId: shortid.generate(),
+    email: payload.email,
+    username: payload.username,
+    scope: ['user'],
+    password: payload.password,
+    token: {
+      uuid: generateUUID(),
+      valid: true
+    }
+  });
   user.save((err, user) => {
     if (err) {
       throw Boom.badRequest(err);
@@ -100,10 +66,9 @@ export function addUser (req, res) {
 };
 
 export function getCurrentUser (req, res) {
-  console.log('token:', req.Token);
   User.findById(req.Token.id, (err, user) => {
     if (err || !user) {
-      res(Boom.unauthorized('user not found'));
+      res(Code.userNotFound);
     } else {
       res(formatUser(user, 'user'));
     }
@@ -138,25 +103,21 @@ export function getUsers (req, res) {
 };
 
 export function deleteUser (req, res) {
-  if (req.Token.id === req.params.id || req.Token.scope === 'admin') {
-    User.findByIdAndRemove(req.params.id, (err, user) => {
-      if (err) {
-        console.error(err);
-        res(Boom.wrap(err, 400));
-      }
-      if (user) {
-        res(formatUser(user, 'user')).code(200);
-      } else {
-        res(Boom.notFound('User not found'));
-      }
-    });
-  } else {
-    res(Boom.unauthorized('you cannot delete account that is not yours'));
-  }
+  User.findByUserIdAndRemove(req.params.id, (err, user) => {
+    if (err) {
+      console.error(err);
+      res(Boom.wrap(err, 400));
+    }
+    if (user) {
+      res(formatUser(user, 'user')).code(200);
+    } else {
+      res(Boom.notFound('User not found'));
+    }
+  });
 };
 
 export function getUser (req, res) {
-  User.findById(req.params.id, function (err, user) {
+  User.findByUserId(req.params.id, function (err, user) {
     if (err || !user) {
       res(Code.userNotFound);
       return;
@@ -212,19 +173,19 @@ export function joinMatchmaking (req, res) {
   });
 };
 
+export function adminTest (req, res) {
+  // if (isAdmin(req.auth.credentials.scope)) {
+  res(req.auth.credentials).code(200);
+};
+
 function addToGhost (survey, userId, callback) {
-  let ghost = new GhostUser();
-  ghost.userId = userId;
-  ghost.preferred_role = survey.preferred_role;
-  ghost.project_manager = survey.project_manager;
-  ghost.skill_level = survey.skill_level;
-  ghost.project_size = survey.project_size;
-  ghost.timezone = survey.timezone;
-  ghost.save(err => {
-    if (err) {
-      callback(err);
-    }else {
-      callback(null);
-    }
+  let ghost = new GhostUser({
+    userId: userId,
+    preferred_role: survey.preferred_role,
+    project_manager: survey.project_manager,
+    skill_level: survey.skill_level,
+    project_size: survey.project_size,
+    timezone: survey.timezone
   });
+  ghost.save(err => ((err) ? callback(err) : callback(null)));
 }
