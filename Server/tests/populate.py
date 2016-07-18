@@ -41,7 +41,7 @@ def createNewUser(username):
 
 
 def postSurvey(token):
-	url = "http://localhost:1337/surveys"
+	url = "http://localhost:1337/survey"
 	payload = "role%5B0%5D={0}&projectManager={1}&skill={2}&size={3}&timezone={4}".format(random.choice(['backend','frontend']),random.choice(['true','false']),random.randint(1,5),random.randint(3,5),random.randint(-12,12))
 	headers = {
 	    'authorization': "bearer {0}".format(token),
