@@ -48,7 +48,12 @@ GhostTeamModel
   .pre('save', function (next) {
     this.populateUsers(() => {
       this.users.forEach((user, index, array) => {
-        User.findByIdAndUpdate(user.id, {$push: {ghostTeams: this.id}}, (err, user) => {
+        let update = {$push: {ghostTeams: this.id}};
+        if (user.id === this.manager[0].userId) {
+          // Updates the scope to include manager
+          update = {$push: {ghostTeams: this.id}, $addToSet: {scope: 'manager'}};
+        }
+        User.findByIdAndUpdate(user.id, update, (err, user) => {
           if (err) {
             console.log(err);
             return next(err);
@@ -56,9 +61,9 @@ GhostTeamModel
           if (!user) {
             return next(new Error('User not found!'));
           }
+          next();
         });
       });
-      next();
     });
   });
 
