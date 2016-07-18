@@ -19,6 +19,12 @@ export function jwtAuth (decoded, request, callback) {
         if (decoded.jti !== user.token.uuid) {
           callback(null, false);
         }else {
+          if (user.manager.length > 0) {
+            user.manager.forEach((team, array, index) => {
+              user.scope.push(`manager-${team}`);
+            });
+          }
+          user.scope.push(`user-${user.userId}`);
           callback(null, true, user);
         }
       }
@@ -32,16 +38,14 @@ export function basicAuth (request, Username, password, callback) {
       username: Username
     }, (err, user) => {
       if (err) {
-        callback(err);
-        return;
+        return callback(err);
       }
       if (!user) {
-        callback(Boom.unauthorized('user not found'));
-        return;
+        return callback(Boom.unauthorized('user not found'));
       }
       user.authenticate(password, (err, res) => {
         if (err) {
-          callback(err);
+          return callback(err);
         }
         callback(null, res, formatUser(user, 'user'));
       });
@@ -81,4 +85,8 @@ export function validateUser (user, callback) {
       callback(false);
     }
   });
+};
+
+export function isAdmin (scope) {
+  return scope.indexOf('admin') >= 0;
 };

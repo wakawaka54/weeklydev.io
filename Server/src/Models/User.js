@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
+  userId: String,
   email: {
     type: String,
     required: true,
@@ -22,10 +23,8 @@ const UserSchema = new Schema({
       unique: true
     }
   },
-  admin: {
-    type: Boolean,
-    required: true
-  },
+  scope: [String],
+  manager: [String],
   team: [{
     type: Schema.Types.ObjectId,
     required: false,
@@ -73,30 +72,68 @@ var validatePresenceOf = function (value) {
 
 UserSchema
   .pre('save', function (next) {
-    // Handle new/update passwords
-    if (!this.isModified('password')) {
-      return next();
-    }
-
-    if (!validatePresenceOf(this.password)) {
-      return next(new Error('Invalid password'));
-    }
-
-    // Make salt with a callback
-    this.makeSalt((saltErr, salt) => {
-      if (saltErr) {
-        return next(saltErr);
+    function hashPassword (that , next) {
+      if (!validatePresenceOf(that.password)) {
+        return next(new Error('Invalid password'));
       }
-      this.salt = salt;
-      this.encryptPassword(this.password, (encryptErr, hashedPassword) => {
-        if (encryptErr) {
-          return next(encryptErr);
+
+      // Make salt with a callback
+      that.makeSalt((saltErr, salt) => {
+        if (saltErr) {
+          return next(saltErr);
         }
-        this.password = hashedPassword;
-        next();
+        that.salt = salt;
+        that.encryptPassword(that.password, (encryptErr, hashedPassword) => {
+          if (encryptErr) {
+            return next(encryptErr);
+          }
+          that.password = hashedPassword;
+          next();
+        });
       });
-    });
+    }
+    // handle duplicated ID
+    if (this.isNew) {
+      this.model('User').find({userId: this.userId}, (err, user) => {
+        if (err || user[0]) {
+          return next(err || new Error('User Id already exists'));
+        }else {
+          hashPassword(this, next);
+        }
+      });
+    }else {
+      // Handle new/update passwords
+      if (!this.isModified('password')) {
+        return next();
+      }
+      hashPassword(this, next);
+    }
   });
+UserSchema.statics.findByUserIdAndRemove = function (userId, cb) {
+  return this.findOne({ userId: userId}, (err, user) => {
+    if (err) {
+      cb(err, null);
+    }else {
+      user.remove(err => {
+        if (err) {
+          cb(err, null);
+        }else {
+          cb(null, user);
+        }
+      });
+    }
+  });
+};
+
+UserSchema.statics.findByUserId = function (userId, cb) {
+  return this.findOne({ userId: userId}, (err, user) => {
+    if (err) {
+      cb(err, null);
+    }else {
+      cb(null, user);
+    }
+  });
+};
 
 UserSchema.methods = {
 

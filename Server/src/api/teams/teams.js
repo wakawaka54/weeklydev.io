@@ -1,4 +1,5 @@
 import Boom from 'boom';
+import shortid from 'shortid';
 import Team from '../../Models/Team';
 import User from '../../Models/User';
 import * as Code from '../../Utils/errorCodes.js';
@@ -10,8 +11,10 @@ import { findUserInTeam } from './util.js';
  */
 
 export function addTeam (req, res) {
-  var team = new Team();
-  team['owner'] = req.Token.id;
+  var team = new Team({
+    owner: req.Token.id,
+    teamId: shortid.generate()
+  });
   if (req.payload.role) {
     var usersProcessed = 0;
     var stop = false;
@@ -80,7 +83,7 @@ export function getTeams (req, res) {
  */
 export function addUserToTeam (req, res) {
   // TODO: Rewrite this with promises!!!!
-  Team.findById(req.params.id, (err, team) => {
+  Team.findByTeamId(req.params.id, (err, team) => {
     if (err || !team) {
       // Team not found
       res(Code.teamNotFound);
@@ -177,7 +180,7 @@ export function deleteTeam (req, res) {
  * Get team by id
  */
 export function getTeam (req, res) {
-  Team.findById(req.params.id).populate('manager.user frontend.user backend.user', 'id username is_searching project team').exec((err, team) => {
+  Team.findByTeamId(req.params.id).populate('manager.user frontend.user backend.user', 'id username is_searching project team').exec((err, team) => {
     res(team);
   });
 };
@@ -186,7 +189,7 @@ export function getTeam (req, res) {
  * Request to join a team
  */
 export function requestJoinToTeam (req, res) {
-  Team.findById(req.params.id, (err, team) => {
+  Team.findByTeamId(req.params.id, (err, team) => {
     if (team.requests.length >= 10) {
       res(Code.maxRequestsReached);
     }else {
@@ -204,7 +207,7 @@ export function requestJoinToTeam (req, res) {
  * Update a team
  */
 export function updateTeam (req, res) {
-  Team.findById(req.params.id, (err, team) => {
+  Team.findByTeamId(req.params.id, (err, team) => {
     if (req.Token.id !== team.owner) {
       res(Boom.unauthorized('only team owner can update team details'));
     }else {

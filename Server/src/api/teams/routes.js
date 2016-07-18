@@ -45,7 +45,9 @@ const routes = [
       validate: {
         payload: teamSchema
       },
-      auth: 'jwt'
+      auth: {
+        scope: ['manager-{params.id}', 'admin']
+      }
     },
     handler: teams.updateTeam
   },
@@ -55,7 +57,9 @@ const routes = [
     method: 'DELETE',
     path: '/teams/{id}',
     config: {
-      auth: 'jwt'
+      auth: {
+        scope: ['manager-{params.id}', 'admin']
+      }
     },
     handler: teams.deleteTeam
   },
@@ -67,7 +71,9 @@ const routes = [
       // validate: {
       //   payload: teamSchema // TOOD: add a new validation otherwise this will not work
       // },
-      auth: 'jwt'
+      auth: {
+        scope: ['manager-{params.id}', 'admin']
+      }
     },
     handler: teams.addUserToTeam
   },

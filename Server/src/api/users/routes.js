@@ -72,7 +72,9 @@ const routes = [
     method: 'PUT',
     path: '/users/{id}',
     config: {
-      auth: 'jwt'
+      auth: {
+        scope: ['user-{params.id}', 'admin']
+      }
     },
     handler: users.updateUser
   },
@@ -96,7 +98,9 @@ const routes = [
     method: 'DELETE',
     path: '/users/{id}',
     config: {
-      auth: 'jwt'
+      auth: {
+        scope: ['user-{params.id}', 'admin']
+      }
     },
     handler: users.deleteUser
   },
@@ -141,10 +145,17 @@ const routes = [
      */
     method: 'GET',
     path: '/match/teams',
-    config: {
-      auth: 'jwt'
-    },
     handler: users.getGhostTeams
+  },
+  {
+    method: 'get',
+    path: '/admin{id?}',
+    config: {
+      auth: {
+        scope: ['admin']
+      }
+    },
+    handler: users.adminTest
   }
 ];
 
