@@ -1,14 +1,15 @@
+// Angular
 import angular from 'angular';
-
-import {hello} from './app/hello';
 import 'angular-ui-router';
+
+// Main App and Routes
+import { MainApp } from './app/app';
 import routesConfig from './routes';
 
+// Require Main SCSS
 import './index.scss';
 
-export const app = 'app';
-
 angular
-  .module(app, ['ui.router'])
+  .module('app', ['ui.router'])
   .config(routesConfig)
-  .component('app', hello);
+  .component('app', MainApp);
