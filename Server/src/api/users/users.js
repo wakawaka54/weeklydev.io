@@ -24,7 +24,7 @@ export function login (req, res) {
     let token = createToken(user);
     res({ token, user: formatUser(user, 'user') })
       .code(200)
-      .state('weeklydevtoken': token, cookie_options);
+      .state('weeklydevtoken', token, cookie_options);
   });
 };
 

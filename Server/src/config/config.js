@@ -1,3 +1,4 @@
+const dist = process.env.NODE_ENV === 'dist'
 const JWT_SECRET_DEFAULT = 'MememememmememexkådkksokfopsekfskfdfpkapkdapwkdpakdpokpokkkKPOKPOKPKkPOkPkpkPkpkPOkPOkPkPkkpkpkpKpOKpOKPOKPkPokPkpKpkPkppkmememems';
 const SUPPLIED_JWT_SECRET = process.env.JWT_SECRET;
 
