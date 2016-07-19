@@ -55,7 +55,7 @@ const TeamModel = new Schema({
 TeamModel
   .pre('save', function (next) {
     // handle duplicated ID
-    this.findByUserId(this.teamId, (err, user) => {
+    this.model('Team').findOne({teamId: this.teamId}, (err, user) => {
       if (err || user) {
         return next(err || new Error('User Id already exists'));
       }else {
