@@ -189,3 +189,7 @@ function addToGhost (survey, userId, callback) {
   });
   ghost.save(err => ((err) ? callback(err) : callback(null)));
 }
+
+export function confirmUserAccount(req, res){
+  
+}

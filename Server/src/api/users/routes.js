@@ -156,7 +156,16 @@ const routes = [
       }
     },
     handler: users.adminTest
+  },
+  {
+    method: 'GET',
+    path: '/users/confirm/{TOKEN}',
+    config: {
+      auth: false
+    },
+    handler: users.confirmUserAccout
   }
+
 ];
 
 export default routes;
