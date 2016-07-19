@@ -25,3 +25,14 @@ function getMongoUrl () {
 export const MONGO_URL = getMongoUrl();
 export const JWT_SECRET = getJWTSecret();
 export const PORT = process.env.PORT || 1337;
+
+export const cookie_options = {
+  ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today 
+  encoding: 'none',    // we already used JWT to encode 
+  isSecure: dist,      // warm & fuzzy feelings 
+  isHttpOnly: false,    // prevent client alteration 
+  clearInvalid: true, // remove invalid cookies 
+  strictHeader: false, // don't allow violations of RFC 6265
+  path: '/'
+
+}
