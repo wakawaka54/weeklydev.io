@@ -8,6 +8,7 @@ import * as Code from '../../Utils/errorCodes.js';
 import { isAdmin } from '../../Utils/validation.js';
 
 import { generateUUID, formatUser, createToken } from './util.js';
+import { cookie_options } from '../../config/config.js'
 
 export function login (req, res) {
   User.findById(req.Credentials.id)
@@ -21,7 +22,9 @@ export function login (req, res) {
       return _user.save();
     }).then((user) => {
     let token = createToken(user);
-    res({ token, user: formatUser(user, 'user') }).code(200);
+    res({ token, user: formatUser(user, 'user') })
+      .code(200)
+      .state('weeklydevtoken', token, cookie_options);
   });
 };
 
@@ -188,4 +191,8 @@ function addToGhost (survey, userId, callback) {
     timezone: survey.timezone
   });
   ghost.save(err => ((err) ? callback(err) : callback(null)));
+}
+
+export function confirmUserAccount(req, res){
+  
 }
