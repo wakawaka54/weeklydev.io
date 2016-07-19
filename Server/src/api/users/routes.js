@@ -193,7 +193,16 @@ This returns user info and valid token used later in most of the paths as author
       }
     },
     handler: users.adminTest
+  },
+  {
+    method: 'GET',
+    path: '/users/confirm/{TOKEN}',
+    config: {
+      auth: false
+    },
+    handler: users.confirmUserAccount
   }
+
 ];
 
 export default routes;
