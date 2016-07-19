@@ -1,9 +1,14 @@
 import Hapi from 'hapi';
+import Inert from 'inert';
+import Vision from 'vision';
+import HapiSwagger from 'hapi-swagger';
 import mongoose from 'mongoose';
 import Boom from 'boom';
 import glob from 'glob';
 import path from 'path';
 import jwt from 'jsonwebtoken';
+
+import Pack from '../package';
 
 import hapiAuthJwt2 from 'hapi-auth-jwt2';
 import hapiBasicAuth from 'hapi-auth-basic-weeklydev-login';
@@ -34,7 +39,19 @@ server.connection({
 });
 
 // Register the jwt auth plugin
-server.register([hapiAuthJwt2, hapiBasicAuth], (err) => {
+server.register([hapiAuthJwt2,
+  hapiBasicAuth,
+  Inert,
+  Vision,
+  {
+    'register': HapiSwagger,
+    'options': {
+      info: {
+        'title': 'Test API Documentation',
+        'version': Pack.version
+      }
+    }
+  }], (err) => {
 
   server.auth.strategy('jwt', 'jwt', {
     key: config.JWT_SECRET, // Never Share your secret key
@@ -63,7 +80,7 @@ server.register([hapiAuthJwt2, hapiBasicAuth], (err) => {
       res({
         success: true,
         message: 'Server is running!'
-      });
+      }).redirect('/documentation');
     }
   });
 });
@@ -81,7 +98,7 @@ server.start((err) => {
       throw err;
     } else {
       console.log('Connected to MongoDB');
-      startMatchmaking();
+    // startMatchmaking()
     }
   });
 });
