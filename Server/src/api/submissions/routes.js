@@ -6,7 +6,9 @@ const routes = [
     method: 'GET',
     path: '/submissions',
     config: {
-      auth: 'jwt'
+      auth: 'jwt',
+      description: 'List all Submissions',
+      tags: ['api', 'Submission']
     },
     handler: submissions.getSubmissions
   },
@@ -14,10 +16,12 @@ const routes = [
     method: 'POST',
     path: '/submissions/new',
     config: {
+      auth: 'jwt',
+      description: 'Create a new submissions',
+      tags: ['api', 'Submission'],
       validate: {
         payload: submissionSchema
-      },
-      auth: 'jwt'
+      }
     },
     handler: submissions.addSubmission
   },
@@ -25,10 +29,12 @@ const routes = [
     method: 'PUT',
     path: '/submissions/{id}',
     config: {
+      auth: 'jwt',
+      description: 'Update Submissions',
+      tags: ['api', 'Submission'],
       validate: {
         payload: submissionSchema // TOOD: make new schema
-      },
-      auth: 'jwt'
+      }
     },
     handler: submissions.updateSubmission
   },
@@ -36,7 +42,9 @@ const routes = [
     method: 'DELETE',
     path: '/submissions/{id}',
     config: {
-      auth: 'jwt'
+      auth: 'jwt',
+      description: 'Deletes Submission',
+      tags: ['api', 'Submission']
     },
     handler: submissions.deleteSubmission
   }

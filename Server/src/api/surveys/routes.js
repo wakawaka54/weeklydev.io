@@ -6,12 +6,9 @@ const routes = [
     method: 'GET',
     path: '/survey',
     config: {
-      // Validate the payload against the Joi schema
-      // NOTE: Do we need this?
-      validate: {
-        // payload: surveySchema
-      },
-      auth: 'jwt'
+      auth: 'jwt',
+      description: 'Return current users survey',
+      tags: ['api', 'Survey']
     },
     handler: surveys.getSurvey
   },
@@ -19,11 +16,13 @@ const routes = [
     method: 'PUT',
     path: '/survey',
     config: {
-      // Validate the payload against the Joi schema
+      auth: 'jwt',
+      description: 'Update Survey',
+      notes: 'Updates the survey',
+      tags: ['api', 'Survey'],
       validate: {
         payload: surveySchema
-      },
-      auth: 'jwt'
+      }
     },
     handler: surveys.updateSurvey
   },
@@ -31,11 +30,13 @@ const routes = [
     method: 'POST',
     path: '/survey',
     config: {
-      // Validate the payload against the Joi schema
+      auth: 'jwt',
+      description: 'Create a new Survey',
+      notes: "Create a new Survey Response used in matchmaking to determine your optimal **Team**. \n\nPS: you're Welcome",
+      tags: ['api', 'Survey'],
       validate: {
         payload: surveySchema
-      },
-      auth: 'jwt'
+      }
     },
     handler: surveys.addSurvey
   }

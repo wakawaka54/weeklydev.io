@@ -7,7 +7,9 @@ const routes = [
     method: 'GET',
     path: '/projects',
     config: {
-      auth: 'jwt'
+      auth: 'jwt',
+      description: 'List all avaible projects',
+      tags: ['api', 'Projects']
     },
     handler: projects.getProjects
   },
@@ -16,7 +18,10 @@ const routes = [
     method: 'GET',
     path: '/projects/{id}',
     config: {
-      auth: 'jwt'
+      auth: 'jwt',
+      description: 'Get project details by Id',
+      notes: 'Get specifics projects details by Id',
+      tags: ['api', 'Projects']
     },
     handler: projects.getProject
   },
@@ -24,10 +29,12 @@ const routes = [
     method: 'POST',
     path: '/projects/add',
     config: {
+      auth: 'jwt',
+      description: 'Create a new project',
+      tags: ['api', 'Projects'],
       validate: {
         payload: projectSchema
-      },
-      auth: 'jwt'
+      }
     },
     handler: projects.addProject
   },
@@ -35,10 +42,12 @@ const routes = [
     method: 'PUT',
     path: '/projects/{id}',
     config: {
+      auth: 'jwt',
+      description: 'Update Project',
+      tags: ['api', 'Projects'],
       validate: {
         payload: projectSchema
-      },
-      auth: 'jwt'
+      }
     },
     handler: projects.updateProject
   }
