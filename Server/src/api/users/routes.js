@@ -163,7 +163,7 @@ const routes = [
     config: {
       auth: false
     },
-    handler: users.confirmUserAccout
+    handler: users.confirmUserAccount
   }
 
 ];
