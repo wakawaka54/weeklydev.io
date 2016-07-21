@@ -1,6 +1,5 @@
 import Boom from 'boom';
 import shortid from 'shortid';
-import randomString from 'random-string'
 
 import User from '../../Models/User.js';
 import Team from '../../Models/Team.js';
