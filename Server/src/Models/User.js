@@ -130,6 +130,16 @@ UserSchema.statics.findByUserIdAndRemove = function (userId, cb) {
   });
 };
 
+UserSchema.statics.findByUserIdAndUpdate = function (userId, updateObject, cb) {
+  return this.findOneAndUpdate({ userId: userId }, updateObject, (err, user) => {
+    if (err) {
+      cb(err, null);
+    }else {
+      cb(null, user);
+    }
+  });
+};
+
 UserSchema.statics.findByUserId = function (userId, cb) {
   return this.findOne({ userId: userId}, (err, user) => {
     if (err) {

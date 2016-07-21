@@ -151,7 +151,7 @@ export function getUser (req, res) {
 };
 
 export function updateUser (req, res) {
-  User.findByIdAndUpdate(req.params.id, {
+  User.findByUserIdAndUpdate(req.params.id, {
     $set: {
       username: req.payload.username,
       email: req.payload.email,
@@ -160,7 +160,7 @@ export function updateUser (req, res) {
     }
   }, function (err, user) {
     if (err) return console.error(err);
-    res(formatUser(user), 'user');
+    res(formatUser(user, 'user'));
   });
 };
 
