@@ -17,7 +17,7 @@ export function addProject (req, res) {
   let project = new Project();
 
   project.title = req.payload.title,
-  project.details = req.payload.details;
+  project.description = req.payload.details;
   if (req.payload.deadline) {
     project.deadline = req.payload.deadline;
   }
@@ -46,20 +46,20 @@ export function getProject (req, res) {
  * Update a  project
  */
 export function updateProject (req, res) {
-  function update () {
+  function update (req) {
     let obj = {};
     if (req.payload.title) {
       obj.title = req.payload.title;
     }
     if (req.payload.details) {
-      obj.details = req.payload.title;
+      obj.description = req.payload.title;
     }
     if (req.payload.deadline) {
       obj.deadline = req.payload.deadline;
     }
     return obj;
   }
-  Project.findByIdAndUpdate(req.params.id, update, (err, project) => {
+  Project.findByIdAndUpdate(req.params.id, update(req), (err, project) => {
     if (err) {
       res(Boom.badRequest('project not found!'));
     }else {

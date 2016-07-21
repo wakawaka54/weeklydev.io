@@ -7,7 +7,8 @@ describe('Validate Server is up and running', () => {
       method: 'GET',
       url: '/'
     }, (res) => {
-      expect(res.statusCode).to.equal(200);
+      console.log('done!', res.statusCode);
+      expect(res.statusCode).to.equal(302);
       done();
     });
   });
