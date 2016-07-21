@@ -67,8 +67,13 @@ server.register([hapiAuthJwt2,
 
   server.auth.default('jwt');
   // Add all the routes to the server
-  allRoutes.forEach(routes => server.route(routes));
-
+  // allRoutes.forEach(routes => server.route(routes));
+  allRoutes.forEach(routes => {
+    server.route(routes.map(route => {
+      route.path = `/v1${route.path}`;
+      return route;
+    }));
+  });
   // Add index route to show server is running
   server.route({
     method: 'GET',
