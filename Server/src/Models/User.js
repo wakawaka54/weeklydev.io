@@ -53,6 +53,11 @@ const UserSchema = new Schema({
     uuid: String,
     valid: Boolean
   },
+  verified: {
+    type: String,
+    required: true,
+    default: false
+  },
   salt: String,
   ghostTeams: [{
     type: Schema.Types.ObjectId,

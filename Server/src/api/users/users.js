@@ -1,14 +1,16 @@
 import Boom from 'boom';
 import shortid from 'shortid';
+
 import User from '../../Models/User.js';
 import Team from '../../Models/Team.js';
 import Survey from '../../Models/Survey.js';
 import GhostUser from '../../Models/GhostUser.js';
+
 import * as Code from '../../Utils/errorCodes.js';
 import { isAdmin } from '../../Utils/validation.js';
-
+import { sendEmail } from '../../Utils/email.js'
 import { generateUUID, formatUser, createToken } from './util.js';
-import { cookie_options } from '../../config/config.js';
+import { cookie_options, PORT } from '../../config/config.js';
 
 export function login (req, res) {
   User.findById(req.Credentials.id)
@@ -76,6 +78,14 @@ export function addUser (req, res) {
     // If the user is saved successfully, Send a JWT
     let token = createToken(user);
     res({ token, user: formatUser(user, 'user') }).code(201);
+
+    sendConfirmEmail()
+    function sendConfirmEmail(){
+      let subject = 'Confirm your weeklydev.io account.'
+      let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/users/confirm/${user.userId}`      
+      let email = user.email
+      sendEmail(email, subject, text, null)
+    }
   });
 };
 
@@ -205,5 +215,9 @@ function addToGhost (survey, userId, callback) {
 }
 
 export function confirmUserAccount(req, res){
-  
+  console.log(req.params.TOKEN)
+  User.findOneAndUpdate({userId: req.params.TOKEN}, {verified: true}, (user) => {
+    // Eventually we can redirect to the front end.
+    res('Your account on weeklydev.io has been confirmed!')
+  })
 }

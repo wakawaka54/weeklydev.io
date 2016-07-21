@@ -95,7 +95,7 @@ server.start((err) => {
   if (err) {
     throw err;
   } else {
-    console.log('Server Started');
+    console.log('Server Started on port ' + config.PORT);
   }
   // Make a connection to the mongodb server
   mongoose.connect(config.MONGO_URL, {}, (err) => {
