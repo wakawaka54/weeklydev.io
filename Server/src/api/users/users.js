@@ -60,7 +60,6 @@ export function logout (req, res) {
 
 export function addUser (req, res) {
   let payload = req.payload;
-  let veryifyToken = randomString()
   let user = new User({
     userId: shortid.generate(),
     email: payload.email,
