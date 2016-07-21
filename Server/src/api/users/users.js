@@ -8,10 +8,21 @@ import * as Code from '../../Utils/errorCodes.js';
 import { isAdmin } from '../../Utils/validation.js';
 
 import { generateUUID, formatUser, createToken } from './util.js';
-import { cookie_options } from '../../config/config.js'
+import { cookie_options } from '../../config/config.js';
 
 export function login (req, res) {
   User.findById(req.Credentials.id)
+    .populate({ path: 'team', populate: { path: 'manager frontend backend' }})
+    .populate('project')
+    .populate({
+      path: 'ghostTeams',
+      populate: {
+        path: 'users',
+        populate: {
+          path: 'id'
+        }
+      }
+    })
     .catch((err) => res(Boom.unauthorized(err)))
     .then((_user) => {
       if (!_user) return res(Boom.unauthorized('user not found'));
