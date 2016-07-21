@@ -37,3 +37,13 @@ export const cookie_options = {
   path: '/'
 
 }
+
+export const emailConfig = {
+  host: 'smtp.sendgrid.net',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'rcady@weeklydev.io',
+    pass: '!@WeeklyDev2016@!'
+  }
+}
