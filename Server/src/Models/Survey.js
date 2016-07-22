@@ -7,7 +7,7 @@ const SurveyModel = new Schema({
     required: true,
     ref: 'User'
   },
-  preferred_role: [{
+  role: [{
     type: String,
     required: true
   }],
@@ -38,7 +38,7 @@ SurveyModel.options.toObject = {
     return {
       id: ret._id,
       user_id: ret.user_id,
-      preferred_role: ret.preferred_role,
+      role: ret.role,
       project_manager: ret.project_manager,
       skill_level: ret.skill_level,
       project_size: ret.project_size,
