@@ -32,7 +32,7 @@ export function addSurvey (req, res) {
             if (err) {
               console.log(err);
             }else {
-              res(survey);
+              res(survey.toObject());
             }
           });
         });
@@ -47,7 +47,7 @@ export function getSurvey (req, res) {
   Survey.findOne({
     user_id: req.Token.id
   }, (err, survey) => {
-    res(((survey) ? survey : {
+    res(((survey) ? survey.toObject() : {
       error: 'No Survey found!'
     })).code(200);
   });
@@ -87,7 +87,7 @@ export function updateSurvey (req, res) {
         if (err) {
           res(Boom.badRequest(err));
         }
-        res(survey);
+        res(survey.toObject());
       });
     });
   });
