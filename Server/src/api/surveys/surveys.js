@@ -67,7 +67,7 @@ export function updateSurvey (req, res) {
     skill_level: payload.skill_level,
     project_size: payload.project_size,
     timezone: payload.timezone
-  }, (err, survey) => {
+  }, { new: true, upsert: true }, (err, survey) => {
     if (err) {
       res(Boom.badRequest(err));
     }
