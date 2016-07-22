@@ -12,20 +12,20 @@ const routes = [
     },
     handler: surveys.getSurvey
   },
-  {
-    method: 'PUT',
-    path: '/survey',
-    config: {
-      auth: 'jwt',
-      description: 'Update Survey',
-      notes: 'Updates the survey',
-      tags: ['api', 'Survey'],
-      validate: {
-        payload: surveySchema
-      }
-    },
-    handler: surveys.updateSurvey
-  },
+  // {
+  //   method: 'PUT',
+  //   path: '/survey',
+  //   config: {
+  //     auth: 'jwt',
+  //     description: 'Update Survey',
+  //     notes: 'Updates the survey',
+  //     tags: ['api', 'Survey'],
+  //     validate: {
+  //       payload: surveySchema
+  //     }
+  //   },
+  //   handler: surveys.updateSurvey
+  // },
   {
     method: 'POST',
     path: '/survey',
@@ -38,7 +38,7 @@ const routes = [
         payload: surveySchema
       }
     },
-    handler: surveys.addSurvey
+    handler: surveys.updateSurvey
   }
 ];
 
