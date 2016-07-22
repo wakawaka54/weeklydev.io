@@ -17,10 +17,10 @@ export function addSurvey (req, res) {
         let payload = req.payload;
         let survey = new Survey({
           user_id: user.id,
-          preferred_role: payload.role,
-          project_manager: payload.projectManager,
-          skill_level: payload.skill,
-          project_size: payload.size,
+          role: payload.role,
+          project_manager: payload.project_manager,
+          skill_level: payload.skill_level,
+          project_size: payload.project_size,
           timezone: payload.timezone
         });
         survey.save((err, survey) => {
@@ -62,10 +62,10 @@ export function updateSurvey (req, res) {
     user_id: req.Token.id
   }, {
     user_id: req.Token.id,
-    preferred_role: payload.role,
-    project_manager: payload.projectManager,
-    skill_level: payload.skill,
-    project_size: payload.size,
+    role: payload.role,
+    project_manager: payload.project_manager,
+    skill_level: payload.skill_level,
+    project_size: payload.project_size,
     timezone: payload.timezone
   }, (err, survey) => {
     if (err) {
