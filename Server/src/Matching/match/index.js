@@ -140,6 +140,9 @@ function createGhostTeam (userId) {
       // Decide users role
       let userRole = decideUserRole(User);
       // Push user role to the team
+      if (!ghostTeam.hasOwnProperty(userRole)) {
+        ghostTeam[userRole] = [];
+      }
       ghostTeam[userRole].push(User);
       // Get optimal skill leve
       let userSkillLevel = getUserSkillLevel(User.skill_level);
