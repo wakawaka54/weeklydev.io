@@ -10,7 +10,7 @@ import * as Code from '../../Utils/errorCodes.js';
 import { isAdmin } from '../../Utils/validation.js';
 import { sendEmail } from '../../Utils/email.js'
 import { generateUUID, formatUser, createToken } from './util.js';
-import { cookie_options, PORT } from '../../config/config.js';
+import { cookie_options, PORT, HOST } from '../../config/config.js';
 
 export function login (req, res) {
   User.findById(req.Credentials.id)
@@ -215,9 +215,58 @@ function addToGhost (survey, userId, callback) {
 }
 
 export function confirmUserAccount(req, res){
-  console.log(req.params.TOKEN)
   User.findOneAndUpdate({userId: req.params.TOKEN}, {verified: true}, (user) => {
-    // Eventually we can redirect to the front end.
+    // Eventually we can redirect to the front end but for now its just a simple response.
     res('Your account on weeklydev.io has been confirmed!')
   })
+}
+
+export function requestPasswordReset(req, res){
+  
+  // If a token was previously generated, use that instead
+  if(!req.auth.credentials.passwordResetToken){
+    let pwToken = shortid.generate()
+    User.findByUserIdAndUpdate(req.auth.credentials.userId, {passwordResetToken: pwToken}, (err, user) => {
+      sendPasswordResetEmail(pwToken)
+      res()
+    })
+  }
+  else {
+    sendPasswordResetEmail(req.auth.credentials.passwordResetToken) 
+    res()
+  }
+
+  function sendPasswordResetEmail(token){
+    let subject = 'Password Reset for Weeklydev.io'
+    let text = `Hey! Click the following link to complete resetting your password: http://${HOST}:${PORT}/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`      
+    let email = req.auth.credentials.email 
+    sendEmail(email, subject, text, null)
+  }
+}
+
+export function passwordReset(req, res){
+  let pwToken = req.params.TOKEN  
+  let newPass = req.payload.password
+  
+  User.findOne({passwordResetToken: pwToken})
+    .then(user => {
+      console.log(user) 
+      if(user.userId === req.auth.credentials.userId){
+        user.passwordResetToken = ''
+        user.password = req.payload.password
+        user.save((err) => {
+          if(err)
+            return res(err)
+          
+          res()
+        })
+      }
+      else {
+        res(Code.invalidPasswordResetToken)
+      }
+    })
+    .catch(err => {
+      console.log('Could not find a user with that password reset token.')
+      res(Code.userNotFound)
+    })
 }

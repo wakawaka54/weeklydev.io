@@ -26,4 +26,7 @@ export function emailUser(username, subject, text, html){
     .then(user => {
       sendEmail(user.email, subject, text, html)
     })
+    .catch(err => {
+      console.log('Could not find the user to email:', err)
+    })
 }

@@ -26,6 +26,7 @@ export const internalServerError = applyErrorCode(Boom.create(500, 'Sorry, somet
 // Users
 export const userNotFound = applyErrorCode(Boom.create(404, 'User not found', {errorCode: 300}));
 export const userInTooManyTeams = applyErrorCode(Boom.create(400, 'User in too many Teams', { errorCode: 305 }));
+export const invalidPasswordResetToken = applyErrorCode(Boom.create(401, 'Invalid password reset token.', { errorCode: 306 }))
 
 // Surveys
 export const surveyNotFound = applyErrorCode(Boom.create(404, 'Survey not found', {errorCode: 400}));
