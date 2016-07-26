@@ -184,7 +184,7 @@ export function getGhostTeams (req, res) {
 export function joinMatchmaking (req, res) {
   // TODO: add check for email confirmation
   Survey.findByUserId(req.Token.id, (err, survey) => {
-    if (err || !survey) {
+    if (err || !survey || survey.length === 0) {
       res(Code.surveyNotFound);
     } else {
       addToGhost(survey[0], req.Token.id, err => {
