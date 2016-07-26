@@ -26,6 +26,7 @@ function getMongoUrl () {
 export const MONGO_URL = getMongoUrl();
 export const JWT_SECRET = getJWTSecret();
 export const PORT = process.env.PORT || 1337;
+export const HOST = prod ? 'weeklydev.io' : 'localhost'
 
 export const cookie_options = {
   ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today 

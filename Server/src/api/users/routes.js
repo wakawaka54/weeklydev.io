@@ -201,8 +201,33 @@ This returns user info and valid token used later in most of the paths as author
       auth: false
     },
     handler: users.confirmUserAccount
+  },
+  {
+    method: 'GET',
+    path: '/users/passwordreset',
+    config: {
+      auth: {
+        scope: ['user']
+      },
+      description: 'Request a password reset.',
+      notes: 'Request a link for password reset to be sent to the users email.',
+      tags: ['api', 'User']
+    },
+    handler: users.requestPasswordReset
+  },
+  {
+    method: 'POST',
+    path: '/users/passwordreset/{TOKEN}',
+    config: {
+      auth: {
+        scope: ['user']
+      },
+      description: 'Reset a user password',
+      notes: 'Verify the password reset token and reset the password for the user.',
+      tags: ['api', 'User']
+    },
+    handler: users.passwordReset
   }
-
 ];
 
 export default routes;
