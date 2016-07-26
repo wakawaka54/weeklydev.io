@@ -34,11 +34,11 @@ export function login (req, res) {
       };
       return _user.save();
     }).then((user) => {
-    let token = createToken(user);
-    res({ token, user: formatUser(user, 'user') })
-      .code(200)
-      .state('weeklydevtoken', token, cookie_options);
-  });
+      let token = createToken(user);
+      res({ token, user: formatUser(user, 'user') })
+        .code(200)
+        .state('weeklydevtoken', token, cookie_options);
+    });
 };
 
 export function logout (req, res) {

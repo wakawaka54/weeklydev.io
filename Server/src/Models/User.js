@@ -241,4 +241,46 @@ UserSchema.methods = {
   }
 };
 
+UserSchema.options.toObject = {
+  transform: (doc, ret, opts) => {
+    // console.log('doc:', doc);
+    // console.log('ret:', ret);
+    // console.log('opts:', opts);
+    let user = {
+      id: ret.userId,
+      username: ret.username,
+      team: ret.team,
+      project: ret.project
+    };
+    
+    if (!opts.scope) {
+      return user;
+    } else {
+      let copy = (prop, realName) => {
+        if (!realName) {
+          realName = prop;
+        }
+        console.log(`setting user.${prop} to ret.${realName}`);
+        user[prop] = ret[realName];
+      };
+      
+      switch (opts.scope) {
+        case 'user':
+          copy('ghostTeams');
+        case 'admin':
+          copy('id', '_id');
+          copy('userId');
+          copy('email');
+          copy('access', 'scope');
+          copy('is_searching');
+          break;
+        case 'users':
+          copy('admin');
+      }
+      console.log('user:', user);
+      return user;
+    }
+  }
+};
+
 export default mongoose.model('User', UserSchema, 'users');
