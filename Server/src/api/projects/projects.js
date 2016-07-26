@@ -15,14 +15,13 @@ export function getProjects (req, res) {
  */
 export function addProject (req, res) {
   let project = new Project();
-
   project.title = req.payload.title,
-  project.description = req.payload.details;
+  project.description = req.payload.description;
   if (req.payload.deadline) {
     project.deadline = req.payload.deadline;
   }
 
-  project.save((err, project) => {
+  project.save((err, newProject) => {
     if (err) return console.log(err);
     res(newProject);
   });

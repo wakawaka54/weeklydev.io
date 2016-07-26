@@ -27,7 +27,7 @@ const routes = [
   },
   {
     method: 'POST',
-    path: '/projects/add',
+    path: '/projects',
     config: {
       auth: 'jwt',
       description: 'Create a new project',
