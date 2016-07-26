@@ -26,7 +26,7 @@ import projectRoutes from './api/projects/routes.js';
 const allRoutes = [userRoutes, teamRoutes, surveyRoutes, submissionRoutes, projectRoutes];
 
 const server = new Hapi.Server();
-import startMatchmaking from './Matching/start';
+import startMatchmaking from './Matching';
 
 global.PATH = process.env.PWD || process.cwd();
 
