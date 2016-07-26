@@ -46,7 +46,7 @@ const UserSchema = new Schema({
   },
   is_searching: {
     type: Boolean,
-    default: true,
+    default: false,
     required: true
   },
   created_on: {
@@ -260,7 +260,6 @@ UserSchema.options.toObject = {
         if (!realName) {
           realName = prop;
         }
-        console.log(`setting user.${prop} to ret.${realName}`);
         user[prop] = ret[realName];
       };
       
@@ -277,7 +276,6 @@ UserSchema.options.toObject = {
         case 'users':
           copy('admin');
       }
-      console.log('user:', user);
       return user;
     }
   }
