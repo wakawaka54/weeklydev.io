@@ -267,7 +267,7 @@ UserSchema.options.toObject = {
         case 'user':
           copy('ghostTeams');
         case 'admin':
-          copy('id', '_id');
+          user.id = ret._id.toString();
           copy('userId');
           copy('email');
           copy('access', 'scope');
