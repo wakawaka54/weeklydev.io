@@ -44,7 +44,7 @@ const UserSchema = new Schema({
     required: false,
     ref: 'Survey'
   },
-  is_searching: {
+  isSearching: {
     type: Boolean,
     default: false,
     required: true
@@ -243,16 +243,13 @@ UserSchema.methods = {
 
 UserSchema.options.toObject = {
   transform: (doc, ret, opts) => {
-    // console.log('doc:', doc);
-    // console.log('ret:', ret);
-    // console.log('opts:', opts);
     let user = {
       id: ret.userId,
       username: ret.username,
       team: ret.team,
       project: ret.project
     };
-    
+
     if (!opts.scope) {
       return user;
     } else {
@@ -262,7 +259,7 @@ UserSchema.options.toObject = {
         }
         user[prop] = ret[realName];
       };
-      
+
       switch (opts.scope) {
         case 'user':
           copy('ghostTeams');
@@ -271,7 +268,7 @@ UserSchema.options.toObject = {
           copy('userId');
           copy('email');
           copy('access', 'scope');
-          copy('is_searching');
+          copy('isSearching');
           break;
         case 'users':
           copy('admin');

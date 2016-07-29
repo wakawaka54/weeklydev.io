@@ -73,7 +73,7 @@ function saveTeam (team, res) {
  * Get Team
  */
 export function getTeams (req, res) {
-  Team.find().populate('manager frontend backend', 'id username is_searching project team').exec((err, team) => {
+  Team.find().populate('manager frontend backend', 'id username isSearching project team').exec((err, team) => {
     res(team);
   });
 };
@@ -180,7 +180,7 @@ export function deleteTeam (req, res) {
  * Get team by id
  */
 export function getTeam (req, res) {
-  Team.findByTeamId(req.params.id).populate('manager.user frontend.user backend.user', 'id username is_searching project team').exec((err, team) => {
+  Team.findByTeamId(req.params.id).populate('manager.user frontend.user backend.user', 'id username isSearching project team').exec((err, team) => {
     res(team);
   });
 };
