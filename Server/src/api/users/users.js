@@ -8,7 +8,7 @@ import GhostUser from '../../Models/GhostUser.js';
 
 import * as Code from '../../Utils/errorCodes.js';
 import { isAdmin } from '../../Utils/validation.js';
-import { sendEmail } from '../../Utils/email.js'
+import { sendEmail } from '../../Utils/email.js';
 import { generateUUID, formatUser, createToken } from './util.js';
 import { cookie_options, PORT, HOST } from '../../config/config.js';
 
@@ -34,11 +34,11 @@ export function login (req, res) {
       };
       return _user.save();
     }).then((user) => {
-      let token = createToken(user);
-      res({ token, user: formatUser(user, 'user') })
-        .code(200)
-        .state('weeklydevtoken', token, cookie_options);
-    });
+    let token = createToken(user);
+    res({ token, user: formatUser(user, 'user') })
+      .code(200)
+      .state('weeklydevtoken', token, cookie_options);
+  });
 };
 
 export function logout (req, res) {
@@ -79,12 +79,12 @@ export function addUser (req, res) {
     let token = createToken(user);
     res({ token, user: formatUser(user, 'user') }).code(201);
 
-    sendConfirmEmail()
-    function sendConfirmEmail(){
-      let subject = 'Confirm your weeklydev.io account.'
-      let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/users/confirm/${user.userId}`      
-      let email = user.email
-      sendEmail(email, subject, text, null)
+    sendConfirmEmail();
+    function sendConfirmEmail () {
+      let subject = 'Confirm your weeklydev.io account.';
+      let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/users/confirm/${user.userId}`;
+      let email = user.email;
+      sendEmail(email, subject, text, null);
     }
   });
 };
@@ -214,59 +214,57 @@ function addToGhost (survey, userId, callback) {
   ghost.save(err => ((err) ? callback(err) : callback(null)));
 }
 
-export function confirmUserAccount(req, res){
+export function confirmUserAccount (req, res) {
   User.findOneAndUpdate({userId: req.params.TOKEN}, {verified: true}, (user) => {
     // Eventually we can redirect to the front end but for now its just a simple response.
-    res('Your account on weeklydev.io has been confirmed!')
-  })
-}
+    res('Your account on weeklydev.io has been confirmed!');
+  });
+};
 
-export function requestPasswordReset(req, res){
-  
+export function requestPasswordReset (req, res) {
+
   // If a token was previously generated, use that instead
-  if(!req.auth.credentials.passwordResetToken){
-    let pwToken = shortid.generate()
+  if (!req.auth.credentials.passwordResetToken) {
+    let pwToken = shortid.generate();
     User.findByUserIdAndUpdate(req.auth.credentials.userId, {passwordResetToken: pwToken}, (err, user) => {
-      sendPasswordResetEmail(pwToken)
-      res()
-    })
-  }
-  else {
-    sendPasswordResetEmail(req.auth.credentials.passwordResetToken) 
-    res()
+      sendPasswordResetEmail(pwToken);
+      res();
+    });
+  }else {
+    sendPasswordResetEmail(req.auth.credentials.passwordResetToken);
+    res();
   }
 
-  function sendPasswordResetEmail(token){
-    let subject = 'Password Reset for Weeklydev.io'
-    let text = `Hey! Click the following link to complete resetting your password: http://${HOST}:${PORT}/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`      
-    let email = req.auth.credentials.email 
-    sendEmail(email, subject, text, null)
+  function sendPasswordResetEmail (token) {
+    let subject = 'Password Reset for Weeklydev.io';
+    let text = `Hey! Click the following link to complete resetting your password: http://${HOST}:${PORT}/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`;
+    let email = req.auth.credentials.email;
+    sendEmail(email, subject, text, null);
   }
-}
+};
 
-export function passwordReset(req, res){
-  let pwToken = req.params.TOKEN  
-  let newPass = req.payload.password
-  
+export function passwordReset (req, res) {
+  let pwToken = req.params.TOKEN;
+  let newPass = req.payload.password;
+
   User.findOne({passwordResetToken: pwToken})
     .then(user => {
-      console.log(user) 
-      if(user.userId === req.auth.credentials.userId){
-        user.passwordResetToken = ''
-        user.password = req.payload.password
+      console.log(user);
+      if (user.userId === req.auth.credentials.userId) {
+        user.passwordResetToken = '';
+        user.password = req.payload.password;
         user.save((err) => {
-          if(err)
-            return res(err)
-          
-          res()
-        })
-      }
-      else {
-        res(Code.invalidPasswordResetToken)
+          if (err)
+            return res(err);
+
+          res();
+        });
+      }else {
+        res(Code.invalidPasswordResetToken);
       }
     })
     .catch(err => {
-      console.log('Could not find a user with that password reset token.')
-      res(Code.userNotFound)
-    })
-}
+      console.log('Could not find a user with that password reset token.');
+      res(Code.userNotFound);
+    });
+};

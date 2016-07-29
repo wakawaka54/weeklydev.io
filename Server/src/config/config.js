@@ -1,8 +1,8 @@
-const prod = process.env.NODE_ENV === 'production'
+const prod = process.env.NODE_ENV === 'production';
 const JWT_SECRET_DEFAULT = 'MememememmememexkådkksokfopsekfskfdfpkapkdapwkdpakdpokpokkkKPOKPOKPKkPOkPkpkPkpkPOkPOkPkPkkpkpkpKpOKpOKPOKPkPokPkpKpkPkppkmememems';
 const SUPPLIED_JWT_SECRET = process.env.JWT_SECRET;
 
-const MONGO_URL_DEFAULT = 'mongodb://localhost:27017/WOIP-backend'
+const MONGO_URL_DEFAULT = 'mongodb://localhost:27017/WOIP-backend';
 const SUPPLIED_MONGO_URL = process.env.MONGO_URL;
 
 function getJWTSecret () {
@@ -26,18 +26,18 @@ function getMongoUrl () {
 export const MONGO_URL = getMongoUrl();
 export const JWT_SECRET = getJWTSecret();
 export const PORT = process.env.PORT || 1337;
-export const HOST = prod ? 'weeklydev.io' : 'localhost'
+export const HOST = prod ? 'weeklydev.io' : 'localhost';
 
 export const cookie_options = {
   ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today 
-  encoding: 'none',    // we already used JWT to encode 
-  isSecure: prod,      // warm & fuzzy feelings 
-  isHttpOnly: false,    // prevent client alteration 
+  encoding: 'none', // we already used JWT to encode 
+  isSecure: prod, // warm & fuzzy feelings 
+  isHttpOnly: false, // prevent client alteration 
   clearInvalid: true, // remove invalid cookies 
   strictHeader: false, // don't allow violations of RFC 6265
   path: '/'
 
-}
+};
 
 export const emailConfig = {
   host: 'smtp.sendgrid.net',
@@ -47,4 +47,4 @@ export const emailConfig = {
     user: 'rcady@weeklydev.io',
     pass: '!@WeeklyDev2016@!'
   }
-}
+};
