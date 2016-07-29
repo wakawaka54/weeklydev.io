@@ -30,9 +30,11 @@ const SurveyModel = new Schema({
 });
 
 SurveyModel.statics.findByUserId = function (userId, cb) {
-  return this.find({ user_id: userId}, cb);
+  return this.findOne({ user_id: userId}, cb);
 };
-
+SurveyModel.statics.findByUserIdAndUpdate = function (userId, cb) {
+  return this.findOneAndUpdate({ user_id: userId}, cb);
+};
 SurveyModel.options.toObject = {
   transform: (doc, ret, opts) => {
     return {

@@ -44,9 +44,7 @@ export function addSurvey (req, res) {
  * Get a survey
  */
 export function getSurvey (req, res) {
-  Survey.findOne({
-    user_id: req.Token.id
-  }, (err, survey) => {
+  Survey.findByUserId(req.Token.id , (err, survey) => {
     res(((survey) ? survey.toObject() : {
       error: 'No Survey found!'
     })).code(200);
@@ -58,9 +56,7 @@ export function getSurvey (req, res) {
  */
 export function updateSurvey (req, res) {
   let payload = req.payload;
-  Survey.findOneAndUpdate({
-    user_id: req.Token.id
-  }, {
+  Survey.findByUserIdAndUpdate(req.Token.id, {
     user_id: req.Token.id,
     role: payload.role,
     project_manager: payload.project_manager,
@@ -68,10 +64,7 @@ export function updateSurvey (req, res) {
     project_size: payload.project_size,
     timezone: payload.timezone
   }, { new: true, upsert: true }, (err, survey) => {
-    if (err) {
-      res(Boom.badRequest(err));
-    }
-    if (!survey) {
+    if (err || !survey) {
       res(Boom.unauthorized('Survey not found'));
     }
     User.findByIdAndUpdate(req.Token.id, {
