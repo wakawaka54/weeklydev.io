@@ -4,7 +4,7 @@ import GhostTeam from '../Models/GhostTeam.js';
 import GhostUser from '../Models/GhostUser';
 
 module.exports = () => {
-  let j = schedule.scheduleJob('*/6 * * * *', function () {
+  let j = schedule.scheduleJob('0 12 * * *', function () {
     console.log('\n--> Started the job!');
     GhostTeam.find({}, (err, teams) => {
       if (err) {
