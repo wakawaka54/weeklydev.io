@@ -250,7 +250,9 @@ UserSchema.options.toObject = {
       id: ret.userId,
       username: ret.username,
       team: ret.team,
-      project: ret.project
+      // team: ret.team.map((t) => t.toObject()),
+      project: ret.project,
+      // project: ret.project.map((p) => p.toObject())
     };
     
     if (!opts.scope) {
@@ -266,6 +268,7 @@ UserSchema.options.toObject = {
       switch (opts.scope) {
         case 'user':
           copy('ghostTeams');
+          // user.ghostTeams = ret.ghostTeams.map((g) => g.toObject());
         case 'admin':
           user.id = ret._id.toString();
           copy('userId');

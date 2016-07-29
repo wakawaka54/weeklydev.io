@@ -20,4 +20,10 @@ var ProjectModel = new Schema({
   }
 });
 
+ProjectModel.options.toObject = {
+  transform: (doc, ret, opts) => {
+    delete ret.__v;
+  }
+};
+
 export default mongoose.model('Project', ProjectModel, 'projects');

@@ -70,4 +70,12 @@ TeamModel.statics.findByTeamId = (ID, callback) => {
   });
 };
 
+TeamModel.options.toObject = {
+  transform: (doc, ret, opts) => {
+    delete ret.__v;
+    
+    return ret;
+  }
+}
+
 export default mongoose.model('Team', TeamModel, 'teams');
