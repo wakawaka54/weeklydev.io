@@ -90,13 +90,33 @@ export function addUser (req, res) {
 };
 
 export function getCurrentUser (req, res) {
-  User.findById(req.Token.id, (err, user) => {
-    if (err || !user) {
-      res(Code.userNotFound);
-    } else {
-      res(formatUser(user, 'user'));
-    }
-  });
+  // User.findById(req.Token.id, (err, user) => {
+  //   if (err || !user) {
+  //     res(Code.userNotFound);
+  //   } else {
+  //     res(formatUser(user, 'user'));
+  //   }
+  // });
+  User.findById(req.Token.id)
+    .populate({ path: 'team', populate: { path: 'manager frontend backend' }})
+    .populate('project')
+    .populate({
+      path: 'ghostTeams',
+      populate: {
+        path: 'users',
+        populate: {
+          path: 'id'
+        }
+      }
+    })
+    .catch((err) => res(Boom.unauthorized(err)))
+    .then((user) => {
+      if (user) {
+        res(formatUser(user, 'user'));
+      } else {
+        res(Code.userNotFound);
+      }
+    });
 };
 
 export function getTeamsIn (req, res) {

@@ -83,4 +83,10 @@ GhostTeamModel
     next();
   });
 
+GhostTeamModel.options.toObject = {
+  transform: (doc, ret, opts) => {
+    delete ret.__v;
+  }
+};
+
 export default mongoose.model('ghostTeam', GhostTeamModel, 'ghostTeams');
