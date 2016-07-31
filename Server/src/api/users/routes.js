@@ -129,7 +129,7 @@ This returns user info and valid token used later in most of the paths as author
   },
 
   /**
-   * Get user by request id
+   * Get current user info
    */
   {
     method: 'GET',
@@ -144,7 +144,7 @@ This returns user info and valid token used later in most of the paths as author
   },
 
   /**
-   * Get user by request id
+   * Get current users teams
    */
   {
     method: 'GET',
@@ -159,10 +159,10 @@ This returns user info and valid token used later in most of the paths as author
   },
   {
     /**
-     * Get user by request id
+     *  Joins a Matchmaking
      */
-    method: 'GET',
-    path: '/match/join',
+    method: 'POST',
+    path: '/match',
     config: {
       auth: 'jwt',
       description: 'Join matchmaking',
@@ -173,13 +173,15 @@ This returns user info and valid token used later in most of the paths as author
   },
   {
     /**
-     * Get user by request id
+     * Matchmaking results
      */
     method: 'GET',
-    path: '/match/teams',
+    path: '/match',
     config: {
       description: 'List avaible teams to join',
-      notes: 'This is a result if matchmaking And will return Teams a user is avaible to join. \n\n If enought people confirm to join a team. Team is then created',
+      notes: `This is a result if matchmaking And will return Teams a user is avaible to join.
+
+If enought people confirm to join a team. Team is then created`,
       tags: ['api', 'User', 'Team', 'Matchmaking']
     },
     handler: users.getGhostTeams
