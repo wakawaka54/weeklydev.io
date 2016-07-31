@@ -44,14 +44,20 @@ server.register([hapiAuthJwt2,
   Inert,
   Vision,
   {
-    'register': HapiSwagger,
-    'options': {
+    register: HapiSwagger,
+    options: {
+      basePath: '/v1',
       info: {
         'title': 'Test API Documentation',
         'version': Pack.version
       }
     }
-  }], (err) => {
+  }], {
+  // Add prefix to the route
+  routes: {
+    prefix: '/v1'
+  }
+}, (err) => {
 
   server.auth.strategy('jwt', 'jwt', {
     key: config.JWT_SECRET, // Never Share your secret key
@@ -61,20 +67,15 @@ server.register([hapiAuthJwt2,
     }
   });
 
+  // Add Authentication based on Username Password using the authBasic standart
   server.auth.strategy('userPass', 'basic', {
     validateFunc: validateUserPass
   });
-
+  // Make the Json Web Token strategy as default, this is basiccaly saying everything that doesn't have "auth:" in the route is JWT
   server.auth.default('jwt');
   // Add all the routes to the server
-  // allRoutes.forEach(routes => server.route(routes));
-  allRoutes.forEach(routes => {
-    server.route(routes.map(route => {
-      route.path = `/v1${route.path}`;
-      return route;
-    }));
-  });
-  // Add index route to show server is running
+  allRoutes.forEach(routes => server.route(routes));
+  // When going to the api this will redirect the "/" to the documentation
   server.route({
     method: 'GET',
     path: '/',
@@ -82,10 +83,7 @@ server.register([hapiAuthJwt2,
       auth: false
     },
     handler: function (req, res) {
-      res({
-        success: true,
-        message: 'Server is running!'
-      }).redirect('/documentation');
+      res().redirect('/v1/documentation');
     }
   });
 });
@@ -103,7 +101,7 @@ server.start((err) => {
       throw err;
     } else {
       console.log('Connected to MongoDB');
-    // startMatchmaking()
+      startMatchmaking();
     }
   });
 });
