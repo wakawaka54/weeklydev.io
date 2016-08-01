@@ -92,11 +92,11 @@ export function addUser (req, res) {
 export function getCurrentUser (req, res) {
   // User.findById(req.Token.id, (err, user) => {
   //   if (err || !user) {
-  //     res(Code.userNotFound);
+  //     res(Code.userNotFound)
   //   } else {
-  //     res(formatUser(user, 'user'));
+  //     res(formatUser(user, 'user'))
   //   }
-  // });
+  // })
   User.findById(req.Token.id)
     .populate({ path: 'team', populate: { path: 'manager frontend backend' }})
     .populate('project')
@@ -120,13 +120,18 @@ export function getCurrentUser (req, res) {
 };
 
 export function getTeamsIn (req, res) {
-  User.findById(req.Token.id).populate('team').exec((err, user) => {
+  let responseWithTeam = (err, user) => {
     if (err || !user) {
       res(Code.userNotFound);
     }else {
       res(user.team);
     }
-  });
+  };
+  if (req.params.id) {
+    User.findByUserId(req.params.id).populate('team').exec(responseWithTeam);
+  }else {
+    User.findById(req.Token.id).populate('team').exec(responseWithTeam);
+  }
 };
 
 export function getUsers (req, res) {
@@ -170,16 +175,36 @@ export function getUser (req, res) {
   });
 };
 
+export function updatePassword (req, res) {
+  User.findById(req.Token.id, (err, user) => {
+    if (err || !user) return res(Boom.wrap(err));
+    user.authenticate(req.payload.passOld, (err, res) => {
+      if (err || !res) {
+        res(Code.invalidPassword);
+      }else {
+        user.password = req.payload.passNew;
+        user.save((err, done) => {
+          if (err || !done) {
+            res(Boom.badRequest(err));
+          }else {
+            res().code(200);
+          }
+        });
+      }
+    });
+  });
+};
 export function updateUser (req, res) {
-  User.findByUserIdAndUpdate(req.params.id, {
+  let searchFor = req.params.id || req.Token.id;
+  User.findByUserIdAndUpdate(searchFor, {
     $set: {
       username: req.payload.username,
       email: req.payload.email,
       admin: req.payload.admin,
       password: req.payload.password
     }
-  }, function (err, user) {
-    if (err) return console.error(err);
+  }, (err, user) => {
+    if (err) return res(Boom.wrap(err));
     res(formatUser(user, 'user'));
   });
 };
@@ -235,7 +260,7 @@ function addToGhost (survey, userId, callback) {
 }
 
 export function confirmUserAccount (req, res) {
-  User.findOneAndUpdate({userId: req.params.TOKEN}, {verified: true}, (user) => {
+  User.findOneAndUpdate({userId: req.params.token}, {verified: true}, (user) => {
     // Eventually we can redirect to the front end but for now its just a simple response.
     res('Your account on weeklydev.io has been confirmed!');
   });
@@ -264,7 +289,7 @@ export function requestPasswordReset (req, res) {
 };
 
 export function passwordReset (req, res) {
-  let pwToken = req.params.TOKEN;
+  let pwToken = req.params.token;
   let newPass = req.payload.password;
 
   User.findOne({passwordResetToken: pwToken})

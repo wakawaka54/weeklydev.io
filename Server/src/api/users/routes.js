@@ -1,11 +1,13 @@
 import { authenticateUser, verifyUniqueUser } from './util.js';
-import createUserSchema from '../../Schemas/User.js';
+import userSchema from '../../Schemas/User.js';
+import shortIdSchema from '../../Schemas/shortId.js';
 import * as users from './users.js';
+import Joi from 'joi';
 
 const routes = [
   /**
-  * Login
-  */
+   * login
+   */
   {
     method: 'POST',
     path: '/login',
@@ -27,8 +29,8 @@ This returns user info and valid token used later in most of the paths as author
   },
 
   /**
-  * Logout
-  */
+   * logout
+   */
   {
     method: 'get',
     path: '/logout',
@@ -67,7 +69,7 @@ This returns user info and valid token used later in most of the paths as author
       notes: 'Creates a new user. Sends a email to confirm it and Return a valid token',
       tags: ['api', 'Register', 'User'],
       validate: {
-        payload: createUserSchema
+        payload: userSchema
       },
       // Before the route handler runs, verify that
       // the user is unique and assign the result to 'user'
@@ -89,6 +91,10 @@ This returns user info and valid token used later in most of the paths as author
       auth: {
         scope: ['user-{params.id}', 'admin']
       },
+      validate: {
+        payload: userSchema,
+        params: shortIdSchema
+      },
       description: 'Update User information',
       notes: 'Only the user whos **ID** it is may update the info',
       tags: ['api' , 'User', 'Update']
@@ -104,6 +110,9 @@ This returns user info and valid token used later in most of the paths as author
     path: '/users/{id}',
     config: {
       auth: 'jwt',
+      validate: {
+        params: shortIdSchema
+      },
       description: 'User info by Id',
       notes: 'Returns User info by by ID',
       tags: ['api', 'User']
@@ -121,11 +130,30 @@ This returns user info and valid token used later in most of the paths as author
       auth: {
         scope: ['user-{params.id}', 'admin']
       },
+      validate: {
+        params: shortIdSchema
+      },
       description: 'Delete User',
       notes: 'Providing a valid *Token* and confirm with password and User account is deleted',
       tags: ['api', 'User']
     },
     handler: users.deleteUser
+  },
+  /**
+   * Return the teams user is currently in
+   */
+  {
+    method: 'GET',
+    path: '/users/{id}/teams',
+    config: {
+      validate: {
+        params: shortIdSchema
+      },
+      description: 'Return Users current teams',
+      notes: 'Return the team user is currently in',
+      tags: ['api', 'User']
+    },
+    handler: users.getTeamsIn
   },
 
   /**
@@ -152,17 +180,53 @@ This returns user info and valid token used later in most of the paths as author
     config: {
       auth: 'jwt',
       description: 'Teams current user is In',
-      notes: 'Return a array of team user requesting this is currently in',
+      notes: 'Return a array of teams current user is in',
       tags: ['api', 'User', 'Team']
     },
     handler: users.getTeamsIn
   },
+  /**
+   * Update Current users information
+   */
   {
-    /**
-     *  Joins a Matchmaking
-     */
     method: 'POST',
-    path: '/match',
+    path: '/users/me/update',
+    config: {
+      auth: 'jwt',
+      validate: {
+        payload: userSchema
+      },
+      description: 'Update current users information',
+      notes: 'Posting a full users object',
+      tags: ['api', 'User', 'Team']
+    },
+    handler: users.updateUser
+  }, /**
+   * Update Current users Password
+   */
+  {
+    method: 'POST',
+    path: '/users/me/password',
+    config: {
+      auth: 'jwt',
+      validate: {
+        payload: {
+          passOld: Joi.string().alphanum().min(6).max(32).description('Your Old Password'),
+          passNew: Joi.string().alphanum().min(6).max(32).description('Your New Password')
+        }
+      },
+      description: 'Update current users password',
+      notes: 'Update the users password after providing the old password and a new password.',
+      tags: ['api', 'User', 'Team']
+    },
+    handler: users.updatePassword
+  },
+  /**
+   *  Joins a Matchmaking
+   */
+  {
+    method: 'POST',
+    path: '/matching/join',
     config: {
       auth: 'jwt',
       description: 'Join matchmaking',
@@ -171,12 +235,12 @@ This returns user info and valid token used later in most of the paths as author
     },
     handler: users.joinMatchmaking
   },
+  /**
+   * Matchmaking results
+   */
   {
-    /**
-     * Matchmaking results
-     */
     method: 'GET',
-    path: '/match',
+    path: '/matching/teams',
     config: {
       description: 'List avaible teams to join',
       notes: `This is a result if matchmaking And will return Teams a user is avaible to join.
@@ -186,24 +250,28 @@ If enought people confirm to join a team. Team is then created`,
     },
     handler: users.getGhostTeams
   },
-  {
-    method: 'get',
-    path: '/admin{id?}',
-    config: {
-      auth: {
-        scope: ['admin']
-      }
-    },
-    handler: users.adminTest
-  },
+  /**
+   *  Confirms users account
+   */
   {
     method: 'GET',
-    path: '/users/confirm/{TOKEN}',
+    path: '/users/confirm/{token}',
     config: {
-      auth: false
+      auth: false,
+      validate: {
+        params: {
+          token: Joi.string().token().length(8)
+        }
+      },
+      description: 'Confirm users account',
+      notes: `Confirms users account, confirmed account are able to join a matchmaking.`,
+      tags: ['api', 'User', 'Team', 'Matchmaking']
     },
     handler: users.confirmUserAccount
   },
+  /**
+   *  Request to reset password
+   */
   {
     method: 'GET',
     path: '/users/passwordreset',
@@ -217,12 +285,21 @@ If enought people confirm to join a team. Team is then created`,
     },
     handler: users.requestPasswordReset
   },
+  /**
+   *  Resets password
+   */
   {
     method: 'POST',
-    path: '/users/passwordreset/{TOKEN}',
+    path: '/users/passwordreset/{token}',
     config: {
-      auth: {
-        scope: ['user']
+      auth: false,
+      validate: {
+        params: {
+          token: Joi.string().token().length(8)
+        },
+        payload: {
+          password: Joi.string().alphanum().min(6).max(32).description('Your New Password')
+        }
       },
       description: 'Reset a user password',
       notes: 'Verify the password reset token and reset the password for the user.',
