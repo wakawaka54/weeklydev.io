@@ -49,4 +49,5 @@ export const emailConfig = {
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASS
+  }
 };
