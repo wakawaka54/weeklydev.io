@@ -119,39 +119,15 @@ UserSchema
     }
   });
 UserSchema.statics.findByUserIdAndRemove = function (userId, cb) {
-  return this.findOne({ userId: userId}, (err, user) => {
-    if (err) {
-      cb(err, null);
-    }else {
-      user.remove(err => {
-        if (err) {
-          cb(err, null);
-        }else {
-          cb(null, user);
-        }
-      });
-    }
-  });
+  return this.findOneAndRemove({ userId: userId},cb);
 };
 
 UserSchema.statics.findByUserIdAndUpdate = function (userId, updateObject, cb) {
-  return this.findOneAndUpdate({ userId: userId }, updateObject, (err, user) => {
-    if (err) {
-      cb(err, null);
-    }else {
-      cb(null, user);
-    }
-  });
+  return this.findOneAndUpdate({ userId: userId }, updateObject, cb);
 };
 
 UserSchema.statics.findByUserId = function (userId, cb) {
-  return this.findOne({ userId: userId}, (err, user) => {
-    if (err) {
-      cb(err, null);
-    }else {
-      cb(null, user);
-    }
-  });
+  return this.findOne({ userId: userId}, cb);
 };
 
 UserSchema.methods = {
