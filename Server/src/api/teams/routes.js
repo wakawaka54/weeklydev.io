@@ -1,9 +1,11 @@
 import * as teams from './teams.js';
 import teamSchema from '../../Schemas/Team.js';
-
+// TODO: 1 Create a way to add projects and submission to the team and user, Also remove it from them when they leave
 const routes = [
+  /**
+   * Lists all Teams (disabled or not)
+   */
   {
-    // Lists all Teams (disabled or not)
     method: 'GET',
     path: '/teams',
     config: {
@@ -13,8 +15,10 @@ const routes = [
     },
     handler: teams.getTeams
   },
+  /**
+   * Create a new team
+   */
   {
-    // Create a new team
     method: 'POST',
     path: '/teams',
     config: {
@@ -33,8 +37,10 @@ const routes = [
     },
     handler: teams.addTeam
   },
+  /**
+   * Lists all Teams (disabled or not)
+   */
   {
-    // Lists all Teams (disabled or not)
     method: 'GET',
     path: '/teams/{id}',
     config: {
@@ -44,8 +50,10 @@ const routes = [
     },
     handler: teams.getTeam
   },
+  /**
+   * Update Team details
+   */
   {
-    // Bulk update
     method: 'PUT',
     path: '/teams/{id}',
     config: {
@@ -61,9 +69,11 @@ const routes = [
     },
     handler: teams.updateTeam
   },
+  /**
+   *  Delete a team by ID if you are the owner or admin 
+   */
+  // TODO: autodelete the team after some period of inactivity
   {
-    // Delete a team by ID if you are the owner or admin 
-    // TODO: autodelete the team after some period of inactivity
     method: 'DELETE',
     path: '/teams/{id}',
     config: {
@@ -76,8 +86,10 @@ const routes = [
     },
     handler: teams.deleteTeam
   },
+  /**
+   * Add a user to team (only owner or admin)
+   */
   {
-    // Add a user to team (only owner)
     method: 'POST',
     path: '/teams/{id}/add',
     config: {
@@ -93,8 +105,10 @@ const routes = [
     },
     handler: teams.addUserToTeam
   },
+  /**
+   * Request to join a team
+   */
   {
-    // Request a join to a team (every User)
     method: 'POST',
     path: '/teams/{id}/join',
     config: {

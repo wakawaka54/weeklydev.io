@@ -48,7 +48,7 @@ server.register([hapiAuthJwt2,
     options: {
       basePath: '/v1',
       info: {
-        'title': 'Test API Documentation',
+        'title': 'API Documentation',
         'version': Pack.version
       }
     }
