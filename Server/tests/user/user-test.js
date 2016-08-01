@@ -11,7 +11,7 @@ describe('Creating new user', () => {
   it('POST new user data', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/users/new',
+      url: '/users/new',
       payload: {
         username: user.username,
         password: user.password,
@@ -57,7 +57,7 @@ describe('Login ', () => {
   it('user with username', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer(user.username + ':' + user.password, 'utf8')).toString('base64')
       }
@@ -70,7 +70,7 @@ describe('Login ', () => {
   it('user with email', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer(user.email + ':' + user.password, 'utf8')).toString('base64')
       }
@@ -84,7 +84,7 @@ describe('Login ', () => {
   it('user with wrong username', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer('Invalid' + ':' + user.password, 'utf8')).toString('base64')
       }
@@ -97,7 +97,7 @@ describe('Login ', () => {
   it('user with wrong email', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer('invalid@someRussina.email' + ':' + user.password, 'utf8')).toString('base64')
       }
@@ -110,7 +110,7 @@ describe('Login ', () => {
   it('user with wrong password ( username )', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer(user.username + ':' + '123456ShittyPassword', 'utf8')).toString('base64')
       }
@@ -123,7 +123,7 @@ describe('Login ', () => {
   it('user with wrong password ( email )', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer(user.email + ':' + '123456ShittyPassword', 'utf8')).toString('base64')
       }
@@ -141,7 +141,7 @@ describe('Deleting user :', () => {
   it('Respond with succes', (done) => {
     server.inject({
       method: 'DELETE',
-      url: '/v1/users/' + res.user.userId,
+      url: '/users/' + res.user.userId,
       headers: {
         Authorization: 'bearer ' + loginRes.token
       }
@@ -167,7 +167,7 @@ describe('Deleting user :', () => {
   it('Login after deleted with username', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer(user.username + ':' + user.password, 'utf8')).toString('base64')
       }
@@ -182,7 +182,7 @@ describe('Deleting user :', () => {
   it('Login after deleted with email', (done) => {
     server.inject({
       method: 'POST',
-      url: '/v1/login',
+      url: '/login',
       headers: {
         Authorization: 'Basic ' + (new Buffer(user.email + ':' + user.password, 'utf8')).toString('base64')
       }
