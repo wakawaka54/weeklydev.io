@@ -5,6 +5,9 @@ const SUPPLIED_JWT_SECRET = process.env.JWT_SECRET;
 const MONGO_URL_DEFAULT = 'mongodb://localhost:27017/WOIP-backend';
 const SUPPLIED_MONGO_URL = process.env.MONGO_URL;
 
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+
 function getJWTSecret () {
   if (!SUPPLIED_JWT_SECRET) {
     console.error('WARNING: Undefined $JWT_SECRET. Using default.');
@@ -44,7 +47,6 @@ export const emailConfig = {
   port: 587,
   secure: false,
   auth: {
-    user: 'rcady@weeklydev.io',
-    pass: '!@WeeklyDev2016@!'
-  }
+    user: EMAIL_USER,
+    pass: EMAIL_PASS
 };
