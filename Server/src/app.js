@@ -16,14 +16,7 @@ import hapiBasicAuth from 'hapi-auth-basic-weeklydev-login';
 import { jwtAuth as validateJwt, basicAuth as validateUserPass } from './Utils/validation.js';
 import * as config from './config/config.js';
 
-// Import routes
-import userRoutes from './api/users/routes.js';
-import teamRoutes from './api/teams/routes.js';
-import surveyRoutes from './api/surveys/routes.js';
-import submissionRoutes from './api/submissions/routes.js';
-import projectRoutes from './api/projects/routes.js';
-
-const allRoutes = [userRoutes, teamRoutes, surveyRoutes, submissionRoutes, projectRoutes];
+import { getRoutes } from './api';
 
 const server = new Hapi.Server();
 import startMatchmaking from './Matching';
@@ -50,7 +43,8 @@ server.register([hapiAuthJwt2,
       info: {
         'title': 'API Documentation',
         'version': Pack.version
-      }
+      },
+      pathPrefixSize: 2
     }
   }], {
   // Add prefix to the route
@@ -73,8 +67,10 @@ server.register([hapiAuthJwt2,
   });
   // Make the Json Web Token strategy as default, this is basiccaly saying everything that doesn't have "auth:" in the route is JWT
   server.auth.default('jwt');
+  
   // Add all the routes to the server
-  allRoutes.forEach(routes => server.route(routes));
+  getRoutes('v1').forEach(r => server.route(r));
+  
   // When going to the api this will redirect the "/" to the documentation
   server.route({
     method: 'GET',
