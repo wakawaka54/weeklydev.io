@@ -1,53 +1,50 @@
 import Boom from 'boom';
-import Survey from '../../Models/Survey.js';
+// import Survey from '../../Models/Survey.js';
 import User from '../../Models/User.js';
 import * as Code from '../../Utils/errorCodes.js';
 
 /*
  * Add a survey
  */
-export function addSurvey (req, res) {
-  User.findById(req.Token.id, (err, user) => {
-    if (err || !user) {
-      res(Code.userNotFound);
-    } else {
-      if (user.survey) {
-        res('Survey already submitted!');
-      }else {
-        let payload = req.payload;
-        let survey = new Survey({
-          user_id: user.id,
-          role: payload.role,
-          project_manager: payload.project_manager,
-          skill_level: payload.skill_level,
-          project_size: payload.project_size,
-          timezone: payload.timezone
-        });
-        survey.save((err, survey) => {
-          if (err) {
-            throw Boom.badRequest(err);
-          }
-          user.survey = survey.id;
-          user.save(err => {
-            if (err) {
-              console.log(err);
-            }else {
-              res(survey.toObject());
-            }
-          });
-        });
-      }}
-  });
-};
+// export function addSurvey (req, res) {
+//   User.findById(req.Token.id, (err, user) => {
+//     if (err || !user) {
+//       res(Code.userNotFound);
+//     } else {
+//       if (user.survey) {
+//         res('Survey already submitted!');
+//       } else {
+//         let payload = req.payload;
+//         user.survey = {
+//           role: payload.role,
+//           project_manager: payload.project_manager,
+//           skill_level: payload.skill_level,
+//           project_size: payload.project_size,
+//           timezone: payload.timezone
+//         };
+//         user.save((err, _user) => {
+//           if (err) {
+//             throw Boom.badRequest(err);
+//           } else {
+//             res(user.survey.toObject());
+//           }
+//         });
+//       }
+//     }
+//   });
+// };
 
 /*
  * Get a survey
  */
 export function getSurvey (req, res) {
-  Survey.findByUserId(req.Token.id , (err, survey) => {
-    res(((survey) ? survey.toObject() : {
-      error: 'No Survey found!'
-    })).code(200);
+  User.findById(req.Token.id, (err, user) => {
+    if (user.survey) {
+      res(user.survey.toObject()).code(200);
+    } else {
+      // res({ error: 'No Survey found!' }).code(200);
+      res({ error: 'No Survey found!' });
+    }
   });
 };
 
@@ -55,33 +52,16 @@ export function getSurvey (req, res) {
  * Update a survey
  */
 export function updateSurvey (req, res) {
-  let payload = req.payload;
-  Survey.findByUserIdAndUpdate(req.Token.id, {
-    user_id: req.Token.id,
-    role: payload.role,
-    project_manager: payload.project_manager,
-    skill_level: payload.skill_level,
-    project_size: payload.project_size,
-    timezone: payload.timezone
-  }, { new: true, upsert: true }, (err, survey) => {
-    if (err || !survey) {
+  let survey = req.payload;
+  User.findByIdAndUpdate(req.Token.id, {
+    survey
+  }, { new: true, upsert: true }, (err, user) => {
+    if (err) {
+      res(Boom.badRequest(err));
+    } else if (!user.survey) {
       res(Boom.unauthorized('Survey not found'));
+    } else {
+      res(user.survey.toObject());
     }
-    User.findByIdAndUpdate(req.Token.id, {
-      survey_id: survey.id
-    }, (err, user) => {
-      if (err) {
-        res(Boom.badRequest(err));
-      }
-      if (!user) {
-        res(Boom.unauthorized('User not found'));
-      }
-      user.save((err) => {
-        if (err) {
-          res(Boom.badRequest(err));
-        }
-        res(survey.toObject());
-      });
-    });
   });
 };

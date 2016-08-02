@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const SurveyModel = new Schema({
-  user_id: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
-  },
+  // user_id: {
+  //   type: Schema.Types.ObjectId,
+  //   required: true,
+  //   ref: 'User'
+  // },
   role: [{
     type: String,
     required: true
@@ -29,17 +29,16 @@ const SurveyModel = new Schema({
   }
 });
 
-SurveyModel.statics.findByUserId = function (userId, cb) {
-  return this.findOne({ user_id: userId}, cb);
-};
-SurveyModel.statics.findByUserIdAndUpdate = function (userId, cb) {
-  return this.findOneAndUpdate({ user_id: userId}, cb);
-};
+// SurveyModel.statics.findByUserId = function (userId, cb) {
+//   return this.findOne({ user_id: userId}, cb);
+// };
+// SurveyModel.statics.findByUserIdAndUpdate = function (userId, cb) {
+//   return this.findOneAndUpdate({ user_id: userId}, cb);
+// };
 SurveyModel.options.toObject = {
   transform: (doc, ret, opts) => {
     return {
       id: ret._id,
-      user_id: ret.user_id,
       role: ret.role,
       project_manager: ret.project_manager,
       skill_level: ret.skill_level,
@@ -49,4 +48,5 @@ SurveyModel.options.toObject = {
   }
 };
 
-export default mongoose.model('Survey', SurveyModel, 'survey');
+export default SurveyModel;
+// export default mongoose.model('Survey', SurveyModel, 'survey');

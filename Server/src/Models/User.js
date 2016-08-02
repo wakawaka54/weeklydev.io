@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
+import SurveyModel from './Survey';
+
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -39,11 +41,12 @@ const UserSchema = new Schema({
     required: false,
     ref: 'Project'
   }],
-  survey: {
-    type: Schema.Types.ObjectId,
-    required: false,
-    ref: 'Survey'
-  },
+  // survey: {
+  //   type: Schema.Types.ObjectId,
+  //   required: false,
+  //   ref: 'Survey'
+  // },
+  survey: SurveyModel,
   isSearching: {
     type: Boolean,
     default: false,
@@ -79,25 +82,27 @@ var validatePresenceOf = function (value) {
   return value && value.length;
 };
 
+
+
 UserSchema
   .pre('save', function (next) {
-    function hashPassword (that , next) {
+    function hashPassword (that , _next) {
       if (!validatePresenceOf(that.password)) {
-        return next(new Error('Invalid password'));
+        return _next(new Error('Invalid password'));
       }
 
       // Make salt with a callback
       that.makeSalt((saltErr, salt) => {
         if (saltErr) {
-          return next(saltErr);
+          return _next(saltErr);
         }
         that.salt = salt;
         that.encryptPassword(that.password, (encryptErr, hashedPassword) => {
           if (encryptErr) {
-            return next(encryptErr);
+            return _next(encryptErr);
           }
           that.password = hashedPassword;
-          next();
+          _next();
         });
       });
     }
@@ -107,6 +112,15 @@ UserSchema
         if (err || user[0]) {
           return next(err || new Error('User Id already exists'));
         }else {
+          if (!this.survey) {
+            this.survey = {
+              role: [],
+              project_manager: false,
+              skill_level: 0,
+              project_size: 5,
+              timezone: 0
+            };
+          }
           hashPassword(this, next);
         }
       });
@@ -225,7 +239,8 @@ UserSchema.options.toObject = {
       team: ret.team,
       // team: ret.team.map((t) => t.toObject()),
       project: ret.project,
-      // project: ret.project.map((p) => p.toObject())
+      // project: ret.project.map((p) => p.toObject()),
+      survey: ret.survey
     };
 
     if (!opts.scope) {
