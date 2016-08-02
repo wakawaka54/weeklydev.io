@@ -41,11 +41,6 @@ const UserSchema = new Schema({
     required: false,
     ref: 'Project'
   }],
-  // survey: {
-  //   type: Schema.Types.ObjectId,
-  //   required: false,
-  //   ref: 'Survey'
-  // },
   survey: SurveyModel,
   isSearching: {
     type: Boolean,
@@ -65,7 +60,6 @@ const UserSchema = new Schema({
     required: true,
     default: false
   },
-  salt: String,
   ghostTeams: [{
     type: Schema.Types.ObjectId,
     ref: 'ghostTeam'
@@ -86,26 +80,19 @@ var validatePresenceOf = function (value) {
 
 UserSchema
   .pre('save', function (next) {
-    function hashPassword (that , _next) {
-      if (!validatePresenceOf(that.password)) {
-        return _next(new Error('Invalid password'));
+    let hashPass = (cb) => {
+      if (!validatePresenceOf(this.password)) {
+        return cb(new Error('Invalid password'));
       }
-
-      // Make salt with a callback
-      that.makeSalt((saltErr, salt) => {
-        if (saltErr) {
-          return _next(saltErr);
+      this.encryptPassword(this.password, (err, hash) => {
+        if (err) {
+          return cb(err);
+        } else {
+          this.password = hash;
+          cb();
         }
-        that.salt = salt;
-        that.encryptPassword(that.password, (encryptErr, hashedPassword) => {
-          if (encryptErr) {
-            return _next(encryptErr);
-          }
-          that.password = hashedPassword;
-          _next();
-        });
       });
-    }
+    };
     // handle duplicated ID
     if (this.isNew) {
       this.model('User').find({userId: this.userId}, (err, user) => {
@@ -121,7 +108,8 @@ UserSchema
               timezone: 0
             };
           }
-          hashPassword(this, next);
+          // hashPassword(this, next);
+          hashPass(next);
         }
       });
     }else {
@@ -129,7 +117,8 @@ UserSchema
       if (!this.isModified('password')) {
         return next();
       }
-      hashPassword(this, next);
+      // hashPassword(this, next);
+      hashPass(next);
     }
   });
 UserSchema.statics.findByUserIdAndRemove = function (userId, cb) {
@@ -167,67 +156,21 @@ UserSchema.methods = {
       }
     });
   },
-
-  /**
-   * Make salt
-   *
-   * @param {Number} byteSize Optional salt byte size, default to 16
-   * @param {Function} callback
-   * @return {String}
-   * @api public
-   */
-  makeSalt(rounds, callback) {
-    var defaultRounds = 10;
-    if (typeof arguments[0] === 'function') {
-      callback = arguments[0];
-      rounds = defaultRounds;
-    } else if (typeof arguments[1] === 'function') {
-      callback = arguments[1];
-    }
-
-    if (!rounds) {
-      rounds = defaultRounds;
-    }
-
-    if (!callback) {
-      return bcrypt.genSaltSync(rounds);
-    }
-
-    return bcrypt.genSalt(rounds, (err, salt) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, salt);
-      }
-    });
-  },
-
+  
   /**
    * Encrypt password
-   *
+   * 
    * @param {String} password
-   * @param {Function} callback
-   * @return {String}
+   * @param {Number} [rounds=10]
+   * @param {Function} [cb]
    * @api public
    */
-  encryptPassword(password, callback) {
-    if (!password || !this.salt) {
-      return null;
+  encryptPassword: (pass, cb, rounds = 10) => {
+    if (!cb) {
+      return bcrypt.hashSync(pass, rounds);
+    } else {
+      return bcrypt.hash(pass, rounds, cb);
     }
-
-    var salt = this.salt;
-
-    if (!callback) {
-      return bcrypt.hashSync(password, salt).toString('base64');
-    }
-
-    return bcrypt.hash(password, salt, (err, key) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, key.toString('base64'));
-      }
-    });
   }
 };
 

@@ -196,16 +196,21 @@ export function updatePassword (req, res) {
 };
 export function updateUser (req, res) {
   let searchFor = req.params.id || req.Token.id;
-  User.findByUserIdAndUpdate(searchFor, {
-    $set: {
-      username: req.payload.username,
-      email: req.payload.email,
-      admin: req.payload.admin,
-      password: req.payload.password
+  let payload = req.payload;
+  User.findByUserId(searchFor, (err, user) => {
+    if (err) {
+      return res(Boom.wrap(err));
     }
-  }, (err, user) => {
-    if (err) return res(Boom.wrap(err));
-    res(formatUser(user, 'user'));
+    if (payload.email !== user.email) {
+      user.email = payload.email;
+    }
+    user.save((err, _user) => {
+      if (err) {
+        res(Boom.wrap(err));
+      } else {
+        res(formatUser(_user, 'user'));
+      }
+    });
   });
 };
 
