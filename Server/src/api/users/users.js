@@ -195,23 +195,33 @@ export function updatePassword (req, res) {
   });
 };
 export function updateUser (req, res) {
-  let searchFor = req.params.id || req.Token.id;
   let payload = req.payload;
-  User.findByUserId(searchFor, (err, user) => {
-    if (err) {
-      return res(Boom.wrap(err));
-    }
-    if (payload.email !== user.email) {
-      user.email = payload.email;
-    }
-    user.save((err, _user) => {
-      if (err) {
-        res(Boom.wrap(err));
+  let query;
+  
+  if (req.params.id) {
+    query = User.findByUserId(req.params.id);
+  } else {
+    query = User.findById(req.Token.id);
+  }
+  
+  query
+    .catch(err => res(Boom.wrap(err)))
+    .then(user => {
+      if (!user) {
+        return res(Boom.wrap(new Error('User not found.')));
       } else {
-        res(formatUser(_user, 'user'));
+        if (payload.email !== user.email) {
+          user.email = payload.email;
+        }
+        user.save((err, _user) => {
+          if (err) {
+            res(Boom.wrap(err));
+          } else {
+            res(formatUser(_user, 'user'));
+          }
+        });
       }
     });
-  });
 };
 
 /*

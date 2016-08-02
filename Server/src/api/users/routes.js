@@ -189,8 +189,8 @@ This returns user info and valid token used later in most of the paths as author
    * Update Current users information
    */
   {
-    method: 'POST',
-    path: '/users/me/update',
+    method: 'PUT',
+    path: '/users/me',
     config: {
       auth: 'jwt',
       validate: {
