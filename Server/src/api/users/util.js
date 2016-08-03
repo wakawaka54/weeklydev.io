@@ -3,7 +3,7 @@ import User from '../../Models/User.js';
 import jwt from 'jsonwebtoken';
 import uuid from 'node-uuid';
 import Joi from 'joi';
-import { JWT_SECRET } from '../../config/config.js';
+import config from 'config';
 
 export function verifyUniqueUser (req, res) {
   // Find an entry from the database that
@@ -63,44 +63,6 @@ export function generateUUID () {
 };
 
 export function formatUser (user, opts) {
-  // switch (opts) {
-  //   case 'admin':
-  //     return {
-  //       id: user.id,
-  //       userId: user.userId,
-  //       email: user.email,
-  //       username: user.username,
-  //       access: user.scope,
-  //       team: user.team,
-  //       project: user.project
-  //     };
-  //   case 'user':
-  //     return {
-  //       id: user.id,
-  //       userId: user.userId,
-  //       email: user.email,
-  //       username: user.username,
-  //       access: user.scope,
-  //       team: user.team,
-  //       ghostTeams: user.ghostTeams,
-  //       project: user.project
-  //     };
-  //   case 'users':
-  //     return {
-  //       id: user.userId,
-  //       username: user.username,
-  //       admin: user.admin,
-  //       team: user.team,
-  //       project: user.project
-  //     };
-  //   default:
-  //     return {
-  //       id: user.userId,
-  //       username: user.username,
-  //       team: user.team,
-  //       project: user.project
-  //     };
-  // }
   return user.toObject({ scope: opts, transform: true });
 };
 
@@ -110,7 +72,7 @@ export function createToken (user, expires = '365 days') {
   // Sign the JWT
   return jwt.sign({
     id: user._id
-  }, JWT_SECRET, {
+  }, config.get('jwt'), {
     algorithm: 'HS256',
     jwtid: user.token.uuid,
     expiresIn: expires // exp: in 24H

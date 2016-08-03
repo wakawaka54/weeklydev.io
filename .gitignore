@@ -47,3 +47,4 @@ dist
 bower_components
 public/components
 Client/public/components
+Server/config/local.json

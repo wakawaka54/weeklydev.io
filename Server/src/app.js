@@ -14,7 +14,8 @@ import hapiAuthJwt2 from 'hapi-auth-jwt2';
 import hapiBasicAuth from 'hapi-auth-basic-weeklydev-login';
 
 import { jwtAuth as validateJwt, basicAuth as validateUserPass } from './Utils/validation.js';
-import * as config from './config/config.js';
+// import * as config from './config/config.js';
+import config from 'config';
 
 import { getRoutes } from './api';
 
@@ -25,7 +26,8 @@ global.PATH = process.env.PWD || process.cwd();
 
 // Setup hapi server
 server.connection({
-  port: config.PORT,
+  // port: config.PORT,
+  port: config.get('http.port'),
   routes: {
     cors: true
   }
@@ -61,7 +63,8 @@ server.register([hapiAuthJwt2,
 }, (err) => {
 
   server.auth.strategy('jwt', 'jwt', {
-    key: config.JWT_SECRET, // Never Share your secret key
+    // key: config.JWT_SECRET, // Never Share your secret key
+    key: config.get('jwt'),
     validateFunc: validateJwt, // validate function defined above
     verifyOptions: {
       algorithms: ['HS256'] // pick a strong algorithm
@@ -96,14 +99,21 @@ server.start((err) => {
   if (err) {
     throw err;
   } else {
-    console.log('Server Started on port ' + config.PORT);
+    // console.log('Server Started on port ' + config.PORT);
+    console.log('Server started on port ' + config.get('http.port'));
   }
   // Make a connection to the mongodb server
-  mongoose.connect(config.MONGO_URL, {}, (err) => {
+  // mongoose.connect(config.MONGO_URL, {}, (err) => {
+  let mongoURI = 'mongodb://';
+  if (config.has('mongo.auth') && config.has('config.auth.user') && config.has('config.auth.pass')) {
+    mongoURI += `${config.get('mongo.auth.user')}:${config.get('mongo.auth.pass')}@`;
+  }
+  mongoURI += `${config.get('mongo.host')}:${config.get('mongo.port')}/${config.get('mongo.name')}`;
+  mongoose.connect(mongoURI, {}, (err) => {
     if (err) {
       throw err;
     } else {
-      console.log('Connected to MongoDB');
+      console.log('Connected to MongoDB at', mongoURI);
       startMatchmaking();
     }
   });

@@ -1,0 +1,11 @@
+{
+  "http": {
+    "host": "weeklydev.io"
+  },
+  "cookies": {
+    "isSecure": true
+  },
+  "email": {
+    "enabled": true
+  }
+}

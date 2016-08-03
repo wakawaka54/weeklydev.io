@@ -1,14 +1,17 @@
 import nodemailer from 'nodemailer'
-import { emailConfig } from '../config/config.js'
+import config from 'config';
 import User from '../Models/User.js'
 
 // Email a user
 export function sendEmail(email, subject, text, html){
-  let smtpInfo = `smtps://${emailConfig.auth.user}:${emailConfig.auth.pass}@${emailConfig.host}`
+  if (!config.get('email.enabled')) {
+    return;
+  }
+  let smtpInfo = `smtps://${config.get('email.auth.user')}:${config.get('email.auth.pass')}@${config.get('email.host')}`;
   let transporter = nodemailer.createTransport(smtpInfo)
 
   let mailOptions = {
-    from: emailConfig.auth.user,
+    from: config.get('email.auth.user'),
     to: email,
     subject,
     text,

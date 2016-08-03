@@ -10,7 +10,7 @@ import * as Code from '../../Utils/errorCodes.js';
 import { isAdmin } from '../../Utils/validation.js';
 import { sendEmail } from '../../Utils/email.js';
 import { generateUUID, formatUser, createToken } from './util.js';
-import { cookie_options, PORT, HOST } from '../../config/config.js';
+import config from 'config';
 
 export function login (req, res) {
   User.findById(req.Credentials.id)
@@ -37,7 +37,7 @@ export function login (req, res) {
     let token = createToken(user);
     res({ token, user: formatUser(user, 'user') })
       .code(200)
-      .state('weeklydevtoken', token, cookie_options);
+      .state('weeklydevtoken', token, config.get('cookies'));
   });
 };
 
@@ -80,7 +80,7 @@ export function addUser (req, res) {
     res({ token, user: formatUser(user, 'user') }).code(201);
 
     let subject = 'Confirm your weeklydev.io account.';
-    let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/v1/users/confirm/${user.userId}`;
+    let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${config.get('http.port')}/v1/users/confirm/${user.userId}`;
     let email = user.email;
     sendEmail(email, subject, text, null);
   });
@@ -188,7 +188,7 @@ export function updateUser (req, res) {
           user.email = payload.email;
           user.verified = false;
           let subject = 'Confirm your weeklydev.io account.';
-          let text = `Your Email was changed for the site www.weeklydev.io. Visit the following link to verify your account: http://localhost:${PORT}/v1/users/confirm/${user.userId}`;
+          let text = `Your Email was changed for the site www.weeklydev.io. Visit the following link to verify your account: http://localhost:${config.get('http.port')}/v1/users/confirm/${user.userId}`;
           let email = user.email;
           sendEmail(email, subject, text, null);
         }
@@ -279,7 +279,7 @@ export function requestPasswordReset (req, res) {
 
   function sendPasswordResetEmail (token) {
     let subject = 'Password Reset for Weeklydev.io';
-    let text = `Hey! Click the following link to complete resetting your password: http://${HOST}:${PORT}/v1/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`;
+    let text = `Hey! Click the following link to complete resetting your password: http://${config.get('http.host')}:${config.get('http.port')}/v1/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`;
     let email = req.auth.credentials.email;
     sendEmail(email, subject, text, null);
   }
