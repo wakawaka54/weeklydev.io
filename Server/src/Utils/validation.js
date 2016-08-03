@@ -32,44 +32,21 @@ export function jwtAuth (decoded, request, callback) {
   });
 };
 
-export function basicAuth (request, Username, password, callback) {
-  if (!validateEmail(Username)) {
-    User.findOne({
-      username: Username
-    }, (err, user) => {
-      if (err) {
-        return callback(err);
-      }
-      if (!user) {
-        return callback(Boom.unauthorized('user not found'));
-      }
-      user.authenticate(password, (err, res) => {
-        if (err) {
-          return callback(err);
-        }
-        callback(null, res, formatUser(user, 'user'));
-      });
-    });
-  } else {
-    User.findOne({
-      email: Username
-    }, (err, user) => {
-      if (err) {
-        callback(err);
-        return;
-      }
+export function basicAuth (request, Identifier, password, callback) {
+  let query = ((!validateEmail(Identifier)) ? User.findOne({ username: Identifier }) : User.findOne({ email: Identifier }));
+
+  query
+    .catch(err => callback(err))
+    .then(user => {
       if (!user) {
         callback(Boom.unauthorized('user not found'));
-        return;
+      }else {
+        user.authenticate(password, (err, res) => {
+          if (err) callback(err);
+          callback(null, res, formatUser(user, 'user'));
+        });
       }
-      user.authenticate(password, (err, res) => {
-        if (err) {
-          callback(err);
-        }
-        callback(null, res, formatUser(user, 'user'));
-      });
     });
-  }
 };
 
 export function validateEmail (email) {
