@@ -44,7 +44,14 @@ server.register([hapiAuthJwt2,
         'title': 'API Documentation',
         'version': Pack.version
       },
-      pathPrefixSize: 2
+      pathPrefixSize: 2,
+      securityDefinitions: {
+        'bearer': {
+          'type': 'apiKey',
+          'name': 'Authorization',
+          'in': 'header'
+        }
+      }
     }
   }], {
   // Add prefix to the route
@@ -67,10 +74,10 @@ server.register([hapiAuthJwt2,
   });
   // Make the Json Web Token strategy as default, this is basiccaly saying everything that doesn't have "auth:" in the route is JWT
   server.auth.default('jwt');
-  
+
   // Add all the routes to the server
   getRoutes('v1').forEach(r => server.route(r));
-  
+
   // When going to the api this will redirect the "/" to the documentation
   server.route({
     method: 'GET',
