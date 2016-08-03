@@ -199,9 +199,9 @@ This returns user info and valid token used later in most of the paths as author
       auth: 'jwt',
       validate: {
         payload: {
-          email: Joi.string().email(),
-          passOld: Joi.string().min(6),
-          passNew: Joi.string().min(6)
+          email: Joi.string().email().allow(''),
+          passOld: Joi.string().min(6).allow(''),
+          passNew: Joi.string().min(6).allow('').when('passOld', {is: Joi.string().min(6),then: Joi.required()})
         }
       },
       description: 'Update current users information',
@@ -209,7 +209,8 @@ This returns user info and valid token used later in most of the paths as author
       tags: ['api', 'User', 'Team']
     },
     handler: users.updateUser
-  }, /**
+  },
+  /**
    * Update Current users Password
    */
   {
