@@ -79,13 +79,10 @@ export function addUser (req, res) {
     let token = createToken(user);
     res({ token, user: formatUser(user, 'user') }).code(201);
 
-    sendConfirmEmail();
-    function sendConfirmEmail () {
-      let subject = 'Confirm your weeklydev.io account.';
-      let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/users/confirm/${user.userId}`;
-      let email = user.email;
-      sendEmail(email, subject, text, null);
-    }
+    let subject = 'Confirm your weeklydev.io account.';
+    let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/users/confirm/${user.userId}`;
+    let email = user.email;
+    sendEmail(email, subject, text, null);
   });
 };
 
@@ -175,51 +172,36 @@ export function getUser (req, res) {
   });
 };
 
-export function updatePassword (req, res) {
-  User.findById(req.Token.id, (err, user) => {
-    if (err || !user) return res(Boom.wrap(err));
-    user.authenticate(req.payload.passOld, (err, res) => {
-      if (err || !res) {
-        res(Code.invalidPassword);
-      }else {
-        user.password = req.payload.passNew;
-        user.save((err, done) => {
-          if (err || !done) {
-            res(Boom.badRequest(err));
-          }else {
-            res().code(200);
-          }
-        });
-      }
-    });
-  });
-};
 export function updateUser (req, res) {
   let payload = req.payload;
   let query;
-  
-  if (req.params.id) {
-    query = User.findByUserId(req.params.id);
-  } else {
-    query = User.findById(req.Token.id);
-  }
-  
+
+  query = ((req.params.id) ? User.findByUserId(req.params.id) : User.findById(req.Token.id));
+
   query
     .catch(err => res(Boom.wrap(err)))
     .then(user => {
       if (!user) {
         return res(Boom.wrap(new Error('User not found.')));
       } else {
-        if (payload.email !== user.email) {
+        if (payload.email && payload.email !== user.email) {
           user.email = payload.email;
+          user.verified = false;
+          let subject = 'Confirm your weeklydev.io account.';
+          let text = `Your Email was changed for the site www.weeklydev.io.</br>Visit the following link to verify your account: <div style="text-align:center">http://localhost:${PORT}/users/confirm/${user.userId}</div>`;
+          let email = user.email;
+          sendEmail(email, subject, text, null);
         }
-        user.save((err, _user) => {
-          if (err) {
-            res(Boom.wrap(err));
-          } else {
-            res(formatUser(_user, 'user'));
+        if (payload.passOld) {
+          if (!user.authenticate(payload.passOld)) {
+            res(Code.invalidPassword);
+          }else {
+            user.password = payload.passNew;
           }
-        });
+        }
+        user.save()
+          .catch(err => res(Boom.wrap(err)))
+          .then(user => res(formatUser(user, 'user')));
       }
     });
 };

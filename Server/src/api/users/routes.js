@@ -92,7 +92,11 @@ This returns user info and valid token used later in most of the paths as author
         scope: ['user-{params.id}', 'admin']
       },
       validate: {
-        payload: userSchema,
+        payload: {
+          email: Joi.string().email(),
+          passOld: Joi.string().min(6),
+          passNew: Joi.string().min(6)
+        },
         params: shortIdSchema
       },
       description: 'Update User information',
@@ -194,7 +198,11 @@ This returns user info and valid token used later in most of the paths as author
     config: {
       auth: 'jwt',
       validate: {
-        payload: userSchema
+        payload: {
+          email: Joi.string().email(),
+          passOld: Joi.string().min(6),
+          passNew: Joi.string().min(6)
+        }
       },
       description: 'Update current users information',
       notes: 'Posting a full users object',
@@ -211,15 +219,15 @@ This returns user info and valid token used later in most of the paths as author
       auth: 'jwt',
       validate: {
         payload: {
-          passOld: Joi.string().alphanum().min(6).max(32).description('Your Old Password'),
-          passNew: Joi.string().alphanum().min(6).max(32).description('Your New Password')
+          passOld: Joi.string().alphanum().min(6).max(32).description('Your Old Password').required(),
+          passNew: Joi.string().alphanum().min(6).max(32).description('Your New Password').required()
         }
       },
       description: 'Update current users password',
       notes: 'Update the users password after providing the old password and a new password.',
       tags: ['api', 'User', 'Team']
     },
-    handler: users.updatePassword
+    handler: users.updateUser
   },
   /**
    *  Joins a Matchmaking
