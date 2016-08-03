@@ -80,7 +80,7 @@ export function addUser (req, res) {
     res({ token, user: formatUser(user, 'user') }).code(201);
 
     let subject = 'Confirm your weeklydev.io account.';
-    let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/users/confirm/${user.userId}`;
+    let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${PORT}/v1/users/confirm/${user.userId}`;
     let email = user.email;
     sendEmail(email, subject, text, null);
   });
@@ -188,7 +188,7 @@ export function updateUser (req, res) {
           user.email = payload.email;
           user.verified = false;
           let subject = 'Confirm your weeklydev.io account.';
-          let text = `Your Email was changed for the site www.weeklydev.io.</br>Visit the following link to verify your account: <div style="text-align:center">http://localhost:${PORT}/users/confirm/${user.userId}</div>`;
+          let text = `Your Email was changed for the site www.weeklydev.io. Visit the following link to verify your account: http://localhost:${PORT}/v1/users/confirm/${user.userId}`;
           let email = user.email;
           sendEmail(email, subject, text, null);
         }
@@ -279,7 +279,7 @@ export function requestPasswordReset (req, res) {
 
   function sendPasswordResetEmail (token) {
     let subject = 'Password Reset for Weeklydev.io';
-    let text = `Hey! Click the following link to complete resetting your password: http://${HOST}:${PORT}/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`;
+    let text = `Hey! Click the following link to complete resetting your password: http://${HOST}:${PORT}/v1/users/passwordreset/${token}. If you did not request this password reset, then you can ignore this email. Thanks.`;
     let email = req.auth.credentials.email;
     sendEmail(email, subject, text, null);
   }
