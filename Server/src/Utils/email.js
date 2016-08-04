@@ -4,7 +4,7 @@ import User from '../Models/User.js'
 
 // Email a user
 export function sendEmail(email, subject, text, html){
-  if (!config.get('email.enabled')) {
+  if (!config.has('email.auth')) {
     return;
   }
   let smtpInfo = `smtps://${config.get('email.auth.user')}:${config.get('email.auth.pass')}@${config.get('email.host')}`;

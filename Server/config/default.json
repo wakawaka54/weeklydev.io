@@ -8,8 +8,7 @@
   "email": {
     "host": "smtp.sendgrid.net",
     "port": 587,
-    "secure": false,
-    "enabled": false
+    "secure": false
   },
   "http": {
     "host": "127.0.0.1",
