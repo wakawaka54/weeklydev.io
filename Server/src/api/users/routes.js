@@ -1,5 +1,6 @@
 import { authenticateUser, verifyUniqueUser } from './util.js';
 import userSchema from '../../Schemas/User.js';
+import updateUserSchema from '../../Schemas/UpdateUser.js';
 import shortIdSchema from '../../Schemas/shortId.js';
 import * as users from './users.js';
 import Joi from 'joi';
@@ -92,11 +93,7 @@ This returns user info and valid token used later in most of the paths as author
         scope: ['user-{params.id}', 'admin']
       },
       validate: {
-        payload: {
-          email: Joi.string().email(),
-          passOld: Joi.string().min(6),
-          passNew: Joi.string().min(6)
-        },
+        payload: updateUserSchema,
         params: shortIdSchema
       },
       description: 'Update User information',
@@ -198,11 +195,7 @@ This returns user info and valid token used later in most of the paths as author
     config: {
       auth: 'jwt',
       validate: {
-        payload: {
-          email: Joi.string().email().allow(''),
-          passOld: Joi.string().min(6).allow(''),
-          passNew: Joi.string().min(6).allow('').when('passOld', {is: Joi.string().min(6),then: Joi.required()})
-        }
+        payload: updateUserSchema
       },
       description: 'Update current users information',
       notes: 'Posting a full users object',
