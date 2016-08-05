@@ -76,8 +76,6 @@ var validatePresenceOf = function (value) {
   return value && value.length;
 };
 
-
-
 UserSchema
   .pre('save', function (next) {
     let hashPass = (cb) => {
@@ -99,16 +97,7 @@ UserSchema
         if (err || user[0]) {
           return next(err || new Error('User Id already exists'));
         }else {
-          if (!this.survey) {
-            this.survey = {
-              role: [],
-              project_manager: false,
-              skill_level: 0,
-              project_size: 5,
-              timezone: 0
-            };
-          }
-          // hashPassword(this, next);
+          // hashPassword(this, next)
           hashPass(next);
         }
       });
@@ -117,12 +106,12 @@ UserSchema
       if (!this.isModified('password')) {
         return next();
       }
-      // hashPassword(this, next);
+      // hashPassword(this, next)
       hashPass(next);
     }
   });
 UserSchema.statics.findByUserIdAndRemove = function (userId, cb) {
-  return this.findOneAndRemove({ userId: userId},cb);
+  return this.findOneAndRemove({ userId: userId}, cb);
 };
 
 UserSchema.statics.findByUserIdAndUpdate = function (userId, updateObject, cb) {
@@ -199,7 +188,7 @@ UserSchema.options.toObject = {
       switch (opts.scope) {
         case 'user':
           copy('ghostTeams');
-          // user.ghostTeams = ret.ghostTeams.map((g) => g.toObject());
+        // user.ghostTeams = ret.ghostTeams.map((g) => g.toObject())
         case 'admin':
           user.id = ret._id.toString();
           copy('userId');
