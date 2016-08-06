@@ -249,9 +249,7 @@ This returns user info and valid token used later in most of the paths as author
     method: 'GET',
     path: '/users/passwordreset',
     config: {
-      auth: {
-        scope: ['user']
-      },
+      auth: false,
       description: 'Request a password reset.',
       notes: 'Request a link for password reset to be sent to the users email.',
       tags: ['api', 'User']
