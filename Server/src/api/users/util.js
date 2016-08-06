@@ -34,28 +34,14 @@ export function verifyUniqueUser (req, res) {
 };
 
 export function authenticateUser (req, res) {
-  // TODO: [1] remove all of this shit and rewrite it all
-  User.findById(req.Credentials.id, (err, user) => {
-    if (err) {
-      console.error(err);
-      res(Boom.wrap(err, 400));
-    }
-    if (!user) {
-      res(Boom.badRequest('User not found!'));
-      return;
-    }
-    user.token.uuid = generateUUID();
-    user.save((err, user) => {
-      if (err) {
-        console.log('-- Something went wrong:');
-        console.log(err);
-        res(Boom.wrap(Boom.create(500, 'Internal Server Error', {
-          timestamp: Date.now()
-        })));
-      }
-      res(req.payload);
+  User.findById(req.Credentials.id).exec()
+    .catch(err => res(Boom.badImplementation(err)))
+    .then(user => {
+      user.token = { uuid: generateUUID(), valid: true };
+      user.save()
+        .catch(err => Boom.badImplementation(err))
+        .then(user => res());
     });
-  });
 };
 
 export function generateUUID () {
@@ -67,11 +53,9 @@ export function formatUser (user, opts) {
 };
 
 export function createToken (user, expires = '365 days') {
-  let scopes = 'user';
-
-  // Sign the JWT
   return jwt.sign({
-    id: user._id
+    id: user._id,
+    shortId: user.userId
   }, config.get('jwt'), {
     algorithm: 'HS256',
     jwtid: user.token.uuid,

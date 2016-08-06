@@ -25,36 +25,26 @@ export function login (req, res) {
         }
       }
     })
+    .exec()
     .catch((err) => res(Boom.unauthorized(err)))
-    .then((_user) => {
-      if (!_user) return res(Boom.unauthorized('user not found'));
-      _user.token = {
-        uuid: generateUUID(),
-        valid: true
-      };
-      return _user.save();
-    }).then((user) => {
-    let token = createToken(user);
-    res({ token, user: formatUser(user, 'user') })
-      .code(200)
-      .state('weeklydevtoken', token, config.get('cookies'));
-  });
+    .then((user) => {
+      if (!user) return res(Boom.unauthorized('user not found'));
+      let token = createToken(user);
+      res({ token, user: formatUser(user, 'user') })
+        .code(200)
+        .state('weeklydevtoken', token, config.get('cookies'));
+    });
 };
 
 export function logout (req, res) {
   if (!req.auth.credentials.token.valid) {
     res(Boom.unauthorized('user not found'));
   } else {
-    let _user = req.auth.credentials;
-    _user.token.valid = false;
-    _user.save()
-      .catch((err) => res(Boom.badRequest(err)))
-      .then((user) => {
-        res({
-          success: true,
-          message: 'successfully logged out'
-        });
-      });
+    let user = req.auth.credentials;
+    user.token.valid = false;
+    user.save()
+      .catch(err => res(Boom.badRequest(err)))
+      .then(user => res({ success: true, message: 'successfully logged out' }));
   }
 };
 
@@ -71,29 +61,19 @@ export function addUser (req, res) {
       valid: true
     }
   });
-  user.save((err, user) => {
-    if (err) {
-      throw Boom.badRequest(err);
-    }
-    // If the user is saved successfully, Send a JWT
-    let token = createToken(user);
-    res({ token, user: formatUser(user, 'user') }).code(201);
+  user.save()
+    .catch(err => Boom.badImplementation(err))
+    .then(user => {
+      res({ token: createToken(user), user: formatUser(user, 'user') }).code(201);
 
-    let subject = 'Confirm your weeklydev.io account.';
-    let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${config.get('http.port')}/v1/users/confirm/${user.userId}`;
-    let email = user.email;
-    sendEmail(email, subject, text, null);
-  });
+      let subject = 'Confirm your weeklydev.io account.';
+      let text = `Hey! Thanks for registereing for weeklydev.io! Visit the following link to verify your account: http://localhost:${config.get('http.port')}/v1/users/confirm/${user.userId}`;
+      let email = user.email;
+      sendEmail(email, subject, text, null);
+    });
 };
 
 export function getCurrentUser (req, res) {
-  // User.findById(req.Token.id, (err, user) => {
-  //   if (err || !user) {
-  //     res(Code.userNotFound)
-  //   } else {
-  //     res(formatUser(user, 'user'))
-  //   }
-  // })
   User.findById(req.Token.id)
     .populate({ path: 'team', populate: { path: 'manager frontend backend' }})
     .populate('project')
@@ -106,155 +86,90 @@ export function getCurrentUser (req, res) {
         }
       }
     })
+    .exec()
     .catch((err) => res(Boom.unauthorized(err)))
     .then((user) => {
-      if (user) {
-        res(formatUser(user, 'user'));
-      } else {
-        res(Code.userNotFound);
-      }
+      if (!user) return res(Code.userNotFound);
+      res(formatUser(user, 'user'));
     });
 };
 
 export function getTeamsIn (req, res) {
-  let responseWithTeam = (err, user) => {
-    if (err || !user) {
-      res(Code.userNotFound);
-    }else {
+  let query = ((req.params.id) ? User.findById(req.Token.id) : User.findByUserId(req.params.id));
+  query.populate('team').exec()
+    .catch(err => res(Code.userNotFound))
+    .then(user => {
+      if (!user) return res(Code.userNotFound);
       res(user.team);
-    }
-  };
-  if (req.params.id) {
-    User.findByUserId(req.params.id).populate('team').exec(responseWithTeam);
-  }else {
-    User.findById(req.Token.id).populate('team').exec(responseWithTeam);
-  }
+    });
 };
 
 export function getUsers (req, res) {
-  User.find(function (err, users) {
-    if (err) {
-      res(Boom.badRequest(err));
-    }
-    if (req.Token.scope == 'admin') {
-      res(users).code(200);
-    } else {
-      var Users = [];
-      users.forEach((user) => {
-        Users.push(formatUser(user, 'users'));
-      });
-      res(Users);
-    }
-  });
-};
-
-export function deleteUser (req, res) {
-  User.findByUserIdAndRemove(req.params.id, (err, user) => {
-    if (err) {
-      console.error(err);
-      res(Boom.wrap(err, 400));
-    }
-    if (user) {
-      res(formatUser(user, 'user')).code(200);
-    } else {
-      res(Boom.notFound('User not found'));
-    }
-  });
-};
-
-export function getUser (req, res) {
-  User.findByUserId(req.params.id, function (err, user) {
-    if (err || !user) {
-      res(Code.userNotFound);
-      return;
-    }
-    res(formatUser(user, 'users')).code(200);
-  });
-};
-
-export function updateUser (req, res) {
-  let payload = req.payload;
-  let query;
-
-  query = ((req.params.id) ? User.findByUserId(req.params.id) : User.findById(req.Token.id));
-
-  query
-    .catch(err => res(Boom.wrap(err)))
-    .then(user => {
-      if (!user) {
-        return res(Boom.wrap(new Error('User not found.')));
+  User.find().exec()
+    .catch(err => res(Boom.badRequest(err)))
+    .then(users => {
+      if (req.Token.scope == 'admin') {
+        res(users).code(200);
       } else {
-        if (payload.email && payload.email !== user.email) {
-          user.email = payload.email;
-          user.verified = false;
-          let subject = 'Confirm your weeklydev.io account.';
-          let text = `Your Email was changed for the site www.weeklydev.io. Visit the following link to verify your account: http://localhost:${config.get('http.port')}/v1/users/confirm/${user.userId}`;
-          let email = user.email;
-          sendEmail(email, subject, text, null);
-        }
-        if (payload.passOld) {
-          if (!user.authenticate(payload.passOld)) {
-            res(Code.invalidPassword);
-          }else {
-            user.password = payload.passNew;
-          }
-        }
-        user.save()
-          .catch(err => res(Boom.wrap(err)))
-          .then(user => res(formatUser(user, 'user')));
+        var Users = [];
+        users.forEach((user) => {
+          Users.push(formatUser(user, 'users'));
+        });
+        res(Users);
       }
     });
 };
 
-/*
- * Get a ghost team for matchmaking
- */
-export function getGhostTeams (req, res) {
-  User.findById(req.Token.id).populate('ghostTeams', 'confirmed manager frontend backend score').exec((err, user) => {
-    if (err || !user) {
-      res(Code.userNotFound);
-    }else {
-      res(user.ghostTeams);
-    }
-  });
+export function deleteUser (req, res) {
+  User.findByUserIdAndRemove(req.params.id).exec()
+    .catch(err => res(Boom.badImplementation(err)))
+    .then(user => {
+      if (!user) return res(Code.userNotFound);
+      res(formatUser(user, 'user')).code(200);
+    });
 };
 
-/*
- * Join a team automatically
- */
+export function getUser (req, res) {
+  User.findByUserId(req.params.id).exec()
+    .catch(err => res(Code.userNotFound))
+    .then(user => {
+      if (!user) return res(Code.userNotFound);
+      res(formatUser(user, 'users')).code(200);
+    });
+};
 
-export function joinMatchmaking (req, res) {
-  // TODO: add check for email confirmation
-  Survey.findByUserId(req.Token.id, (err, survey) => {
-    if (err || !survey || survey.length === 0) {
-      res(Code.surveyNotFound);
-    } else {
-      addToGhost(survey[0], req.Token.id, err => {
-        if (err) {
-          res(Boom.wrap(err));
+export function updateUser (req, res) {
+  let payload = req.payload;
+  let query = ((req.params.id) ? User.findByUserId(req.params.id) : User.findById(req.Token.id));
+  query.exec()
+    .catch(err => res(Boom.wrap(err)))
+    .then(user => {
+      if (!user) return res(Boom.wrap(new Error('User not found.')));
+      if (payload.email && payload.email !== user.email) {
+        user.email = payload.email;
+        user.verified = false;
+        let subject = 'Confirm your weeklydev.io account.';
+        let text = `Your Email was changed for the site www.weeklydev.io. Visit the following link to verify your account: http://localhost:${config.get('http.port')}/v1/users/confirm/${user.userId}`;
+        let email = user.email;
+        sendEmail(email, subject, text, null);
+      }
+      if (payload.passOld && payload.passNew) {
+        if (!user.authenticate(payload.passOld)) {
+          res(Code.invalidPassword);
+        }else {
+          user.password = payload.passNew;
         }
-        res('ok').code(200);
-      });
-    }
-  });
+      }
+      user.save()
+        .catch(err => res(Boom.wrap(err)))
+        .then(user => res(formatUser(user, 'user')));
+    });
 };
 
 export function adminTest (req, res) {
   // if (isAdmin(req.auth.credentials.scope)) {
   res(req.auth.credentials).code(200);
 };
-
-function addToGhost (survey, userId, callback) {
-  let ghost = new GhostUser({
-    userId: userId,
-    preferred_role: survey.preferred_role,
-    project_manager: survey.project_manager,
-    skill_level: survey.skill_level,
-    project_size: survey.project_size,
-    timezone: survey.timezone
-  });
-  ghost.save(err => ((err) ? callback(err) : callback(null)));
-}
 
 export function confirmUserAccount (req, res) {
   User.findOneAndUpdate({userId: req.params.token}, {verified: true}, (user) => {

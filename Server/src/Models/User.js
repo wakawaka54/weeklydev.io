@@ -29,6 +29,10 @@ const UserSchema = new Schema({
       unique: true
     }
   },
+  requests: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Team'
+  }],
   scope: [String],
   manager: [String],
   team: [{
@@ -95,9 +99,9 @@ UserSchema
     if (this.isNew) {
       this.model('User').find({userId: this.userId}, (err, user) => {
         if (err || user[0]) {
+          // TODO: generate a new ID
           return next(err || new Error('User Id already exists'));
         }else {
-          // hashPassword(this, next)
           hashPass(next);
         }
       });
@@ -145,7 +149,7 @@ UserSchema.methods = {
       }
     });
   },
-  
+
   /**
    * Encrypt password
    * 

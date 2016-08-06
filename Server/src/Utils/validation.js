@@ -54,14 +54,27 @@ export function validateEmail (email) {
   return ((Joi.validate({email: email}, schema).error === null) ? true : false);
 };
 
-export function validateUser (user, callback) {
-  User.count({_id: user}, (err, count) => {
-    if (count > 0) {
-      callback(true);
-    }else {
-      callback(false);
-    }
-  });
+export function validateUser (users, cb) {
+  if (users instanceof Array) {
+    let _user = [];
+    let _count = users.length;
+    let current = 0;
+    users.forEach(user => {
+      User.count({userId: user.id}).exec()
+        .catch(err => callback(err, null))
+        .then(count => {
+          _user.push(((count > 0) ? {user: user,valid: true} : {user: user,valid: false}));
+          current++;
+          if (current == _count) {
+            cb(null, _user);
+          }
+        });
+    });
+  }else {
+    User.count({userId: users}).exec()
+      .catch(err => callback(false))
+      .then(count => ((count > 0) ? cb(true) : cb(false)));
+  }
 };
 
 export function isAdmin (scope) {

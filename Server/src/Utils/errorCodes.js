@@ -25,6 +25,7 @@ export const internalServerError = applyErrorCode(Boom.create(500, 'Sorry, somet
 
 // Users
 export const userNotFound = applyErrorCode(Boom.create(404, 'User not found', {errorCode: 300}));
+export const accountNotValidated = applyErrorCode(Boom.create(401, 'Account is not validated', { errorCode: 301 }));
 export const invalidPassword = applyErrorCode(Boom.create(400, 'Invalid password.', { errorCode: 304 })); // Don't use this in anywhere else then user settings !! Please
 export const userInTooManyTeams = applyErrorCode(Boom.create(400, 'User in too many Teams', { errorCode: 305 }));
 export const invalidPasswordResetToken = applyErrorCode(Boom.create(401, 'Invalid password reset token.', { errorCode: 306 }));
