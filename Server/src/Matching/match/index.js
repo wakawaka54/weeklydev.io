@@ -1,4 +1,5 @@
-import GhostUser from '../../Models/GhostUser';
+import User from '../../Models/User';
+import Team from '../../Models/Team';
 import GhostTeam from '../../Models/GhostTeam';
 
 const _TZ_OFFSET = 1;
@@ -100,76 +101,61 @@ function removeUsersIfInTeam (users, teamMemebers) {
   return users;
 }
 function sort (array, argument) {
-  // default argument is skill_level
-  if (!argument) {
-    argument = 'skill_level';
-  }
+  if (!argument) argument = 'skill_level';
   array.sort(function (a, b) {
-    if (a[argument] > b[argument]) {
-      return 1;
-    }
-    if (a[argument] < b[argument]) {
-      return -1;
-    }
-    // a must be equal to b
+    if (a[argument] > b[argument]) return 1;
+    if (a[argument] < b[argument]) return -1;
     return 0;
   });
   return array;
 }
-function createGhostTeam (userId) {
-  GhostUser.find({ userId: userId }, (err, user) => {
-    if (err || user.length == 0) {
-      console.log(err);
-      console.log(user);
-      console.log('user not found!');
-      return;
+function createGhostTeam (_user) {
+  let timeOffset = getOffset(_TZ_OFFSET);
+  let projectOffset = getOffset(_PS_OFFSET);
+  Team.find({
+    isActive: true,
+    members: {$lt: 5}
+  });
+  User.find({
+    isSearching: true,
+    userId: { $ne: _user.id },
+    timezone: {$gte: (User.timezone - timeOffset), $lte: (User.timezone + timeOffset) },
+  // project_size: {$gte: (User.project_size - projectOffset),$lte: (User.project_size + projectOffset)}
+  }).sort({
+    timezone: -1,
+    skill_level: -1,
+    project_size: -1
+  }).exec((err, potentialCandidates) => {
+    let ghostTeam = new GhostTeam();
+    // Decide users role
+    let userRole = decideUserRole(User);
+    // Push user role to the team
+    if (!ghostTeam.hasOwnProperty(userRole)) {
+      ghostTeam[userRole] = [];
     }
-    let timeOffset = getOffset(_TZ_OFFSET);
-    let projectOffset = getOffset(_PS_OFFSET);
-    var User = user[0];
-    GhostUser.find({
-      userId: { $ne: userId },
-      timezone: {$gte: (User.timezone - timeOffset), $lte: (User.timezone + timeOffset) },
-    // project_size: {$gte: (User.project_size - projectOffset),$lte: (User.project_size + projectOffset)}
-    }).sort({
-      timezone: -1,
-      skill_level: -1,
-      project_size: -1
-    }).exec((err, potentialCandidates) => {
-      let ghostTeam = new GhostTeam();
-      // Decide users role
-      let userRole = decideUserRole(User);
-      // Push user role to the team
-      if (!ghostTeam.hasOwnProperty(userRole)) {
-        ghostTeam[userRole] = [];
-      }
-      ghostTeam[userRole].push(User);
-      // Get optimal skill leve
-      let userSkillLevel = getUserSkillLevel(User.skill_level);
-      // Populate free roles in 5 man team
-      const freeRoles = ['backend', 'backend', 'frontend', 'frontend', 'manager'];
+    ghostTeam[userRole].push(User);
+    // Get optimal skill leve
+    let userSkillLevel = getUserSkillLevel(User.skill_level);
+    // Populate free roles in 5 man team
+    const freeRoles = ['backend', 'backend', 'frontend', 'frontend', 'manager'];
 
-      removeFromFreeRole(freeRoles, userRole);
+    removeFromFreeRole(freeRoles, userRole);
 
-      ghostTeam.score = [User.skill_level];
+    ghostTeam.score = [User.skill_level];
 
-      potentialCandidates.forEach((potentailTeammate, index, array) => {
-        var potentialRole = decideUserRole(potentailTeammate);
-        // Check if role is free
-        if (include(freeRoles, potentialRole)) {
-          if (potentialRole === userRole) {
-            if (inRange(userSkillLevel, potentailTeammate.skill_level)) {
-              ghostTeam[potentialRole].push(potentailTeammate);
-              removeFromFreeRole(freeRoles, potentialRole);
-            }
-          }else {
-            if (freeRoles[0] !== 'manager') {
-              if (ghostTeam[potentialRole].length >= 1) {
-                if (inRange(getUserSkillLevel(ghostTeam[potentialRole][0]), potentailTeammate.skill_level)) {
-                  ghostTeam[potentialRole].push(potentailTeammate);
-                  removeFromFreeRole(freeRoles, potentialRole);
-                }
-              }else {
+    potentialCandidates.forEach((potentailTeammate, index, array) => {
+      var potentialRole = decideUserRole(potentailTeammate);
+      // Check if role is free
+      if (include(freeRoles, potentialRole)) {
+        if (potentialRole === userRole) {
+          if (inRange(userSkillLevel, potentailTeammate.skill_level)) {
+            ghostTeam[potentialRole].push(potentailTeammate);
+            removeFromFreeRole(freeRoles, potentialRole);
+          }
+        }else {
+          if (freeRoles[0] !== 'manager') {
+            if (ghostTeam[potentialRole].length >= 1) {
+              if (inRange(getUserSkillLevel(ghostTeam[potentialRole][0]), potentailTeammate.skill_level)) {
                 ghostTeam[potentialRole].push(potentailTeammate);
                 removeFromFreeRole(freeRoles, potentialRole);
               }
@@ -177,27 +163,30 @@ function createGhostTeam (userId) {
               ghostTeam[potentialRole].push(potentailTeammate);
               removeFromFreeRole(freeRoles, potentialRole);
             }
+          }else {
+            ghostTeam[potentialRole].push(potentailTeammate);
+            removeFromFreeRole(freeRoles, potentialRole);
           }
         }
-      });
-
-      if (freeRoles.length >= 0) {
-        for (var i = 0; i < freeRoles.length; i++) {
-          let potentailTeammate = removeUsersIfInTeam(sort(getUsersForRole(potentialCandidates, freeRoles[i])), ghostTeam.members);
-
-          let Teammate = potentailTeammate[0];
-          ghostTeam[freeRoles[i]].push(Teammate);
-        }
       }
-      ghostTeam.save((err, team) => {
-        if (err) {
-          return err;
-        }
-        if (!team) {
-          return new Error('Something went wrong when saving team');
-        }
-        process.stdout.write('.');
-      });
+    });
+
+    if (freeRoles.length >= 0) {
+      for (var i = 0; i < freeRoles.length; i++) {
+        let potentailTeammate = removeUsersIfInTeam(sort(getUsersForRole(potentialCandidates, freeRoles[i])), ghostTeam.members);
+
+        let Teammate = potentailTeammate[0];
+        ghostTeam[freeRoles[i]].push(Teammate);
+      }
+    }
+    ghostTeam.save((err, team) => {
+      if (err) {
+        return err;
+      }
+      if (!team) {
+        return new Error('Something went wrong when saving team');
+      }
+      process.stdout.write('.');
     });
   });
 }

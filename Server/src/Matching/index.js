@@ -1,32 +1,28 @@
 import match from './match';
 import schedule from 'node-schedule';
 import GhostTeam from '../Models/GhostTeam.js';
-import GhostUser from '../Models/GhostUser';
+import User from '../Models/User';
 
-module.exports = () => {
+export function startSchedule () {
   let j = schedule.scheduleJob('0 12 * * *', function () {
     console.log('\n--> Started the job!');
-    GhostTeam.find({}, (err, teams) => {
-      if (err) {
-        console.log('something went wrong');
-        console.log(err);
-        return;
-      }
-      console.log('--> Removing GhostTeam Database');
-      teams.forEach((team, index, array) => {
-        team.remove();
-      });
-      GhostUser.find({}, (err, users) => {
-        console.log('--> Passing users to matchmaking functions');
+    runMatch();
+  });
+};
+
+export function runMatch () {
+  GhostTeam.find({}, (err, teams) => {
+    if (err) {
+      console.log(err);
+    }else {
+      teams.forEach(team => team.remove(err => ((err) ? console.log(err) : null)));
+      User.find({ isSearching: true }, (err, users) => {
         if (err || !users) {
-          console.log('No users to Match');
           console.log(err);
-          console.log(users);
+        }else {
+          users.forEach(user => match(user));
         }
-        users.forEach((user, index, array) => {
-          match(user.userId);
-        });
       });
-    });
+    }
   });
 };
