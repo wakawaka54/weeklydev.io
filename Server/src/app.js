@@ -91,6 +91,9 @@ server.register([hapiAuthJwt2,
   });
 });
 
+// set mongo promse to use bluebird
+mongoose.Promise = require('bluebird');
+
 // Start the server
 server.start((err) => {
   if (err) {
