@@ -1,5 +1,8 @@
 import * as teams from './teams.js';
 import teamSchema from '../../Schemas/Team.js';
+import { validateUserId } from './util.js';
+import Joi from 'joi';
+
 // TODO: 1 Create a way to add projects and submission to the team and user, Also remove it from them when they leave
 const routes = [
   /**
@@ -25,14 +28,8 @@ const routes = [
       description: 'Create a new Team',
       notes: 'Create a new **Team** with the team owner being then one who requested this',
       tags: ['api', 'Team'],
-      validate: {
-        payload: teamSchema
-      },
-      // pre: [{
-      //   method: 
-      // TODO: add method that checks if team name and projects are taken
-      // NOTE: also check if team name is taken, the owner of the team can create only 3 team max.
-      // }],
+      validate: { payload: teamSchema },
+      pre: [ [{method: validateUserId,  assign: 'users' }] ],
       auth: 'jwt'
     },
     handler: teams.addTeam
@@ -93,9 +90,12 @@ const routes = [
     method: 'POST',
     path: '/teams/{id}/add',
     config: {
-      // validate: {
-      //   payload: teamSchema // TOOD: add a new validation otherwise this will not work
-      // },
+      validate: {
+        payload: Joi.object({
+          id: Joi.string().token().length(8).required(),
+          role: Joi.string().allow(['frontend', 'backend', 'manager']).required()
+        })
+      },
       auth: {
         scope: ['manager-{params.id}', 'admin']
       },

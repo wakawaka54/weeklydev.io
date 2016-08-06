@@ -1,3 +1,5 @@
+import { validateUser } from '../../Utils/validation.js';
+
 export function checkArrayLength (role, role_level) {
   if (role.length !== role_level.length) {
     return false;
@@ -37,4 +39,18 @@ export function findUserInTeam (user, arrayOfRoles) {
     }
   }
   return false;
+};
+
+export function validateUserId (req, res) {
+  if (req.payload.user) {
+    validateUser(req.payload.user, (err, response) => {
+      if (err) {
+        res(err);
+      }else {
+        res(response);
+      }
+    });
+  }else {
+    res();
+  }
 };
