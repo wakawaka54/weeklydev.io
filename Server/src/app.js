@@ -19,7 +19,7 @@ import config from 'config';
 import { getRoutes } from './api';
 
 const server = new Hapi.Server();
-import startMatchmaking from './Matching';
+import { startSchedule } from './Matching';
 
 global.PATH = process.env.PWD || process.cwd();
 
@@ -112,7 +112,9 @@ server.start((err) => {
       throw err;
     } else {
       console.log('Connected to MongoDB at', mongoURI);
-      startMatchmaking();
+      // schedule Matchmaking every 12 PM (24H)
+      console.log('Starting Matchmaking Schedule');
+      startSchedule();
     }
   });
 });
