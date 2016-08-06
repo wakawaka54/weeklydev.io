@@ -37,6 +37,8 @@ const TeamModel = new Schema({
     msg: String
   }],
   meta: {
+    Match: Boolean,
+    timezone: [Number],
     created: {type: Date, default: Date.now()},
     disband: Date,
     members: [{
@@ -69,7 +71,6 @@ TeamModel
     updateObject = { $addToSet: { team: this.teamId }};
     if (this.project) updateObject['$addToSet'].project = this.project;
     if (this.submission)  updateObject['$addToSet'].submission = this.submission;
-    console.log(updateObject);
     this.members.forEach(user => {
       this.model('User').findByUserIdAndUpdate(user.id, updateObject).exec()
         .catch(err => next(err))
@@ -82,7 +83,25 @@ TeamModel
     });
   });
 
-TeamModel.pre('remove');
+TeamModel
+  .pre('remove', function (next) {
+    let _count = this.members.length;
+    let _current = 0;
+    let updateObject = {};
+    updateObject = { $pull: { team: this.teamId }};
+    if (this.project) updateObject['$addToSet'].project = this.project;
+    if (this.submission)  updateObject['$addToSet'].submission = this.submission;
+    this.members.forEach(user => {
+      this.model('User').findByUserIdAndUpdate(user.id, updateObject).exec()
+        .catch(err => next(err))
+        .then(user => {
+          _current++;
+          if (_current == _content) {
+            next();
+          }
+        });
+    });
+  });
 
 let getUsers = (users, role) => {
   let ret;

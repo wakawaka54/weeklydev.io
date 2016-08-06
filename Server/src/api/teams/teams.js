@@ -5,32 +5,31 @@ import User from '../../Models/User';
 import * as Code from '../../Utils/errorCodes.js';
 import { findUserInTeam } from './util.js';
 
-let saveTeam = (team, res) => {
-  team.save()
-    .catch(err => res(Boom.badImplementation(err)))
-    .then(team => res(team));
-};
-
 /*
  * Add Team 
  */
 export function addTeam (req, res) {
-  let team = new Team();
-  team[owner] = req.Token.id;
-  team[teamId] = shortid.generate();
-  team[isActive] = true;
-  if (req.payload.users && req.pre.users) {
+  let team = new Team({
+    owner: req.Token.id,
+    teamId: shortid.generate(),
+    isActive: true
+  });
+  if (req.payload.user && req.pre.users) {
     req.pre.users.forEach(user => {
       if (user.valid) {
-        team[members].push(user.user);
+        team.members.push(user.user);
         team.meta['members'].push({id: user.user.id});
       }else {
         res(Boom.badRequest({msg: 'Incorect User Details',error: user.user}));
       }
     });
-    saveTeam(team, res);
+    team.save()
+      .catch(err => res(Boom.badImplementation(err)))
+      .then(_team => res(_team));
   }else {
-    saveTeam(team, res);
+    team.save()
+      .catch(err => res(Boom.badImplementation(err)))
+      .then(_team => res(_team));
   }
 };
 
@@ -39,7 +38,7 @@ export function addTeam (req, res) {
  */
 export function getTeams (req, res) {
   Team.find()
-    .populate('manager frontend backend', 'id username isSearching project team')
+    .populate('members', 'id username isSearching project team')
     .exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));

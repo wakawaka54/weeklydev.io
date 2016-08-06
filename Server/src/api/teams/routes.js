@@ -29,7 +29,7 @@ const routes = [
       notes: 'Create a new **Team** with the team owner being then one who requested this',
       tags: ['api', 'Team'],
       validate: { payload: teamSchema },
-      pre: [ [{method: validateUserId,  assign: 'users' }] ],
+      pre: [{method: validateUserId,  assign: 'users' }],
       auth: 'jwt'
     },
     handler: teams.addTeam
