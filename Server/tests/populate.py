@@ -7,7 +7,8 @@ import sys
 
 start_time = time.time()
 userNumber = (int(float(sys.argv[1])) or 200)
-
+baseURL = 'http://localhost:1337'
+prefix = '/v1'
 
 def randomName(capitalize):  
 	bits=[]
@@ -32,7 +33,7 @@ def randomName(capitalize):
 	return word
 
 def createNewUser(username):
-	url = "http://localhost:1337/users/new"
+	url = "%s%s/users/new" % (baseURL,prefix)
 	payload = "username={0}&email={0}%40gmail.com&password=testtest".format(username)
 	headers = {
 	    'content-type': "application/x-www-form-urlencoded"
@@ -41,8 +42,8 @@ def createNewUser(username):
 
 
 def postSurvey(token):
-	url = "http://localhost:1337/survey"
-	payload = "role%5B0%5D={0}&projectManager={1}&skill={2}&size={3}&timezone={4}".format(random.choice(['backend','frontend']),random.choice(['true','false']),random.randint(1,5),random.randint(3,5),random.randint(-12,12))
+	url = "%s%s/survey" % (baseURL,prefix)
+	payload = "role%5B0%5D={0}&project_manager={1}&skill_level={2}&project_size={3}&timezone={4}".format(random.choice(['backend','frontend']),random.choice(['true','false']),random.randint(1,5),random.randint(3,5),random.randint(-12,12))
 	headers = {
 	    'authorization': "bearer {0}".format(token),
 	    'content-type': "application/x-www-form-urlencoded"
@@ -50,11 +51,12 @@ def postSurvey(token):
 	return  requests.request("POST", url, data=payload, headers=headers)
 
 def joinMatchmaking(token):
-	url = "http://localhost:1337/match/join"
+	url = "%s%s/matching/join" % (baseURL,prefix)
+	print url
 	headers = { 'authorization': "bearer {0}".format(token) }
-	return  requests.request("GET", url, headers=headers)
+	return requests.request("POST", url, headers=headers)
 
-for i in range(1,userNumber):
+for i in range(0,userNumber - 1):
 	username = randomName(True)
 	userResponse = createNewUser(username)
 	token = json.loads(userResponse.text)['token']
