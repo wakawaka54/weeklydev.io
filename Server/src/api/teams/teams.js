@@ -17,7 +17,7 @@ export function addTeam (req, res) {
   if (req.payload.user && req.pre.users) {
     req.pre.users.forEach(user => {
       if (user.valid) {
-        team.members.push(user.user);
+        team.members.push({id: user.user.id,  role: user.user.role});
         team.meta['members'].push({id: user.user.id});
       }else {
         res(Boom.badRequest({msg: 'Incorect User Details',error: user.user}));
@@ -38,7 +38,7 @@ export function addTeam (req, res) {
  */
 export function getTeams (req, res) {
   Team.find()
-    .populate('members', 'id username isSearching project team')
+    .populate('Pmembers', 'id username isSearching project team')
     .exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));
@@ -98,7 +98,7 @@ export function deleteTeam (req, res) {
  */
 export function getTeam (req, res) {
   Team.findByTeamId(req.params.id)
-    .populate('manager.user frontend.user backend.user', 'id username isSearching project team').exec()
+    .populate('Pmembers', 'id username isSearching project team').exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));
 };

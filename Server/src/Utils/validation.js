@@ -61,7 +61,7 @@ export function validateUser (users, cb) {
     let current = 0;
     users.forEach(user => {
       User.count({userId: user.id}).exec()
-        .catch(err => callback(err, null))
+        .catch(err => cb(err, null))
         .then(count => {
           _user.push(((count > 0) ? {user: user,valid: true} : {user: user,valid: false}));
           current++;
@@ -72,8 +72,8 @@ export function validateUser (users, cb) {
     });
   }else {
     User.count({userId: users}).exec()
-      .catch(err => callback(false))
-      .then(count => ((count > 0) ? cb(true) : cb(false)));
+      .catch(err => callback(null, false))
+      .then(count => ((count > 0) ? cb(null, true) : cb(null, false)));
   }
 };
 

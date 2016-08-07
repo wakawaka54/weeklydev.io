@@ -25,9 +25,8 @@ const TeamModel = new Schema({
   },
   members: [{
     id: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
+      type: String,
+      required: true
     },
     role: String
   }],
@@ -42,7 +41,7 @@ const TeamModel = new Schema({
     created: {type: Date, default: Date.now()},
     disband: Date,
     members: [{
-      id: Schema.Types.ObjectId,
+      id: String,
       date: {
         joined: {type: Date, default: Date.now()},
         leave: Date
@@ -68,7 +67,7 @@ TeamModel
     let _count = this.members.length;
     let _current = 0;
     let updateObject = {};
-    updateObject = { $addToSet: { team: this.teamId }};
+    updateObject = { $addToSet: { team: {id: this.id, shortId: this.teamId}  }};
     if (this.project) updateObject['$addToSet'].project = this.project;
     if (this.submission)  updateObject['$addToSet'].submission = this.submission;
     this.members.forEach(user => {
@@ -76,7 +75,7 @@ TeamModel
         .catch(err => next(err))
         .then(user => {
           _current++;
-          if (_current == _content) {
+          if (_current == _count) {
             next();
           }
         });
@@ -88,7 +87,7 @@ TeamModel
     let _count = this.members.length;
     let _current = 0;
     let updateObject = {};
-    updateObject = { $pull: { team: this.teamId }};
+    updateObject = { $pull: { team: {id: this.id, shortId: this.teamId} }};
     if (this.project) updateObject['$addToSet'].project = this.project;
     if (this.submission)  updateObject['$addToSet'].submission = this.submission;
     this.members.forEach(user => {
@@ -96,7 +95,7 @@ TeamModel
         .catch(err => next(err))
         .then(user => {
           _current++;
-          if (_current == _content) {
+          if (_current == _count) {
             next();
           }
         });
@@ -111,6 +110,11 @@ let getUsers = (users, role) => {
   return ret;
 };
 
+TeamModel.virtual('Pmembers', {
+  ref: 'User', // The model to use
+  localField: 'members.id', // Find people where `localField`
+  foreignField: 'userId' // is equal to `foreignField`
+});
 TeamModel.virtual('frontend').get(() => {
   return getUsers(this.members, 'frontend');
 });
@@ -121,11 +125,11 @@ TeamModel.virtual('manager').get(() => {
   return getUsers(this.members, 'manager');
 });
 
-TeamModel.statics.findByTeamId = (ID, cb) => {
-  return this.findOne({teamId: ID}, cb);
+TeamModel.statics.findByTeamId = function (ID, cb) {
+  return this.model('Team').findOne({teamId: ID}, cb);
 };
-TeamModel.statics.findByTeamIdAndRemove = (ID, cb) => {
-  return this.findOneAndRemove({teamId: ID}, cb);
+TeamModel.statics.findByTeamIdAndRemove = function (ID, cb) {
+  return this.model('Team').findOneAndRemove({teamId: ID}, cb);
 };
 TeamModel.options.toObject = {
   transform: (doc, ret, opts) => {

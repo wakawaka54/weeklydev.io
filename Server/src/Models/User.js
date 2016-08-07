@@ -36,9 +36,12 @@ const UserSchema = new Schema({
   scope: [String],
   manager: [String],
   team: [{
-    type: Schema.Types.ObjectId,
-    required: false,
-    ref: 'Team'
+    id: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: 'Team'
+    },
+    shortId: String
   }],
   project: [{
     type: Schema.Types.ObjectId,
@@ -170,9 +173,10 @@ UserSchema.methods = {
 UserSchema.options.toObject = {
   transform: (doc, ret, opts) => {
     let user = {
-      id: ret.userId,
+      shortId: ret.userId,
+      id: ret.id,
       username: ret.username,
-      team: ret.team,
+      team: ret.team.map((t) => t.shortId),
       // team: ret.team.map((t) => t.toObject()),
       project: ret.project,
       // project: ret.project.map((p) => p.toObject()),
@@ -201,6 +205,7 @@ UserSchema.options.toObject = {
           copy('isSearching');
           break;
         case 'users':
+          user.id = ret._id.toString();
           copy('admin');
       }
       return user;
