@@ -246,12 +246,12 @@ This returns user info and valid token used later in most of the paths as author
    *  Request to reset password
    */
   {
-    method: 'GET',
+    method: 'POST',
     path: '/users/passwordreset',
     config: {
       auth: false,
       description: 'Request a password reset.',
-      notes: 'Request a link for password reset to be sent to the users email.',
+      notes: 'Request a link for password reset to be sent to the email provided, granted that a user for that email exists. Otherwise it returns an error.',
       tags: ['api', 'User']
     },
     handler: users.requestPasswordReset
