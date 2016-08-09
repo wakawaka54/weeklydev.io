@@ -174,7 +174,7 @@ UserSchema.options.toObject = {
   transform: (doc, ret, opts) => {
     let user = {
       shortId: ret.userId,
-      id: ret.id,
+      id: ret._id,
       username: ret.username,
       team: ret.team.map((t) => t.shortId),
       // team: ret.team.map((t) => t.toObject()),

@@ -4,7 +4,7 @@
   "description": "A RESTful api for interacting with the weekly dev databases",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node dist/app.js",
     "watch": "gulp spy",
     "test": "npm run build && mocha tests/tests.js",
     "build": "gulp build"

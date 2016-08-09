@@ -10,13 +10,37 @@ var ProjectModel = new Schema({
     type: String,
     required: true
   },
+  tags: {
+    type: [String],
+    required: false
+  },
+  creator: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
+  },
+  team: {
+    type: Schema.Types.ObjectId,
+    required: false,
+    ref: 'Team'
+  },
   deadline: {
     type: Date,
-    required: false
+    required: false,
+    default: Date.now()
   },
   created_on: {
     type: Date,
     default: Date.now()
+  },
+  public: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  upvotes: {
+    type: [Schema.Types.ObjectId],
+    required: false
   }
 });
 

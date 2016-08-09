@@ -113,8 +113,8 @@ server.start((err) => {
     } else {
       console.log('Connected to MongoDB at', mongoURI);
       // schedule Matchmaking every 12 PM (24H)
-      console.log('Starting Matchmaking Schedule');
-      startSchedule();
+      //console.log('Starting Matchmaking Schedule');
+      //startSchedule();
     }
   });
 });
