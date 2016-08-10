@@ -10,12 +10,12 @@ import { findUserInTeam } from './util.js';
  */
 export function addTeam (req, res) {
   let team = new Team({
-    owner: req.Token.id,
-    teamId: shortid.generate(),
-    isActive: true
+    manager: req.Token.id,
+    name: req.payload.name
   });
-  if (req.payload.user && req.pre.users) {
-    req.pre.users.forEach(user => {
+
+  if (req.payload.users) {
+    req.payload.users.forEach(user => {
       if (user.valid) {
         team.members.push({id: user.user.id,  role: user.user.role});
         team.meta['members'].push({id: user.user.id});

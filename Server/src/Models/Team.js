@@ -2,43 +2,37 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const TeamModel = new Schema({
-  teamId: String,
+  name: String,
+  members: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    role: String
+  }],
   project: {
     type: Schema.Types.ObjectId,
     required: false,
     ref: 'Project',
     dafault: null
   },
-  submission: {
-    type: Schema.Types.ObjectId,
-    required: false,
-    ref: 'Submission',
-    dafault: null
-  },
-  owner: {
+  manager: {
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
   isActive: {
     type: Boolean,
-    default: false
+    default: true
   },
-  members: [{
-    id: {
-      type: String,
-      required: true
-    },
-    role: String
-  }],
   requests: [{
     id: Schema.Types.ObjectId,
     role: String,
     msg: String
   }],
+  created: {type: Date, default: Date.now()},
   meta: {
     Match: Boolean,
     timezone: [Number],
-    created: {type: Date, default: Date.now()},
     disband: Date,
     members: [{
       id: String,
@@ -54,9 +48,9 @@ TeamModel
   .pre('save', function (next) {
     if (this.isNew) {
       // handle duplicated ID
-      this.model('Team').findOne({teamId: this.teamId}, (err, user) => {
-        if (err || user) {
-          next(err || new Error('User Id already exists'));
+      this.model('Team').findOne({name: this.name, (err, team) => {
+        if (err || team) {
+          next(err || new Error('Team name already exists'));
         }else {
           next();
         }
@@ -110,7 +104,7 @@ let getUsers = (users, role) => {
   return ret;
 };
 
-TeamModel.virtual('Pmembers', {
+TeamModel.virtual('Members', {
   ref: 'User', // The model to use
   localField: 'members.id', // Find people where `localField`
   foreignField: 'userId' // is equal to `foreignField`
@@ -121,9 +115,9 @@ TeamModel.virtual('frontend').get(() => {
 TeamModel.virtual('backend').get(() => {
   return getUsers(this.members, 'backend');
 });
-TeamModel.virtual('manager').get(() => {
+/*TeamModel.virtual('manager').get(() => {
   return getUsers(this.members, 'manager');
-});
+});*/
 
 TeamModel.statics.findByTeamId = function (ID, cb) {
   return this.model('Team').findOne({teamId: ID}, cb);
