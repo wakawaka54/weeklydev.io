@@ -1,6 +1,6 @@
 import * as teams from './teams.js';
-import { teamSchema, teamProjectSchema } from '../../Schemas/Team.js';
-import { validateUserId } from './util.js';
+import { newTeamSchema, addProjectTeamSchema } from '../../Schemas/Team.js';
+import { validateUserId, validateProjectId } from './util.js';
 import Joi from 'joi';
 
 // TODO: 1 Create a way to add projects and submission to the team and user, Also remove it from them when they leave
@@ -28,7 +28,7 @@ const routes = [
       description: 'Create a new Team',
       notes: 'Create a new **Team** with the team owner being then one who requested this',
       tags: ['api', 'Team'],
-      validate: { payload: teamSchema },
+      validate: { payload: newTeamSchema },
       pre: [{ method: validateUserId,  assign: 'users' }],
       auth: 'jwt'
     },
@@ -61,7 +61,7 @@ const routes = [
       notes: 'Update the team infomation. \n\n**IMPORTANT**: only the Team owner can update it.',
       tags: ['api', 'Team'],
       validate: {
-        payload: teamSchema
+        payload: newTeamSchema
       }
     },
     handler: teams.updateTeam
@@ -121,6 +121,22 @@ const routes = [
       tags: ['api', 'Team']
     },
     handler: teams.requestJoinToTeam
+  },
+  
+  /**
+  * Add Project to Team
+  */  
+  {
+    method: 'POST',
+    path: '/teams/{id}/project/{pid}',
+    config: {
+      auth: {
+        scope: ['manager-{params.id}', 'admin']
+      },
+      description: "Add project to team",
+      pre: [{ method: validateProjectId,  assign: 'project' }]
+    },
+    handler: teams.addProjectTeam
   }
 ];
 

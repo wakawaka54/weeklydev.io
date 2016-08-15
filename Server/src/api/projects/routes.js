@@ -8,7 +8,7 @@ const routes = [
     path: '/projects',
     config: {
       auth: 'jwt',
-      description: 'List all avaible projects',
+      description: 'List all available projects',
       tags: ['api', 'Projects']
     },
     handler: projects.getProjects

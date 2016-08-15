@@ -129,6 +129,9 @@ UserSchema.statics.findByUserId = function (userId, cb) {
   return this.findOne({ userId: userId}, cb);
 };
 
+//Safe schema that doesn't allow the selection of password, etc. when populating other models with user
+UserSchema.statics.safeUser = 'username';
+
 UserSchema.methods = {
 
   /**
@@ -155,7 +158,7 @@ UserSchema.methods = {
 
   /**
    * Encrypt password
-   * 
+   *
    * @param {String} password
    * @param {Number} [rounds=10]
    * @param {Function} [cb]

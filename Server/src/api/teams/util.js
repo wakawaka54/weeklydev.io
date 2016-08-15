@@ -1,4 +1,19 @@
-import { validateUser } from '../../Utils/validation.js';
+import User from '../../Models/User.js';
+import { validateUser, validateProject } from '../../Utils/validation.js';
+
+export function addToUserScope(userid, scope)
+{
+  console.log("adding scope");
+
+  User.findOne({_id : userid}, (err, user) => {
+    if(user)
+    {
+      console.log(user);
+      user.scope.push(scope);
+      user.save();
+    }
+  });
+}
 
 export function checkArrayLength (role, role_level) {
   if (role.length !== role_level.length) {
@@ -29,14 +44,10 @@ export function arrayChecker (role, role_level) {
   }
 };
 
-export function findUserInTeam (user, arrayOfRoles) {
-  function userFind (array) {
-    return array.user == user;
-  }
-  for (var i = 0; i < arrayOfRoles.length; i++) {
-    if (arrayOfRoles[i].find(userFind)) {
-      return true;
-    }
+export function findUserInTeam (user, members) {
+  for(let i = 0; i != members.length; i++)
+  {
+    if(members[i].user == user) return true;
   }
   return false;
 };
@@ -51,6 +62,20 @@ export function validateUserId (req, res) {
       }
     });
   }else {
+    res();
+  }
+};
+
+export function validateProjectId (req, res) {
+  if(req.params.pid) {
+    validateProject(req.params.id, (err, response) =>{
+      if(err) { res(err); }
+      else {
+        res(response);
+      }
+    });
+  }
+  else {
     res();
   }
 };

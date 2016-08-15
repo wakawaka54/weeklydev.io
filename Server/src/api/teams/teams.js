@@ -3,10 +3,10 @@ import shortid from 'shortid';
 import Team from '../../Models/Team';
 import User from '../../Models/User';
 import * as Code from '../../Utils/errorCodes.js';
-import { findUserInTeam } from './util.js';
+import { findUserInTeam, addToUserScope } from './util.js';
 
 /*
- * Add Team 
+ * Add Team
  */
 export function addTeam (req, res) {
   let team = new Team({
@@ -14,7 +14,9 @@ export function addTeam (req, res) {
     name: req.payload.name
   });
 
-  if (req.payload.users) {
+  //Can't force users to be on your team
+
+  /*if (req.payload.users) {
     req.payload.users.forEach(user => {
       if (user.valid) {
         team.members.push({id: user.user.id,  role: user.user.role});
@@ -23,14 +25,14 @@ export function addTeam (req, res) {
         res(Boom.badRequest({msg: 'Incorect User Details',error: user.user}));
       }
     });
-    team.save()
-      .catch(err => res(Boom.badImplementation(err)))
-      .then(_team => res(_team));
-  }else {
-    team.save()
-      .catch(err => res(Boom.badImplementation(err)))
-      .then(_team => res(_team));
-  }
+  }*/
+
+  team.save()
+    .then(_team => {
+      addToUserScope(_team.manager, `manager-${_team.id}`)
+      res(_team);
+    })
+    .catch(err => { res(Boom.conflict(err)); });
 };
 
 /*
@@ -38,11 +40,23 @@ export function addTeam (req, res) {
  */
 export function getTeams (req, res) {
   Team.find()
-    .populate('Pmembers', 'id username isSearching project team')
+    .populate({ select: User.safeUser, path: 'manager' })
+    .populate('members')
     .exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));
 };
+
+export function addProjectTeam (req, res) {
+  Team.findByTeamId(req.params.id).exec()
+    .then(team => {
+      team.project = req.params.pid;
+      team.save()
+        .then(_team => res(_team))
+        .catch(err => res(Boom.badImplementation(err)));
+    })
+    .catch(err => res(Boom.notFound(err)));
+}
 
 /*
  * Add user to team
@@ -54,32 +68,33 @@ export function addUserToTeam (req, res) {
       User.findByUserId(req.payload.id).exec()
         .catch(err => res(Code.teamNotFound))
         .then(user => {
+          console.log("HERE");
+
           // Checks if user is in more then 3 teams
           if (user.team.length >= 3) {
-            res(Code.userInTooManyTeams);
-          }else {
-            // If the user who requested is team owner
-            if (req.Token.id !== team.owner) {
-              res(Code.notOwner);
-            }else {
-              // Makes sure the new user is NOT in the team already
-              if (findUserInTeam(user.id, [team.manager, team.backend, team.frontend])) {
-                res(Code.userInTeam);
-              }else {
-                if (team[req.payload.role].length >= 2 || team.members.length >= 5) {
-                  res(Code.maxUsersInRole);
-                }else {
-                  team.members.push(req.payload);
-                  // Adds the user to meta data
-                  team.meta.members.push({id: req.payload.user});
-
-                  team.save()
-                    .catch(err => res(Boom.badImplementation(err)))
-                    .then(team => res({success: true, code: 200}).code(200));
-                }
-              }
-            }
+            res(Code.userInTooManyTeams); return;
           }
+          // If the user who requested is team owner
+          if (req.Token.id !== team.manager) {
+            res(Code.notOwner); return;
+          }
+          // Makes sure the new user is NOT in the team already
+          if (findUserInTeam(user.id, team.members)) {
+            res(Code.userInTeam); return;
+          }
+
+          let pushObject = {
+            id: req.payload.id,
+            role: req.payload.role
+          };
+
+          team.members.push(pushObject);
+          // Adds the user to meta data
+          team.meta.members.push({id: req.payload.id});
+
+          team.save()
+            .catch(err => res(Boom.badImplementation(err)))
+            .then(team => res({success: true, code: 200}).code(200));
         });
     });
 };
