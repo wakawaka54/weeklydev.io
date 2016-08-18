@@ -136,6 +136,64 @@ describe('Project Endpoints', () => {
       done();
     });
   });
+
+  it('Upvote project', (done) => {
+    server.inject({
+      method: 'POST',
+      url: URL + '/projects/' + projectSchema.id + '/upvote',
+      headers: {
+        Authorization: 'bearer ' + user2.token
+      }
+    }, (res) => {
+      let project = res.result;
+      expect(project.upvotes.indexOf(user2.id)).to.not.equal(-1);
+      expect(project.downvotes.indexOf(user2.id)).to.be.equal(-1);
+      expect(res.statusCode).to.be.equal(200);
+      done();
+    });
+  });
+
+  it('Cannot upvote project again', (done) => {
+    server.inject({
+      method: 'POST',
+      url: URL + '/projects/' + projectSchema.id + '/upvote',
+      headers: {
+        Authorization: 'bearer ' + user2.token
+      }
+    }, (res) => {
+      expect(res.statusCode).to.be.equal(409);
+      done();
+    });
+  });
+
+  it('Downvote project', (done) => {
+    server.inject({
+      method: 'POST',
+      url: URL + '/projects/' + projectSchema.id + '/downvote',
+      headers: {
+        Authorization: 'bearer ' + user2.token
+      }
+    }, (res) => {
+      let project = res.result;
+      expect(project.upvotes.indexOf(user2.id)).to.be.equal(-1);
+      expect(project.downvotes.indexOf(user2.id)).to.not.equal(-1);
+      expect(res.statusCode).to.be.equal(200);
+      done();
+    });
+  });
+
+  it('Cannot downvote project again', (done) => {
+    server.inject({
+      method: 'POST',
+      url: URL + '/projects/' + projectSchema.id + '/downvote',
+      headers: {
+        Authorization: 'bearer ' + user2.token
+      }
+    }, (res) => {
+      expect(res.statusCode).to.be.equal(409);
+      done();
+    });
+  });
 });
 
 describe('Team Endpoints', () => {

@@ -1,5 +1,6 @@
 import * as projects from './projects.js';
 import { projectSchema, projectUpdateSchema } from '../../Schemas/Project.js';
+import * as utils from './util.js';
 
 const routes = [
   {
@@ -60,6 +61,30 @@ const routes = [
       tags: ['api', 'Projects']
     },
     handler: projects.deleteProject
+  },
+  {
+    method: 'POST',
+    path: '/projects/{id}/upvote',
+    config: {
+      auth: 'jwt',
+      description: 'Delete Project',
+      tags: ['api', 'Projects'],
+      pre:
+        [{ method: utils.validateUpvoteProjectId,  assign: 'project' }]
+    },
+    handler: projects.upvoteProject
+  },
+  {
+    method: 'POST',
+    path: '/projects/{id}/downvote',
+    config: {
+      auth: 'jwt',
+      description: 'Delete Project',
+      tags: ['api', 'Projects'],
+      pre:
+        [{ method: utils.validateUpvoteProjectId,  assign: 'project' }]
+    },
+    handler: projects.downvoteProject
   }
 ];
 

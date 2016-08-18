@@ -1,5 +1,6 @@
 import Project from '../../Models/Project.js';
 import Team from '../../Models/Team.js';
+import Boom from 'boom';
 
 /*
  * Get projects
@@ -81,4 +82,44 @@ export function deleteProject(req, res) {
     if(err) { Boom.badImplementation("Error removing project"); }
     res({statusCode:200});
   });
+};
+
+export function upvoteProject(req, res) {
+  if(req.pre.project == null) { res(Boom.badRequest("Project invalid")); }
+
+  let project = req.pre.project;
+
+  //make sure user has not already upvoted
+  if(project.upvotes.indexOf(req.auth.credentials.id) != -1) { return res(Boom.conflict('User has already upvoted')); }
+
+  //add user id to upvotes
+  project.upvotes.push(req.auth.credentials.id);
+
+  //check downvotes to make sure user is not there
+  let downvoteIndex = project.downvotes.indexOf(req.auth.credentials.id);
+  if(downvoteIndex != -1) { project.downvotes.splice(downvoteIndex, 1); }
+
+  req.pre.project.save()
+  .then((project) => res(project))
+  .catch((err) => res(Boom.badImplementation(err)));
+}
+
+export function downvoteProject(req, res) {
+  if(req.pre.project == null) { res(Boom.badRequest("Project invalid")); }
+
+  let project = req.pre.project;
+
+  //make sure user has not already downvoted
+  if(project.downvotes.indexOf(req.auth.credentials.id) != -1) { return res(Boom.conflict('User has already downvoted')); }
+
+  //add user id to downvotes
+  project.downvotes.push(req.auth.credentials.id);
+
+  //check upvotes to make sure user is not there
+  let upvoteIndex = project.upvotes.indexOf(req.auth.credentials.id);
+  if(upvoteIndex != -1) { project.upvotes.splice(upvoteIndex, 1); }
+
+  req.pre.project.save()
+  .then((project) => res(project))
+  .catch((err) => res(Boom.badImplementation(err)));
 }

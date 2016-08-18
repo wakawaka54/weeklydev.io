@@ -41,7 +41,15 @@ var ProjectModel = new Schema({
   upvotes: {
     type: [Schema.Types.ObjectId],
     required: false
+  },
+  downvotes: {
+    type: [Schema.Types.ObjectId],
+    required: false
   }
+});
+
+ProjectModel.virtual('votes').get(() => {
+  return upvotes.length - downvotes.length;
 });
 
 ProjectModel.statics.findProjectAndUpdate = function (pid, updateObject, cb) {
@@ -51,7 +59,6 @@ ProjectModel.statics.findProjectAndUpdate = function (pid, updateObject, cb) {
 ProjectModel.options.toObject = {
   transform: (doc, ret, opts) => {
     delete ret.__v;
-
     return ret;
   }
 };
