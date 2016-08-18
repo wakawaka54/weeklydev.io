@@ -44,6 +44,10 @@ var ProjectModel = new Schema({
   }
 });
 
+ProjectModel.statics.findProjectAndUpdate = function (pid, updateObject, cb) {
+  return this.findOneAndUpdate({ _id: pid }, updateObject, cb);
+};
+
 ProjectModel.options.toObject = {
   transform: (doc, ret, opts) => {
     delete ret.__v;

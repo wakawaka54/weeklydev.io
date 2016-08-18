@@ -64,24 +64,21 @@ export function getProject (req, res) {
  * Update a  project
  */
 export function updateProject (req, res) {
-  function update (req) {
-    let obj = {};
-    if (req.payload.title) {
-      obj.title = req.payload.title;
-    }
-    if (req.payload.details) {
-      obj.description = req.payload.description;
-    }
-    if (req.payload.deadline) {
-      obj.deadline = req.payload.deadline;
-    }
-    return obj;
-  }
-  Project.findByIdAndUpdate(req.params.id, update(req), (err, project) => {
+  Project.findByIdAndUpdate(req.params.id, req.payload, (err, project) => {
     if (err) {
       res(Boom.badRequest('project not found!'));
-    }else {
+    }
+    else {
+      //Overwrite FOUND document properties with update object
+      for(let attrname in req.payload) { project[attrname] = req.payload[attrname]; }
       res(project);
     }
   });
 };
+
+export function deleteProject(req, res) {
+  Project.findOneAndRemove({_id: req.params.id}, (err, callback) => {
+    if(err) { Boom.badImplementation("Error removing project"); }
+    res({statusCode:200});
+  });
+}

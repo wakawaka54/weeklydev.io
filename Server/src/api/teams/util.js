@@ -1,17 +1,43 @@
 import User from '../../Models/User.js';
+import Project from '../../Models/Project.js';
 import { validateUser, validateProject } from '../../Utils/validation.js';
 
 export function addToUserScope(userid, scope)
 {
-  console.log("adding scope");
-
   User.findOne({_id : userid}, (err, user) => {
     if(user)
     {
-      console.log(user);
       user.scope.push(scope);
       user.save();
     }
+  });
+}
+
+export function removeFromUserScope(userid, scope)
+{
+  User.findOne({_id : userid}, (err, user) => {
+    if(user)
+    {
+      let index = user.scope.indexOf(scope);
+      if(index != -1) { user.scope.splice(index, 1); }
+      user.save();
+    }
+  });
+}
+
+export function addTeamToProject(teamId, projectId)
+{
+  Project.findById({_id: projectId}, (err, project) => {
+    project.team = teamId;
+    project.save();
+  });
+}
+
+export function removeTeamFromProject(teamId, projectId)
+{
+  Project.findById({_id: projectId}, (err, project) => {
+    project.team = null;
+    project.save();
   });
 }
 
@@ -52,6 +78,14 @@ export function findUserInTeam (user, members) {
   return false;
 };
 
+export function findUserInRequests(user, members) {
+  for(let i = 0; i != members.length; i++)
+  {
+    if(members[i].user == user) return true;
+  }
+  return false;
+}
+
 export function validateUserId (req, res) {
   if (req.payload.user) {
     validateUser(req.payload.user, (err, response) => {
@@ -65,6 +99,32 @@ export function validateUserId (req, res) {
     res();
   }
 };
+
+/*
+export function validateUpdateProject(req, res)
+{
+  if(req.payload.project)
+  {
+    validateProject(req.payload.project, (err, project) => {
+      if(err) { return res(false); }
+      if(project && project.team != null) { return res(false); }
+      return res(true);
+    });
+  }
+  else { return res(true);}
+}*/
+
+export function validateUpdateUser(req, res)
+{
+  if(req.payload.manager)
+  {
+    validateUser(req.payload.manager, (err, response) => {
+      if(err) { return res(false); }
+      return res(true);
+    });
+  }
+  else { return res(true); }
+}
 
 export function validateProjectId (req, res) {
   if(req.params.pid) {

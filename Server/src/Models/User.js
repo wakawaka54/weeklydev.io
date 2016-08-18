@@ -40,8 +40,7 @@ const UserSchema = new Schema({
       type: Schema.Types.ObjectId,
       required: false,
       ref: 'Team'
-    },
-    shortId: String
+    }
   }],
   project: [{
     type: Schema.Types.ObjectId,
@@ -118,15 +117,15 @@ UserSchema
     }
   });
 UserSchema.statics.findByUserIdAndRemove = function (userId, cb) {
-  return this.findOneAndRemove({ userId: userId}, cb);
+  return this.findOneAndRemove({ _id: userId}, cb);
 };
 
 UserSchema.statics.findByUserIdAndUpdate = function (userId, updateObject, cb) {
-  return this.findOneAndUpdate({ userId: userId }, updateObject, cb);
+  return this.findOneAndUpdate({ _id: userId }, updateObject, cb);
 };
 
 UserSchema.statics.findByUserId = function (userId, cb) {
-  return this.findOne({ userId: userId}, cb);
+  return this.findOne({ _id: userId}, cb);
 };
 
 //Safe schema that doesn't allow the selection of password, etc. when populating other models with user
@@ -179,7 +178,7 @@ UserSchema.options.toObject = {
       shortId: ret.userId,
       id: ret._id,
       username: ret.username,
-      team: ret.team.map((t) => t.shortId),
+      team: ret.team,
       // team: ret.team.map((t) => t.toObject()),
       project: ret.project,
       // project: ret.project.map((p) => p.toObject()),

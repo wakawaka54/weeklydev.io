@@ -80,11 +80,10 @@ export function validateUser (users, cb) {
 
 export function validateProject(project, cb)
 {
-  Project.count({_id: project.id}).exec()
-    .catch(err => cb(err, null))
-    .then(count => {
-        cb(null, count > 0);
-    });
+  Project.findOne({_id: project}, (err, _proj) => {
+      if(err) { cb(err, null); return; }
+      cb(null, _proj);
+  });
 }
 
 export function isAdmin (scope) {

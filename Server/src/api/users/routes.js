@@ -129,10 +129,7 @@ This returns user info and valid token used later in most of the paths as author
     path: '/users/{id}',
     config: {
       auth: {
-        scope: ['user-{params.id}', 'admin']
-      },
-      validate: {
-        params: shortIdSchema
+        scope: ['user', 'admin']
       },
       description: 'Delete User',
       notes: 'Providing a valid *Token* and confirm with password and User account is deleted',

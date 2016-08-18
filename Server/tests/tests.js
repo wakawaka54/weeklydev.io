@@ -3,9 +3,9 @@ global.chai = require('chai');
 global.expect = global.chai.expect;
 
 // ----- Definition here
-global.URL = 'http://localhost:1337';
+global.URL = 'http://localhost:1337/v1';
 
-function generateRandomUser (cb) {
+/*function generateRandomUser (cb) {
   var http = require('http');
   var NewUser;
   http.get('http://api.randomuser.me/?inc=login,email', (res) => {
@@ -15,8 +15,9 @@ function generateRandomUser (cb) {
     NewUser.email = user.email;
     cb(NewUser);
   });
-}
+}*/
 // chai.use(require('chai-http'))
 
 require('./user/server-test');
-require('./user/user-test');
+//require('./user/user-test');
+require('./user/project-test.js');

@@ -1,5 +1,5 @@
 import * as projects from './projects.js';
-import projectSchema from '../../Schemas/Project.js';
+import { projectSchema, projectUpdateSchema } from '../../Schemas/Project.js';
 
 const routes = [
   {
@@ -46,10 +46,20 @@ const routes = [
       description: 'Update Project',
       tags: ['api', 'Projects'],
       validate: {
-        payload: projectSchema
+        payload: projectUpdateSchema
       }
     },
     handler: projects.updateProject
+  },
+  {
+    method: 'DELETE',
+    path: '/projects/{id}',
+    config: {
+      auth: 'jwt',
+      description: 'Delete Project',
+      tags: ['api', 'Projects']
+    },
+    handler: projects.deleteProject
   }
 ];
 

@@ -19,7 +19,7 @@ const TeamModel = new Schema({
     default: true
   },
   requests: [{
-    id: Schema.Types.ObjectId,
+    user: Schema.Types.ObjectId,
     role: String,
     msg: String
   }],
@@ -62,9 +62,12 @@ TeamModel
     updateObject = { $addToSet: { team: this.id }};
     if(this.project) { updateObject.$addToSet['project'] = this.project; }
     this.members.forEach(user => {
-      this.model('User').findByUserIdAndUpdate(user.id, updateObject).exec()
+      this.model('User').findByUserIdAndUpdate(user, updateObject).exec()
         .catch(err => next(err));
     });
+
+    let updateProject = {}
+    updateProject = { $addToSet: { team: this.id } };
 
     next();
   });

@@ -1,5 +1,5 @@
 // This can be used for easy identification of a problem
-// and not scrathing your head what happend and why are 
+// and not scrathing your head what happend and why are
 // you getting that error that just says the same thing
 // over and over again
 
@@ -40,3 +40,4 @@ export const userInTeam = applyErrorCode(Boom.create(400, 'User already on team'
 export const maxUsersInRole = applyErrorCode(Boom.create(400, 'Maximum users in role reached', { errorCode: 503 }));
 export const maxRequestsReached = applyErrorCode(Boom.create(400, 'Maximum requests reached', { errorCode: 505 }));
 export const alreadyRequested = applyErrorCode(Boom.create(400, 'You already requested to join this team', { errorCode: 506}));
+export const userNotRequested = applyErrorCode(Boom.create(400, 'User has not requested to join this team', {errorCode: 503 }));
