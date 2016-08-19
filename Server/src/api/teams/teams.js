@@ -2,11 +2,12 @@ import Boom from 'boom';
 import shortid from 'shortid';
 import Team from '../../Models/Team';
 import User from '../../Models/User';
+import Project from '../../Models/Project';
 import * as Code from '../../Utils/errorCodes.js';
-import { findUserInTeam } from './util.js';
+import { findUserInTeam, addToUserScope, findUserInRequests, addTeamToProject, removeTeamFromProject, removeFromUserScope } from './util.js';
 
 /*
- * Add Team 
+ * Add Team
  */
 export function addTeam (req, res) {
   let team = new Team({
@@ -14,35 +15,58 @@ export function addTeam (req, res) {
     name: req.payload.name
   });
 
-  if (req.payload.users) {
-    req.payload.users.forEach(user => {
-      if (user.valid) {
-        team.members.push({id: user.user.id,  role: user.user.role});
-        team.meta['members'].push({id: user.user.id});
-      }else {
-        res(Boom.badRequest({msg: 'Incorect User Details',error: user.user}));
-      }
-    });
-    team.save()
-      .catch(err => res(Boom.badImplementation(err)))
-      .then(_team => res(_team));
-  }else {
-    team.save()
-      .catch(err => res(Boom.badImplementation(err)))
-      .then(_team => res(_team));
-  }
+  team.save()
+    .then(_team => {
+      //Add to user scope that he is Team Manager to allow authorization to Manager Api Endpoints
+      addToUserScope(_team.manager, `manager-${_team.id}`)
+      return res(_team);
+    })
+    .catch(err => { return res(Boom.conflict(err)); });
 };
 
 /*
- * Get Team
+ * Get Teams
  */
 export function getTeams (req, res) {
+  let page = 0;
+  console.log(req.query);
   Team.find()
-    .populate('Pmembers', 'id username isSearching project team')
+    .populate({ select: User.safeUser, path: 'manager' })
+    .populate({ select: User.safeUser, path: 'members.user'})
     .exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));
 };
+
+export function addProjectTeam (req, res) {
+  Team.findByTeamId(req.params.id).exec()
+    .then(team => {
+      team.project = req.params.pid;
+      team.save()
+        .then(_team => {
+          addTeamToProject(req.params.id, req.params.pid);
+          return res(_team);
+        })
+        .catch(err => res(Boom.badImplementation(err)));
+    })
+    .catch(err => res(Boom.notFound(err)));
+}
+
+export function deleteProjectTeam(req, res) {
+  Team.findByTeamId(req.params.id).exec()
+    .then(team => {
+      team.project = null;
+      team.save()
+        .then(_team => {
+          let objectUpdate = { team: null };
+          Project.findProjectAndUpdate(req.params.pid, objectUpdate, (err, project) => {
+            return res(_team);
+          });
+        })
+        .catch(err => res(Boom.badImplementation(err)));
+    })
+    .catch(err => res(Boom.notFound(err)));
+}
 
 /*
  * Add user to team
@@ -54,32 +78,41 @@ export function addUserToTeam (req, res) {
       User.findByUserId(req.payload.id).exec()
         .catch(err => res(Code.teamNotFound))
         .then(user => {
+
           // Checks if user is in more then 3 teams
           if (user.team.length >= 3) {
-            res(Code.userInTooManyTeams);
-          }else {
-            // If the user who requested is team owner
-            if (req.Token.id !== team.owner) {
-              res(Code.notOwner);
-            }else {
-              // Makes sure the new user is NOT in the team already
-              if (findUserInTeam(user.id, [team.manager, team.backend, team.frontend])) {
-                res(Code.userInTeam);
-              }else {
-                if (team[req.payload.role].length >= 2 || team.members.length >= 5) {
-                  res(Code.maxUsersInRole);
-                }else {
-                  team.members.push(req.payload);
-                  // Adds the user to meta data
-                  team.meta.members.push({id: req.payload.user});
-
-                  team.save()
-                    .catch(err => res(Boom.badImplementation(err)))
-                    .then(team => res({success: true, code: 200}).code(200));
-                }
-              }
-            }
+            res(Code.userInTooManyTeams); return;
           }
+
+          // If the user who requested is team owner
+          if (req.auth.credentials.id != team.manager) {
+            res(Code.notOwner); return;
+          }
+          // Makes sure the new user is NOT in the team already
+          if (findUserInTeam(user.id, team.members)) {
+            res(Code.userInTeam); return;
+          }
+
+          if(!findUserInRequests(user.id, team.requests)) {
+            res(Code.userNotRequested); return;
+          }
+
+          let pushObject = {
+            user: req.payload.id,
+            role: req.payload.role
+          };
+
+          team.members.push(pushObject);
+          // Adds the user to meta data
+          team.meta.members.push({id: req.payload.id});
+
+          //Remove user from requests
+          let indexOf = team.requests.indexOf(req.payload.id);
+          team.requests.splice(indexOf, 1);
+
+          team.save()
+            .catch(err => res(Boom.badImplementation(err)))
+            .then(team => res(team).code(200));
         });
     });
 };
@@ -90,7 +123,10 @@ export function addUserToTeam (req, res) {
 export function deleteTeam (req, res) {
   Team.findByTeamIdAndRemove(req.params.id).exec()
     .catch(err => res(Code.teamNotFound))
-    .then(team => res({success: true, code: 200, team: team}).code(200));
+    .then(team => {
+      removeFromUserScope(team.manager, `manager-${team.id}`);
+      res({success: true, code: 200, team: team}).code(200)
+    });
 };
 
 /*
@@ -98,7 +134,9 @@ export function deleteTeam (req, res) {
  */
 export function getTeam (req, res) {
   Team.findByTeamId(req.params.id)
-    .populate('Pmembers', 'id username isSearching project team').exec()
+    .populate({ select: User.safeUser, path: 'manager' })
+    .populate({ select: User.safeUser, path: 'members.user'})
+    .exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));
 };
@@ -110,18 +148,19 @@ export function requestJoinToTeam (req, res) {
   Team.findByTeamId(req.params.id).exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => {
+
       if (team.requests.length >= 5) {
-        res(Code.maxRequestsReached);
-      }else {
-        if (team.requests.includes(req.Token.id)) {
-          res(Code.alreadyRequested);
-        }else {
-          team.requests.push({id: req.payload.user, role: req.payload.role, msg: req.payload.msg});
-          team.save()
-            .catch(err => res(Boom.badImplementation(err)))
-            .then(team => res({success: true, code: 200}).code(200));
-        }
+        res(Code.maxRequestsReached); return;
       }
+
+      if (findUserInRequests(req.auth.credentials.id, team.requests)) {
+          res(Code.alreadyRequested); return;
+      }
+
+      team.requests.push({user: req.auth.credentials.id, role: req.payload.role, msg: req.payload.message});
+      team.save()
+        .catch(err => res(Boom.badImplementation(err)))
+        .then(team => res().code(200));
     });
 };
 
@@ -129,19 +168,25 @@ export function requestJoinToTeam (req, res) {
  * Update a team
  */
 export function updateTeam (req, res) {
+  if(!req.pre.user) { return res(Boom.badImplementation("Invalid User")); }
   Team.findByTeamId(req.params.id).exec()
-    .catch(err => res(Boom.badImplementation(err)))
     .then(team => {
-      if (req.Token.id !== team.owner) {
-        res(Code.notOwner);
-      }else {
-        if (req.payload.owner) team[owner] = req.payload.owner;
-        if (req.payload.project) team[project] = req.payload.project;
-        if (req.payload.submission) team[submission] = req.payload.submission;
-        if (req.payload.isActive) team[isActive] = req.payload.isActive;
-        team.save()
-          .catch(err => res(Boom.badImplementation(err)))
-          .then(team => res({success: true, code: 200, team: team}).code(200));
+
+      if (req.auth.credentials.id != team.manager) {
+        res(Code.notOwner); return;
       }
-    });
+
+      var previousManager = team.manager;
+      if (req.payload.manager) team.manager = req.payload.manager;
+      if (req.payload.isActive != undefined) team.isActive = req.payload.isActive;
+
+      team.save()
+        .then(team => {
+          addToUserScope(team.manager, `manager-$(team.id)`);
+          removeFromUserScope(previousManager, `manager-$(team.id)`);
+          return res(team).code(200);
+        })
+        .catch(err => res(Boom.badImplementation(err)));
+    })
+    .catch(err => { console.log("replying"); res(Boom.badImplementation(err)); });
 };

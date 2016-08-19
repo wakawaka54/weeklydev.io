@@ -1,11 +1,15 @@
+'use strict';
+
 global.server = require('../dist/app.js');
 global.chai = require('chai');
 global.expect = global.chai.expect;
 
-// ----- Definition here
-global.URL = 'http://localhost:1337';
+var populate = require('./populate.js');
 
-function generateRandomUser (cb) {
+// ----- Definition here
+global.URL = 'http://localhost:1337/v1';
+
+/*function generateRandomUser (cb) {
   var http = require('http');
   var NewUser;
   http.get('http://api.randomuser.me/?inc=login,email', (res) => {
@@ -15,8 +19,17 @@ function generateRandomUser (cb) {
     NewUser.email = user.email;
     cb(NewUser);
   });
-}
+}*/
 // chai.use(require('chai-http'))
 
-require('./user/server-test');
-require('./user/user-test');
+before(function () {
+  return populate.setup();
+});
+
+//require('./endpoints/server-test');
+//require('./endpoints/user-test');
+require('./endpoints/project-test.js');
+
+after(function () {
+  return populate.cleanup();
+});

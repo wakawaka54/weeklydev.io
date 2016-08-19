@@ -10,26 +10,25 @@ const TeamModel = new Schema({
     },
     role: String
   }],
-  project: {
-    type: Schema.Types.ObjectId,
-    required: false,
-    ref: 'Project',
-    dafault: null
-  },
   manager: {
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   },
   requests: [{
-    id: Schema.Types.ObjectId,
+    user: Schema.Types.ObjectId,
     role: String,
     msg: String
   }],
   created: {type: Date, default: Date.now()},
+  project: {
+    type: Schema.Types.ObjectId,
+    ref: 'Project',
+    default: null
+  },
   meta: {
     Match: Boolean,
     timezone: [Number],
@@ -42,13 +41,16 @@ const TeamModel = new Schema({
       }
     }]
   }
+},
+{
+  toObject: { virtuals: true }
 });
 
 TeamModel
   .pre('save', function (next) {
     if (this.isNew) {
       // handle duplicated ID
-      this.model('Team').findOne({name: this.name, (err, team) => {
+      this.model('Team').findOne({name: this.name}, (err, team) => {
         if (err || team) {
           next(err || new Error('Team name already exists'));
         }else {
@@ -56,44 +58,34 @@ TeamModel
         }
       });
     }
-    // populate members info abou this team
+
+    // populate members info about this team
     // TODO: add projects and submissions
-    let _count = this.members.length;
-    let _current = 0;
     let updateObject = {};
-    updateObject = { $addToSet: { team: {id: this.id, shortId: this.teamId}  }};
-    if (this.project) updateObject['$addToSet'].project = this.project;
-    if (this.submission)  updateObject['$addToSet'].submission = this.submission;
+    updateObject = { $addToSet: { team: this.id }};
+    if(this.project) { updateObject.$addToSet['project'] = this.project; }
     this.members.forEach(user => {
-      this.model('User').findByUserIdAndUpdate(user.id, updateObject).exec()
-        .catch(err => next(err))
-        .then(user => {
-          _current++;
-          if (_current == _count) {
-            next();
-          }
-        });
+      this.model('User').findByUserIdAndUpdate(user, updateObject).exec()
+        .catch(err => next(err));
     });
+
+    let updateProject = {}
+    updateProject = { $addToSet: { team: this.id } };
+
+    next();
   });
 
 TeamModel
   .pre('remove', function (next) {
-    let _count = this.members.length;
-    let _current = 0;
     let updateObject = {};
-    updateObject = { $pull: { team: {id: this.id, shortId: this.teamId} }};
-    if (this.project) updateObject['$addToSet'].project = this.project;
-    if (this.submission)  updateObject['$addToSet'].submission = this.submission;
+    updateObject = { $pull: { team: this.id }};
+    if(this.project) { updateObject.$pull['project'] = this.project; }
     this.members.forEach(user => {
       this.model('User').findByUserIdAndUpdate(user.id, updateObject).exec()
         .catch(err => next(err))
-        .then(user => {
-          _current++;
-          if (_current == _count) {
-            next();
-          }
-        });
     });
+
+    next();
   });
 
 let getUsers = (users, role) => {
@@ -104,11 +96,6 @@ let getUsers = (users, role) => {
   return ret;
 };
 
-TeamModel.virtual('Members', {
-  ref: 'User', // The model to use
-  localField: 'members.id', // Find people where `localField`
-  foreignField: 'userId' // is equal to `foreignField`
-});
 TeamModel.virtual('frontend').get(() => {
   return getUsers(this.members, 'frontend');
 });
@@ -120,10 +107,10 @@ TeamModel.virtual('backend').get(() => {
 });*/
 
 TeamModel.statics.findByTeamId = function (ID, cb) {
-  return this.model('Team').findOne({teamId: ID}, cb);
+  return this.model('Team').findOne({ _id: ID }, cb);
 };
 TeamModel.statics.findByTeamIdAndRemove = function (ID, cb) {
-  return this.model('Team').findOneAndRemove({teamId: ID}, cb);
+  return this.model('Team').findOneAndRemove({ _id: ID }, cb);
 };
 TeamModel.options.toObject = {
   transform: (doc, ret, opts) => {

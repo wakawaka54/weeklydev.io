@@ -1,5 +1,6 @@
 import * as projects from './projects.js';
-import projectSchema from '../../Schemas/Project.js';
+import { projectSchema, projectUpdateSchema } from '../../Schemas/Project.js';
+import * as utils from './util.js';
 
 const routes = [
   {
@@ -8,7 +9,7 @@ const routes = [
     path: '/projects',
     config: {
       auth: 'jwt',
-      description: 'List all avaible projects',
+      description: 'List all available projects',
       tags: ['api', 'Projects']
     },
     handler: projects.getProjects
@@ -46,10 +47,44 @@ const routes = [
       description: 'Update Project',
       tags: ['api', 'Projects'],
       validate: {
-        payload: projectSchema
+        payload: projectUpdateSchema
       }
     },
     handler: projects.updateProject
+  },
+  {
+    method: 'DELETE',
+    path: '/projects/{id}',
+    config: {
+      auth: 'jwt',
+      description: 'Delete Project',
+      tags: ['api', 'Projects']
+    },
+    handler: projects.deleteProject
+  },
+  {
+    method: 'POST',
+    path: '/projects/{id}/upvote',
+    config: {
+      auth: 'jwt',
+      description: 'Delete Project',
+      tags: ['api', 'Projects'],
+      pre:
+        [{ method: utils.validateUpvoteProjectId,  assign: 'project' }]
+    },
+    handler: projects.upvoteProject
+  },
+  {
+    method: 'POST',
+    path: '/projects/{id}/downvote',
+    config: {
+      auth: 'jwt',
+      description: 'Delete Project',
+      tags: ['api', 'Projects'],
+      pre:
+        [{ method: utils.validateUpvoteProjectId,  assign: 'project' }]
+    },
+    handler: projects.downvoteProject
   }
 ];
 

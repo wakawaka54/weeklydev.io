@@ -1,5 +1,6 @@
 import Boom from 'boom';
 import User from '../Models/User';
+import Project from '../Models/Project.js';
 import { formatUser } from '../api/users/util';
 import Joi from 'joi';
 
@@ -76,6 +77,14 @@ export function validateUser (users, cb) {
       .then(count => ((count > 0) ? cb(null, true) : cb(null, false)));
   }
 };
+
+export function validateProject(project, cb)
+{
+  Project.findOne({_id: project}, (err, _proj) => {
+      if(err) { cb(err, null); return; }
+      cb(null, _proj);
+  });
+}
 
 export function isAdmin (scope) {
   return scope.indexOf('admin') >= 0;

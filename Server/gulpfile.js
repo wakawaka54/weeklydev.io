@@ -11,22 +11,19 @@ gulp.task('watch', ['build'], function(){
   gulp.watch(files, ['build', 'reload'] )
 })
 
-var files = './src/**/*.js'
+var files = './src/**/*.js';
+
+var testFiles = './tests/*.js';
+var testBase = './tests';
 
 gulp.task('build', function(cb){
-  while(children.length != 0){
-    children.pop().kill()
-  }
-
   gulp.src(files, { base: './src' })
     .pipe(babel())
     .pipe(gulp.dest('dist'))
-    .on('end', cb)
-
-})
+});
 
 gulp.task('reload', ['build'], function(){
-  
+
   // If no child processes exist, make a new one
   if(children.length === 0){
     children.push ( startProcess() )
@@ -44,13 +41,13 @@ function startProcess(){
   proc.stdout.on('data', function(data){
     console.log('stdout:', data.toString())
   })
-  
+
   proc.stderr.on('data', function(data){
     console.log('stderr:', data.toString())
   })
 
   return proc
-  
+
 }
 
 process.on('SIGINT', function(){

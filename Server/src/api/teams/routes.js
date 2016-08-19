@@ -1,6 +1,6 @@
 import * as teams from './teams.js';
-import { teamSchema, teamProjectSchema } from '../../Schemas/Team.js';
-import { validateUserId } from './util.js';
+import * as schemas from '../../Schemas/Team.js';
+import { validateUserId, validateProjectId, validateUpdateUser } from './util.js';
 import Joi from 'joi';
 
 // TODO: 1 Create a way to add projects and submission to the team and user, Also remove it from them when they leave
@@ -28,7 +28,7 @@ const routes = [
       description: 'Create a new Team',
       notes: 'Create a new **Team** with the team owner being then one who requested this',
       tags: ['api', 'Team'],
-      validate: { payload: teamSchema },
+      validate: { payload: schemas.newTeamSchema },
       pre: [{ method: validateUserId,  assign: 'users' }],
       auth: 'jwt'
     },
@@ -61,13 +61,14 @@ const routes = [
       notes: 'Update the team infomation. \n\n**IMPORTANT**: only the Team owner can update it.',
       tags: ['api', 'Team'],
       validate: {
-        payload: teamSchema
-      }
+        payload: schemas.updateTeamSchema
+      },
+      pre: [{ method: validateUpdateUser, assign: 'user'}]
     },
     handler: teams.updateTeam
   },
   /**
-   *  Delete a team by ID if you are the owner or admin 
+   *  Delete a team by ID if you are the owner or admin
    */
   // TODO: autodelete the team after some period of inactivity
   {
@@ -91,10 +92,7 @@ const routes = [
     path: '/teams/{id}/add',
     config: {
       validate: {
-        payload: Joi.object({
-          id: Joi.string().token().length(8).required(),
-          role: Joi.string().allow(['frontend', 'backend', 'manager']).required()
-        })
+        payload: schemas.addUserTeamSchema
       },
       auth: {
         scope: ['manager-{params.id}', 'admin']
@@ -112,15 +110,46 @@ const routes = [
     method: 'POST',
     path: '/teams/{id}/join',
     config: {
-      // validate: {
-      //   payload: teamSchema // TOOD: add a new validation otherwise this will not work
-      // },
+      validate: {
+        payload: schemas.joinTeamSchema
+      },
       auth: 'jwt',
       description: 'Request to join a team',
       notes: 'Puts a request to join a team. If team owner approves of this request Automatically joins the team \n\n**USER CAN ONLY REQUEST TO JOIN 2 TEAMS AT A TIME** and uppon accepting into one of those the other request is deleted',
       tags: ['api', 'Team']
     },
     handler: teams.requestJoinToTeam
+  },
+
+  /**
+  * Add Project to Team
+  */
+  {
+    method: 'POST',
+    path: '/teams/{id}/project/{pid}',
+    config: {
+      auth: {
+        scope: ['manager-{params.id}', 'admin']
+      },
+      description: "Add project to team",
+      pre: [{ method: validateProjectId,  assign: 'project' }]
+    },
+    handler: teams.addProjectTeam
+  },
+  /**
+  * Delete Project from Team
+  */
+  {
+    method: 'DELETE',
+    path: '/teams/{id}/project/{pid}',
+    config: {
+      auth: {
+        scope: ['manager-{params.id}', 'admin']
+      },
+      description: "Delete project from team",
+      pre: [{ method: validateProjectId,  assign: 'project' }]
+    },
+    handler: teams.deleteProjectTeam
   }
 ];
 
