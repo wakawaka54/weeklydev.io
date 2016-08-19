@@ -1,5 +1,6 @@
 'use strict';
 
+var server = require('../dist/app.js');
 var mongoose = require('mongoose');
 var User = require('../dist/Models/User.js');
 var tokenUtils = require('../dist/api/users/util.js');
@@ -11,15 +12,21 @@ global.teams = [];
 
 var _exports = module.exports = {};
 
-_exports.setup = function () {
+_exports.setup = function(done) {
   console.warn("Setting up test database");
 
   for (var i in mongoose.connection.collections) {
     mongoose.connection.collections[i].remove(function () {});
   }
 
-  addUsers();
-  addProjects();
+addUsers(() => {
+  addProjects(() => {
+    addTeams(() => {
+      done();
+    });
+  });
+});
+
 };
 
 _exports.cleanup = function () {
@@ -29,72 +36,109 @@ _exports.cleanup = function () {
   }*/
 };
 
-function addUsers() {
-  var userss = {
+function addUsers(done) {
+  var user = {
     username: "testuser",
     password: "testuser",
     email: "test@test.com"
   };
 
-  var UserModel = mongoose.model('User');
+  var i = 0;
 
-  for (var i = 0; i != 50; i++) {
-    let user = new UserModel({
-      userId: shortid.generate(),
-      email: "test" + i + "@test.com",
-      username: userss.username + i,
-      scope: ['user'],
-      password: userss.password,
-      token: {
-        uuid: tokenUtils.generateUUID(),
-        valid: true
+  function addUser(i, cb) {
+    server.inject({
+      method: 'POST',
+      url: URL + '/users/new',
+      payload: {
+        username: user.username + i,
+        password: user.password,
+        email: `test${i}@test.com`
       }
+    }, function (result) {
+      let user = result.result;
+      users.push(user);
+      cb(done);
     });
-
-    user.save();
-
-    users.push(user);
   }
+
+  function iterate(done)
+  {
+    if(i != 20)
+    {
+      addUser(i++, iterate);
+    }
+    else { done(); }
+  }
+
+  iterate(done);
 }
 
-function addProjects() {
-  var project = {
-    title: "test title",
-    description: "test description",
-    creator: users[0]._id
-  };
+function addProjects(done) {
+    var project = {
+      title: "test title",
+      description: "test description"
+    };
 
-  var ProjectModel = mongoose.model('Project');
+    var i = 0;
 
-  for (var i = 0; i != 50; i++) {
-    var u = new ProjectModel();
-    u.title = project.title + ' ' + i;
-    u.description = project.description;
-    u.creator = project.creator;
-
-    u.save();
-
-    projects.push(u);
+    function iterate(done)
+    {
+      if(i++ != 10)
+      {
+          server.inject({
+            method: 'POST',
+            url: URL + '/projects',
+            headers: {
+              Authorization: 'bearer ' + users[0].token
+            },
+            payload: {
+              title: project.title + i,
+              description: project.description + i,
+              tags: ["test", "description"],
+              public: true
+            }
+          }, function (res) {
+            let project = res.result;
+            projects.push(project);
+            iterate(done);
+          });
+      }
+      else { done(); }
   }
+
+  iterate(done);
 }
 
-function addTeams() {
+function addTeams(done) {
   var team = {
     name: "test team",
     isActive: true,
     manager: users[0].id
   };
 
-  var TeamModel = mongoose.model('Team');
+  var i = 0;
 
-  for (var i = 0; i != 50; i++) {
-    var u = new TeamModel();
-    u.name = team.name + ' ' + i;
-    u.isActive = team.isActive;
-    u.manager = team.manager;
-
-    u.save();
-
-    teams.push(u);
+  function iterate(done)
+  {
+    if(i++ != 25)
+    {
+      server.inject({
+        method: 'POST',
+        url: URL + '/teams',
+        headers: {
+          Authorization: 'bearer ' + users[0].token
+        },
+        payload: {
+          name: team.name + i
+        }
+      }, function (res) {
+        let team = res.result;
+        teams.push(team);
+        iterate(done);
+      });
+    }
+    else { done(); }
   }
+
+  iterate(done);
 }

@@ -6,13 +6,16 @@ import Project from '../../Models/Project';
 import * as Code from '../../Utils/errorCodes.js';
 import { findUserInTeam, addToUserScope, findUserInRequests, addTeamToProject, removeTeamFromProject, removeFromUserScope } from './util.js';
 
+const resultsPerPage = 20;
+
 /*
  * Add Team
  */
 export function addTeam (req, res) {
   let team = new Team({
-    manager: req.Token.id,
-    name: req.payload.name
+    manager: req.auth.credentials.id,
+    name: req.payload.name,
+    isActive: req.payload.isActive
   });
 
   team.save()
@@ -29,10 +32,13 @@ export function addTeam (req, res) {
  */
 export function getTeams (req, res) {
   let page = 0;
-  console.log(req.query);
+  if(req.query.page) { page = req.query.page; }
+
   Team.find()
     .populate({ select: User.safeUser, path: 'manager' })
     .populate({ select: User.safeUser, path: 'members.user'})
+    .limit(resultsPerPage)
+    .skip(resultsPerPage * page)
     .exec()
     .catch(err => res(Boom.badImplementation(err)))
     .then(team => res(team));

@@ -22,13 +22,16 @@ global.URL = 'http://localhost:1337/v1';
 }*/
 // chai.use(require('chai-http'))
 
-before(function () {
-  return populate.setup();
+before(function (done) {
+  this.timeout(10000);
+  populate.setup(done);
 });
 
 //require('./endpoints/server-test');
 //require('./endpoints/user-test');
 require('./endpoints/project-test.js');
+require('./endpoints/team-tests.js');
+
 
 after(function () {
   return populate.cleanup();
