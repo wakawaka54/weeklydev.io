@@ -30,7 +30,7 @@ before(function (done) {
 //require('./endpoints/server-test');
 //require('./endpoints/user-test');
 require('./endpoints/project-test.js');
-require('./endpoints/team-tests.js');
+require('./endpoints/team-test.js');
 
 
 after(function () {
