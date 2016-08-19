@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "watch": "gulp spy",
-    "test": "npm run build && mocha tests/tests.js",
+    "test": "npm run build && NODE_ENV=test mocha --compilers js:babel-core/register tests/tests.js",
     "build": "gulp build"
   },
   "repository": {

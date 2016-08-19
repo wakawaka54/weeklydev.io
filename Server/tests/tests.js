@@ -1,6 +1,10 @@
+'use strict';
+
 global.server = require('../dist/app.js');
 global.chai = require('chai');
 global.expect = global.chai.expect;
+
+var populate = require('./populate.js');
 
 // ----- Definition here
 global.URL = 'http://localhost:1337/v1';
@@ -18,6 +22,14 @@ global.URL = 'http://localhost:1337/v1';
 }*/
 // chai.use(require('chai-http'))
 
-require('./user/server-test');
-//require('./user/user-test');
-require('./user/project-test.js');
+before(function () {
+  return populate.setup();
+});
+
+//require('./endpoints/server-test');
+//require('./endpoints/user-test');
+require('./endpoints/project-test.js');
+
+after(function () {
+  return populate.cleanup();
+});

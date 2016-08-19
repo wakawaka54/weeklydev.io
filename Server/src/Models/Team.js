@@ -16,7 +16,7 @@ const TeamModel = new Schema({
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   },
   requests: [{
     user: Schema.Types.ObjectId,
@@ -41,6 +41,9 @@ const TeamModel = new Schema({
       }
     }]
   }
+},
+{
+  toObject: { virtuals: true }
 });
 
 TeamModel

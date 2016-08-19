@@ -48,8 +48,12 @@ var ProjectModel = new Schema({
   }
 });
 
-ProjectModel.virtual('votes').get(() => {
-  return upvotes.length - downvotes.length;
+//Arrow function instead of function() was giving me issues
+ProjectModel.virtual('votes').get(function(){
+  let up = this.upvotes == undefined ? 0 : this.upvotes.length;
+  let down = this.downvotes == undefined ? 0 : this.downvotes.length;
+
+  return up - down;
 });
 
 ProjectModel.statics.findProjectAndUpdate = function (pid, updateObject, cb) {
@@ -58,7 +62,11 @@ ProjectModel.statics.findProjectAndUpdate = function (pid, updateObject, cb) {
 
 ProjectModel.options.toObject = {
   transform: (doc, ret, opts) => {
+    //Remove MongoDB __v (Version) property
     delete ret.__v;
+
+    //Attach virtual method to return object
+    ret.votes = doc.votes;
     return ret;
   }
 };

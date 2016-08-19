@@ -15,21 +15,9 @@ export function addTeam (req, res) {
     name: req.payload.name
   });
 
-  //Can't force users to be on your team
-
-  /*if (req.payload.users) {
-    req.payload.users.forEach(user => {
-      if (user.valid) {
-        team.members.push({id: user.user.id,  role: user.user.role});
-        team.meta['members'].push({id: user.user.id});
-      }else {
-        res(Boom.badRequest({msg: 'Incorect User Details',error: user.user}));
-      }
-    });
-  }*/
-
   team.save()
     .then(_team => {
+      //Add to user scope that he is Team Manager to allow authorization to Manager Api Endpoints
       addToUserScope(_team.manager, `manager-${_team.id}`)
       return res(_team);
     })
@@ -37,9 +25,11 @@ export function addTeam (req, res) {
 };
 
 /*
- * Get Team
+ * Get Teams
  */
 export function getTeams (req, res) {
+  let page = 0;
+  console.log(req.query);
   Team.find()
     .populate({ select: User.safeUser, path: 'manager' })
     .populate({ select: User.safeUser, path: 'members.user'})
