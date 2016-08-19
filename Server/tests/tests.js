@@ -31,7 +31,7 @@ before(function (done) {
 //require('./endpoints/user-test');
 require('./endpoints/project-test.js');
 require('./endpoints/team-test.js');
-
+require('./endpoints/survey-test.js');
 
 after(function () {
   return populate.cleanup();

@@ -40,10 +40,9 @@ import * as Code from '../../Utils/errorCodes.js';
 export function getSurvey (req, res) {
   User.findById(req.Token.id, (err, user) => {
     if (user.survey) {
-      res(user.survey.toObject()).code(200);
+      return res(user.survey);
     } else {
-      // res({ error: 'No Survey found!' }).code(200);
-      res({ error: 'No Survey found!' });
+      return res(Code.surveyNotFound);
     }
   });
 };
@@ -57,11 +56,11 @@ export function updateSurvey (req, res) {
     survey
   }, { new: true, upsert: true }, (err, user) => {
     if (err) {
-      res(Boom.badRequest(err));
+      return res(Boom.badRequest(err));
     } else if (!user.survey) {
-      res(Boom.unauthorized('Survey not found'));
+      return res(Boom.unauthorized('Survey not found'));
     } else {
-      res(user.survey.toObject());
+      return res(user.survey);
     }
   });
 };

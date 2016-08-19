@@ -32,7 +32,7 @@ const routes = [
     config: {
       auth: 'jwt',
       description: 'Create a new Survey',
-      notes: "Create a new Survey Response used in matchmaking to determine your optimal **Team**. \n\nPS: you're Welcome",
+      notes: "Create a new Survey Response used in matchmaking to determine your optimal **Team**.",
       tags: ['api', 'Survey'],
       validate: {
         payload: surveySchema

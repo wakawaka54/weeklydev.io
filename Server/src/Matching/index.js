@@ -10,7 +10,11 @@ export function startSchedule () {
   });
 };
 
-export function runMatch () {
+export function runMatch() {
+  
+}
+
+/*export function runMatch () {
   GhostTeam.find({}, (err, teams) => {
     if (err) {
       console.log(err);
@@ -25,4 +29,4 @@ export function runMatch () {
       });
     }
   });
-};
+};*/
