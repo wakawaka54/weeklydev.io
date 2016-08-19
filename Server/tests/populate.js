@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var User = require('../dist/Models/User.js');
 var tokenUtils = require('../dist/api/users/util.js');
 var shortid = require('shortid');
+var utils = require('./utils/util.js');
 
 global.users = [];
 global.projects = [];
@@ -22,7 +23,9 @@ _exports.setup = function(done) {
 addUsers(() => {
   addProjects(() => {
     addTeams(() => {
-      done();
+      addSurveys(() => {
+          done();
+      });
     });
   });
 });
@@ -134,6 +137,38 @@ function addTeams(done) {
       }, function (res) {
         let team = res.result;
         teams.push(team);
+        iterate(done);
+      });
+    }
+    else { done(); }
+  }
+
+  iterate(done);
+}
+
+function addSurveys(done) {
+
+  var i = 0;
+
+  function iterate(done)
+  {
+    if(i != 20)
+    {
+      server.inject({
+        method: 'POST',
+        url: URL + '/survey',
+        headers: {
+          Authorization: 'bearer ' + users[i].token
+        },
+        payload: {
+          role: ['frontend', 'backend', 'manager'],
+          project_manager: true,
+          skill_level: utils.randomWhole(1, 5),
+          project_size: utils.randomWhole(1, 5),
+          timezone: utils.randomWhole(-12, 12)
+        }
+      }, function (res) {
+        i++;
         iterate(done);
       });
     }

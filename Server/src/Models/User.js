@@ -50,7 +50,7 @@ const UserSchema = new Schema({
   survey: SurveyModel,
   isSearching: {
     type: Boolean,
-    default: false,
+    default: true,
     required: true
   },
   created_on: {
