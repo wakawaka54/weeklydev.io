@@ -1,5 +1,5 @@
 var gulp = require('gulp')
-var babel= require('gulp-babel')
+var babel = require('gulp-babel')
 var spawn = require('child_process').spawn
 
 var children = []

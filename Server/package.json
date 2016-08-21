@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "watch": "gulp spy",
-    "test": "npm run build && NODE_ENV=test mocha tests/tests.js",
+    "test": "npm run build && NODE_ENV=test mocha tests/tests.js --require babel-polyfill",
     "build": "gulp build"
   },
   "repository": {
@@ -45,6 +45,9 @@
     "vision": "^4.1.0"
   },
   "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-polyfill": "^6.13.0",
+    "babel-preset-stage-3": "^6.11.0",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "mocha": "^2.5.3",

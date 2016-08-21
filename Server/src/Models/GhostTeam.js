@@ -46,7 +46,7 @@ GhostTeamModel.methods = {
 
 GhostTeamModel
   .pre('save', function (next) {
-    this.populateUsers(() => {
+    /*this.populateUsers(() => {
       this.users.forEach((user, index, array) => {
         let update = {$push: {ghostTeams: this.id}};
         if (user.id === this.manager[0].userId) {
@@ -64,7 +64,9 @@ GhostTeamModel
           next();
         });
       });
-    });
+    });*/
+
+    next();
   });
 
 GhostTeamModel

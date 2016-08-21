@@ -1,3 +1,5 @@
+import "babel-polyfill";
+
 import Hapi from 'hapi';
 import Inert from 'inert';
 import Vision from 'vision';
