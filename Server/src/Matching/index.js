@@ -1,4 +1,3 @@
-import match from './match';
 import schedule from 'node-schedule';
 import GhostTeam from '../Models/GhostTeam.js';
 import User from '../Models/User';
