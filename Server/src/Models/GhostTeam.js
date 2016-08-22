@@ -1,3 +1,5 @@
+const async = require('async');
+
 import User from './User.js';
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
@@ -29,45 +31,25 @@ GhostTeamModel.virtual('score').get(function () {
   return score;
 });
 
-GhostTeamModel.methods = {
-  populateUsers(callback) {
-    this.manager.forEach((user, index, array) => {
-      this.users.push({id: user.userId, role: 'manager'});
-    });
-    this.frontend.forEach((user, index, array) => {
-      this.users.push({id: user.userId, role: 'frontend'});
-    });
-    this.backend.forEach((user, index, array) => {
-      this.users.push({id: user.userId, role: 'backend'});
-    });
-    callback();
-  }
-};
-
 GhostTeamModel
   .pre('save', function (next) {
-    /*this.populateUsers(() => {
-      this.users.forEach((user, index, array) => {
-        let update = {$push: {ghostTeams: this.id}};
-        if (user.id === this.manager[0].userId) {
-          // Updates the scope to include manager
-          update = {$push: {ghostTeams: this.id}, $addToSet: {scope: 'manager'}};
-        }
-        User.findByIdAndUpdate(user.id, update, (err, user) => {
-          if (err) {
-            console.log(err);
-            return next(err);
-          }
-          if (!user) {
-            return next(new Error('User not found!'));
-          }
-          next();
-        });
-      });
-    });*/
+    var ghostTeam = this;
+    async.each(this.users, updateUserGhostTeam, (err) => { next(); });
 
-    next();
-  });
+    function updateUserGhostTeam(user, callback) {
+      let update = {$push: {ghostTeams: ghostTeam.id}};
+      User.findByIdAndUpdate(user.id, update, (err, user) => {
+        if (err) {
+          console.log(err);
+          return next(err);
+        }
+        if (!user) {
+          return next(new Error('User not found!'));
+        }
+        callback();
+      });
+    }
+});
 
 GhostTeamModel
   .pre('remove', function (next) {

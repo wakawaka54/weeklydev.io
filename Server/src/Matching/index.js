@@ -14,20 +14,3 @@ export function startSchedule () {
 export function runMatch() {
   startMatchmaking();
 }
-
-/*export function runMatch () {
-  GhostTeam.find({}, (err, teams) => {
-    if (err) {
-      console.log(err);
-    }else {
-      teams.forEach(team => team.remove(err => ((err) ? console.log(err) : null)));
-      User.find({ isSearching: true }, (err, users) => {
-        if (err || !users) {
-          console.log(err);
-        }else {
-          users.forEach(user => match(user));
-        }
-      });
-    }
-  });
-};*/

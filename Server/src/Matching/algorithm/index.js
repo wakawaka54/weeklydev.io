@@ -26,8 +26,8 @@ and have filled out their survey (NOT IMPLEMENTED)
 **/
 const userQuery = { $and: [
   { 'isSearching': true},
-  {$or: [{'ghostTeam': null},
-  {'ghostTeam': {$exists: false}}]}
+  {$or: [{'ghostTeams': {$size: 0}},
+  {'ghostTeams': {$exists: false}}]}
 ]};
 
 var totalUsers = -100;
@@ -41,7 +41,7 @@ export async function startMatchmaking()
     for(let i = 0; i != 1; i++) {
     let seedUser = await randomUsers(1);
     let ghostTeam = await assembleGhostTeam(seedUser);
-    }
+  }
 
   }
   catch(err) {
@@ -172,8 +172,9 @@ async function findUserMatch(users) {
     match += Math.abs(overallSkill.project_size - survey.project_size) * matchingImportance[1];
     match += Math.abs(overallSkill.timezone - survey.timezone) * matchingImportance[1];
 
+    console.log('These are all the users on the team:' + users);
     //If the user is already on the team, make the match a really high number
-    if(users.filter((user) => ranUsers[i].id == user.id).length > 0) { match = 100000; }
+    if(users.filter((teamUser) => user.id == teamUser.id).length > 0) { match = 100000; }
 
     matchCount.push(match);
   }
@@ -187,6 +188,11 @@ async function findUserMatch(users) {
   return ranUsers[indexOf];
 }
 
+/**
+Computational method that computes the total amount of match skill points in a team
+[users] => current list of users in the team
+Returns: overallSkill object
+**/
 function getUsersSkill(users){
 
   let overallSkill = {

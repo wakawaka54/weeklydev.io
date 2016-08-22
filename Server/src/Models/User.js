@@ -34,6 +34,7 @@ const UserSchema = new Schema({
     ref: 'Team'
   }],
   scope: [String],
+  isAdmin: {type: Boolean, default: false},
   manager: [String],
   team: [{
     id: {
