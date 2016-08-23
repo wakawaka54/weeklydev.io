@@ -45,6 +45,7 @@ export async function startMatchmaking()
 
   }
   catch(err) {
+    console.log(`Line Number: ${err.line}`);
     console.log(err);
   }
 }
@@ -172,9 +173,8 @@ async function findUserMatch(users) {
     match += Math.abs(overallSkill.project_size - survey.project_size) * matchingImportance[1];
     match += Math.abs(overallSkill.timezone - survey.timezone) * matchingImportance[1];
 
-    console.log('These are all the users on the team:' + users);
     //If the user is already on the team, make the match a really high number
-    if(users.filter((teamUser) => user.id == teamUser.id).length > 0) { match = 100000; }
+    if(users.filter((teamUser) => user.id == teamUser.id).length > 0) { console.log('filtered'); match = 100000; }
 
     matchCount.push(match);
   }

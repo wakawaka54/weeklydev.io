@@ -14,13 +14,6 @@ const GhostTeamModel = new Schema({
     role: String
   }],
   confirmed: Number,
-  manager: [Schema.Types.Mixed],
-  frontend: [Schema.Types.Mixed],
-  backend: [Schema.Types.Mixed]
-});
-
-GhostTeamModel.virtual('members').get(function () {
-  return this.manager.concat(this.frontend.concat(this.backend));
 });
 
 GhostTeamModel.virtual('score').get(function () {
@@ -33,6 +26,8 @@ GhostTeamModel.virtual('score').get(function () {
 
 GhostTeamModel
   .pre('save', function (next) {
+
+    //Add GhostTeam id to next user
     var ghostTeam = this;
     async.each(this.users, updateUserGhostTeam, (err) => { next(); });
 
@@ -53,8 +48,14 @@ GhostTeamModel
 
 GhostTeamModel
   .pre('remove', function (next) {
-    this.users.forEach((user, index, array) => {
-      User.findByIdAndUpdate(user.id, {ghostTeams: [] }, (err, user) => {
+
+    //Remove GhostTeam id from each User
+    var ghostTeam = this;
+    async.each(this.users, updateUserGhostTeam, (err) => { next(); });
+
+    function updateUserGhostTeam(user, callback) {
+      let update = {ghostTeams: [] };
+      User.findByIdAndUpdate(user.id, update, (err, user) => {
         if (err) {
           console.log(err);
           return next(err);
@@ -62,9 +63,9 @@ GhostTeamModel
         if (!user) {
           return next(new Error('User not found!'));
         }
+        callback();
       });
-    });
-    next();
+    }
   });
 
 GhostTeamModel.options.toObject = {
