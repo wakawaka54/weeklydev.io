@@ -65,9 +65,12 @@ TeamModel
     updateObject = { $addToSet: { team: this.id }};
     if(this.project) { updateObject.$addToSet['project'] = this.project; }
     this.members.forEach(user => {
-      this.model('User').findByUserIdAndUpdate(user, updateObject).exec()
+      console.log('users to update:' + user);
+      this.model('User').findByUserIdAndUpdate(user.user, updateObject).exec()
         .catch(err => next(err));
     });
+
+    this.model('User').findByUserIdAndUpdate(this.manager, updateObject).exec();
 
     let updateProject = {}
     updateProject = { $addToSet: { team: this.id } };

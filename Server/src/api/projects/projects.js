@@ -1,17 +1,24 @@
 import Project from '../../Models/Project.js';
 import Team from '../../Models/Team.js';
+import User from '../../Models/User';
 import Boom from 'boom';
+
+const itemsPerPage = 20;
 
 /*
  * Get projects
  */
 export function getProjects (req, res) {
-  Project.find((err, projects) => {
-    if (err) return console.error(err);
-    res(projects);
+  Project.find()
+  .limit(itemsPerPage)
+  .populate({select: User.safeUser, path: 'creator'})
+  .exec()
+  .catch((err) => { return res(err); })
+  .then((projects) => {
+    projects = projects.map(p => p.toObject());
+    return res(projects);
   });
 };
-
 /*
  * Add a  project
  */

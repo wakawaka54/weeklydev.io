@@ -119,7 +119,7 @@ server.start((err) => {
       if(process.env.NODE_ENV != 'test')
       {
         console.log('Starting matchmaking...');
-        runMatch();
+        //runMatch();
       }
     }
   });

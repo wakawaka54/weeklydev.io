@@ -41,7 +41,10 @@ export function getTeams (req, res) {
     .skip(resultsPerPage * page)
     .exec()
     .catch(err => res(Boom.badImplementation(err)))
-    .then(team => res(team));
+    .then(team =>{
+      team = team.map(t => t.toObject());
+      return res(team);
+    });
 };
 
 export function addProjectTeam (req, res) {

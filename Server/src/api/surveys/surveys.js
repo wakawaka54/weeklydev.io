@@ -40,9 +40,11 @@ import * as Code from '../../Utils/errorCodes.js';
 export function getSurvey (req, res) {
   User.findById(req.Token.id, (err, user) => {
     if (user.survey) {
-      return res(user.survey);
+      console.log("FONND");
+      res(user.survey);
     } else {
-      return res(Code.surveyNotFound);
+      console.log("NOT FOUND");
+      res(Boom.notFound());
     }
   });
 };

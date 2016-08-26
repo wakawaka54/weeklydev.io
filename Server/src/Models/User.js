@@ -37,11 +37,9 @@ const UserSchema = new Schema({
   isAdmin: {type: Boolean, default: false},
   manager: [String],
   team: [{
-    id: {
       type: Schema.Types.ObjectId,
       required: false,
       ref: 'Team'
-    }
   }],
   project: [{
     type: Schema.Types.ObjectId,

@@ -75,20 +75,11 @@ export function addUser (req, res) {
 
 export function getCurrentUser (req, res) {
   User.findById(req.Token.id)
-    .populate({ path: 'team', populate: { path: 'manager frontend backend' }})
-    .populate('project')
-    .populate({
-      path: 'ghostTeams',
-      populate: {
-        path: 'users',
-        populate: {
-          path: 'id'
-        }
-      }
-    })
+    .populate({path: 'team', populate: { select: User.safeUser, path: 'manager'}})
     .exec()
     .catch((err) => res(Boom.unauthorized(err)))
     .then((user) => {
+      console.log(user);
       if (!user) return res(Code.userNotFound);
       res(formatUser(user, 'user'));
     });
